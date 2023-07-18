@@ -1,0 +1,9 @@
+{
+    "Admin": true,
+    "Acl": true,
+    "Store": true,
+    "Customer": true,
+    "Shipping": true,
+    "Exception": true,
+    "InvalidQuantityException": true
+}
