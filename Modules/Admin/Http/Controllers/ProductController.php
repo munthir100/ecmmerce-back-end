@@ -113,3 +113,47 @@ class ProductController extends Controller
         );
     }
 }
+
+/*
+i have a product model :
+    public function options()
+    {
+        return $this->hasMany(ProductOption::class);
+    }
+and ProductOption :
+        protected $fillable = ['name','product_id'];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+    public function values()
+    {
+        return $this->hasMany(ProductOptionValue::class);
+    }
+and ProductOptionValue:
+    protected $fillable = [
+        'name',
+        'additional_price',
+        'quantity',
+        'product_option_id',
+    ];
+
+    public function option()
+    {
+        return $this->belongsTo(Option::class);
+    }
+    what if the customer put the product in cart 
+*/
+
+
+
+
+
+
+
+
+
+
+
+

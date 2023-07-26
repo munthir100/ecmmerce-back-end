@@ -27,6 +27,5 @@ Route::prefix('{storeLink}')->name('store.')->group(function () {
     Route::post('/add-location', [StoreController::class,'addLocation'])->name('addLocation');
     Route::post('/delete-location', [StoreController::class,'deleteLocation'])->name('deleteLocation');
 
-    Route::post('/checkout', [StoreController::class,'checkout'])->name('checkout');
 
 });

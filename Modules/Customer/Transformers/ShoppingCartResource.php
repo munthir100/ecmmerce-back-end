@@ -15,16 +15,19 @@ class shoppingCartResource extends JsonResource
      */
     public function toArray($request)
     {
-        $products = $this->products->map(function ($product) {
+        $items = $this->products->map(function ($item) {
             return [
-                'product' => new ProductResource($product),
-                'quantity' => $product->pivot->quantity,
+                'item' => $item->name,
+                'quantity' => $item->pivot->quantity,
+                'product_option' => $item->pivot->product_option,
+                'product_option_value' => $item->pivot->product_option_value,
             ];
         });
 
         return [
             'id' => $this->id,
-            'products' => $products,
+            'products' => $items,
+            'total_price' => $this->TotalPrice
         ];
     }
 }

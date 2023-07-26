@@ -5,7 +5,7 @@ namespace Modules\Admin\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class OptionValue extends Model
+class ProductOptionValue extends Model
 {
     use HasFactory;
 

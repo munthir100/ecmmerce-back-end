@@ -3,6 +3,8 @@
 namespace Modules\Customer\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Services\CartService;
+use App\Services\OrderService;
 use Modules\Store\Entities\Store;
 use Illuminate\Routing\Controller;
 use App\Http\Responses\MessageResponse;
@@ -10,28 +12,36 @@ use Illuminate\Contracts\Support\Renderable;
 
 class CheckoutController extends Controller
 {
+    protected $orderService;
+    protected $cartService;
+
+    public function __construct(OrderService $orderService, CartService $cartService)
+    {
+        $this->orderService = $orderService;
+        $this->cartService = $cartService;
+    }
     public function checkout(Store $store, Request $request)
     {
         $data = $request->validate([
-            'location_id' => 'required|exists:locations,id'
+            'location_id' => 'required|exists:locations,id',
+            'captain_id' => 'required|exists:captains,id',
+            'payment_type' => 'required|in:bank,cash',
         ]);
-    
-        $customer = auth()->user()->customer;
-        $location = $customer->locations()->find($data['location_id']);
-    
-        if (!$location) {
-            return new MessageResponse(
-                message: 'Invalid location',
-                statusCode: 400
-            );
+        $data['store_id'] = $store->id;
+        $customer = $request->user()->customer;
+        $cart = $customer->shoppingCart;
+        try {
+            $order = $this->orderService->createOrderFromCart($customer, $cart, $data);
+        } catch (\Exception $e) {
+            return new MessageResponse('Failed to create order', [], 500);
         }
-    
-        // Perform the checkout process
-    
+        // delete shopping cart
+        $cart->products()->detach();
+        $cart->delete();
         return new MessageResponse(
             message: 'Checkout completed successfully',
+            data: ['order' => $order],
             statusCode: 200
         );
     }
-    
 }

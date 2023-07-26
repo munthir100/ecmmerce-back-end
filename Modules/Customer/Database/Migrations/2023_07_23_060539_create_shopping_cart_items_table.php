@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('product_shopping_cart', function (Blueprint $table) {
+        Schema::create('shopping_cart_items', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('quantity')->default(1);
             $table->timestamps();
@@ -35,6 +35,9 @@ return new class extends Migration
                 ->on('shopping_carts')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+
+            $table->foreignId('product_option')->nullable();
+            $table->foreignId('product_option_value')->nullable();
         });
     }
 
@@ -45,6 +48,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('customer_shopping_cart');
+        Schema::dropIfExists('cart_items');
     }
 };

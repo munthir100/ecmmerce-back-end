@@ -3,6 +3,7 @@
 namespace Modules\Admin\Transformers;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Modules\Admin\Transformers\ProductOptionValueResource;
 
 class ProductOptionResource extends JsonResource
 {

@@ -2,103 +2,123 @@
 
 namespace Modules\Customer\Http\Controllers;
 
-use App\Http\Responses\MessageResponse;
 use Illuminate\Http\Request;
+use App\Services\CartService;
+use Modules\Store\Entities\Store;
 use Illuminate\Routing\Controller;
 use Modules\Store\Entities\Product;
+use App\Http\Responses\MessageResponse;
+use App\Services\FeaturedProductService;
 use Modules\Customer\Entities\Customer;
 use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Support\Facades\DB;
+use Modules\Customer\Http\Requests\AddFeaturedProductToCartRequest;
+use Modules\Customer\Http\Requests\AddToCartRequest;
 use Modules\Customer\Transformers\shoppingCartResource;
-use Modules\Store\Entities\Store;
 
 class ShoppingCartController extends Controller
 {
+    protected $cartService, $featuredProductService;
+
+    public function __construct(CartService $cartService, FeaturedProductService $featuredProductService)
+    {
+        $this->cartService = $cartService;
+        $this->featuredProductService = $featuredProductService;
+    }
+
     public function getCartByCustomer()
     {
         $customer = request()->user()->customer;
         $cart = $customer->shoppingCart;
 
-        return $cart && !$cart->products->isEmpty()
+        return $cart && !$cart->items->isEmpty()
             ? new MessageResponse(data: new shoppingCartResource($cart), statusCode: 200)
             : new MessageResponse(message: 'The cart is empty', statusCode: 200);
     }
 
-    public function addProductToCart(Store $store, $productId, Request $request)
+
+
+    public function addProductToCart(Store $store, $productId, AddToCartRequest $request)
     {
-        $product = $store->products->find($productId);
-        if (!$product) {
-            return new MessageResponse(
-                message: 'The product does not exist in the store',
-                statusCode: 404
-            );
-        }
-        $data = $request->validate([
-            'quantity' => [
-                'required',
-                'integer',
-                function ($attribute, $value, $fail) use ($product) {
-                    if (!$product->unspecifiedQuantity && $value > $product->quantity) {
-                        $fail('The requested quantity exceeds the available quantity for this product');
-                    }
-                },
-            ],
-        ]);
-        if ($product->featured_product) {
-            $data['product_option'] = $request->validate([
-                'product_option' => 'required'
-            ]);
-        }
-
-        $newQuantity = $data['quantity'];
+        $data = $request->validated();
         $customer = $request->user()->customer;
-
         $cart = $customer->shoppingCart()->firstOrCreate([]);
+        $product = $this->cartService->findProduct($store, $productId);
+        $validatedQuantity = $this->cartService->validateProductQuantity($product,$data['quantity'],$cart);
+        $ProductInCart = $this->cartService->CheckIfProductExistsInCart($product, $cart);
 
-        $updatedQuantity = 0;
-
-        if ($existingProduct = $cart->products->find($product->id)) {
-            $existingQuantity = $existingProduct->pivot->quantity;
-            $updatedQuantity = $existingQuantity + $newQuantity;
-
-            $cart->products()->updateExistingPivot($product->id, [
-                'quantity' => $updatedQuantity
-            ]);
-        } else {
-            $cart->products()->attach($product, [
-                'store_id' => $store->id,
-                'quantity' => $newQuantity,
-            ]);
-            $updatedQuantity = $newQuantity; // Assign the new quantity to the variable
-        }
-
-        return new MessageResponse(
-            message: 'Product added to cart successfully',
-            data: [
+        $ProductInCart ?
+            $ProductInCart->update(['quantity' => $validatedQuantity])
+            : $cart->items()->create([
                 'product_id' => $product->id,
-                'product_price' => $product->price,
-                'quantity' => $updatedQuantity,
-            ],
+                'product_id' => $product->id,
+                'store_id' => $store->id,
+                'quantity' => $validatedQuantity,
+            ]);
+        return new MessageResponse(
+            message: 'shopping cart updated',
+            data: new shoppingCartResource($cart),
             statusCode: 200
         );
     }
 
 
-    public function removeProductFromCart(Store $store, $productId)
+
+
+
+
+
+
+
+
+
+
+
+
+    public function addFeaturedProductToCart(Store $store, $productId, AddFeaturedProductToCartRequest $request)
     {
-        $product = $store->products->find($productId);
+        $data = $request->validated();
+        $productOption = $data['product_option'];
+        $productOptionValue = $data['product_option_value'];
+        $customer = $request->user()->customer;
+        $cart = $customer->shoppingCart()->firstOrCreate([]);
+        $product = $this->featuredProductService->findProduct($store, $productId, $productOption, $productOptionValue);
+        $existingProduct = $this->featuredProductService->findProductInCartWithOptions($cart, $product, $productOption, $productOptionValue);
+        $existingProduct ? $totalQuantity = $existingProduct->quantity + $data['quantity'] : $totalQuantity = $data['quantity'];
+        $availableQuantity = $this->featuredProductService->calculateOptionValueAvailableQuantity($product, $productOption, $productOptionValue);
+        $this->featuredProductService->validateQuantity($availableQuantity, $totalQuantity);
+        $this->featuredProductService->addItemToCart(
+            $store,
+            $cart,
+            $productId,
+            $productOption,
+            $productOptionValue,
+            $existingProduct,
+            $totalQuantity
+        );
 
-        if (!$product) {
-            return new MessageResponse(message: 'The product does not exist in the store', statusCode: 404);
-        }
+        return new MessageResponse('product added to cart',statusCode:200);
+    }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public function removeProductFromCart(Store $store, $itemId)
+    {
         $customer = request()->user()->customer;
         $cart = $customer->shoppingCart;
-
-        if (!$cart || !$cart->products->contains('id', $product->id)) {
-            return new MessageResponse(message: 'The product does not exist in the cart', statusCode: 404);
-        }
-
-        $cart->products()->detach($product);
+        $item = $cart->items->find($itemId);
+        $item->delete();
 
         return new MessageResponse(message: 'Product removed from cart', statusCode: 200);
     }
@@ -112,15 +132,12 @@ class ShoppingCartController extends Controller
             return new MessageResponse(message: 'The product does not exist in the store', statusCode: 404);
         }
 
-
-        $data = $request->validate([
-            'quantity' => 'required|integer'
-        ]);
+        $data = $request->validated();
         $newQuantity = $data['quantity'];
         $customer = request()->user()->customer;
-        $cart = $customer->shoppingCart;
+        $cart = $customer->shoppingCart->with('items');
 
-        if (!$cart || $cart->products->isEmpty() || !$cart->products->contains('id', $product->id)) {
+        if (!$cart || $cart->items()->isEmpty() || !$cart->items()->contains('id', $product->id)) {
             return new MessageResponse(message: 'The product does not exist in the cart', statusCode: 404);
         }
 

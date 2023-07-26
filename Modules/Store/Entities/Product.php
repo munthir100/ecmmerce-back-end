@@ -62,10 +62,7 @@ class Product extends Model  implements HasMedia
     }
 
     // attributes
-    protected function unspecifiedQuantity(): Attribute
-    {
-        return Attribute::make()->get(fn () => $this->quantity == 0);
-    }
+
     protected function FeaturedProdcut(): Attribute
     {
         return Attribute::make()->get(fn () => $this->options()->exists());

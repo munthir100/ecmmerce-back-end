@@ -4,9 +4,6 @@ namespace App\Http\Responses;
 
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Inertia\Inertia;
-use Inertia\Response as InertiaResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class MessageResponse implements Responsable

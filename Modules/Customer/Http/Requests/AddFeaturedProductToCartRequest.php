@@ -4,7 +4,7 @@ namespace Modules\Customer\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AddToCartRequest extends FormRequest
+class AddFeaturedProductToCartRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -14,13 +14,11 @@ class AddToCartRequest extends FormRequest
     public function rules()
     {
         return [
-            'quantity' => [
-                'required',
-                'integer',
-            ],
+            'quantity' => 'required',
+            'product_option' => 'required',
+            'product_option_value' => 'required',
         ];
     }
-
 
     /**
      * Determine if the user is authorized to make this request.
