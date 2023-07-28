@@ -2,42 +2,109 @@
 
 namespace App\Services;
 
-use Modules\Store\Entities\Product;
+use App\Services\CartService;
 use Modules\Customer\Entities\Order;
 use Modules\Customer\Entities\Customer;
-use Modules\Customer\Entities\OrderDetail;
+use Modules\Customer\Entities\OrderItem;
 use Modules\Customer\Entities\ShoppingCart;
+use Modules\Customer\Transformers\shoppingCartResource;
+use Modules\Shipping\Entities\Captain;
+use Modules\Store\Entities\Store;
 
 class OrderService
 {
-    public function createOrderFromCart(Customer $customer, ShoppingCart $cart, array $data): Order
+    public function validateShippingMethod($storeCities, $selectedLocation)
     {
-        // Create a new order instance
+        if (!$storeCities->contains('name', $selectedLocation->name)) {
+            abort(response()->json('This location does not have a captain'));
+        }
+    }
+
+
+    public function SetOrderValues($storeId, Customer $customer, ShoppingCart $ShoppingCart, array $data): Order
+    {
+        $productsTotalPrice = $this->calculateProductsTotalPrice($ShoppingCart);
+        $shippingCost = $this->calculateShippingCost($data['captain_id']);
+
+        $totalPrice = $productsTotalPrice + $shippingCost;
         $order = new Order();
         $order->customer_id = $customer->id;
-        $order->status = 'new'; // Set the initial status of the order
-        $order->total_price = $cart->TotalPrice; // Calculate the total price
+        $order->total_price = $totalPrice; // Calculate the total price
         $order->payment_type = $data['payment_type']; // Set the payment type
-        $order->store_id = $data['store_id']; // Set the store
         $order->captain_id = $data['captain_id']; // Set the captain
-
-        // Save the order
+        $order->store_id = $storeId; // Set the store
+        $order->status = 'new'; // Set the initial status of the order
         $order->save();
 
-        // Move cart items to order details
-        foreach ($cart->products as $cartProduct) {
-            $product = Product::find($cartProduct->id);
+        return $order;
+    }
+    public function calculateProductsTotalPrice($ShoppingCart)
+    {
+        $totalPrice = $ShoppingCart->products->sum(function ($item) {
+            $additionalPrice = $item->pivot->product_option_value ? $item->pivot->additional_price : 0;
+            return ($item->price + $additionalPrice) * $item->pivot->quantity;
+        });
+        $cartResource = new shoppingCartResource($ShoppingCart);
+        $cartResource->resource['total_price'] = $totalPrice;
 
-            // Create a new order detail for each product in the cart
-            $orderDetail = new OrderDetail();
-            $orderDetail->order_id = $order->id;
-            $orderDetail->product_id = $product->id;
-            $orderDetail->quantity = $cartProduct->pivot->quantity;
+        return $totalPrice;
+    }
 
-            // Save the order detail
-            $orderDetail->save();
+    public function calculateShippingCost($captainId)
+    {
+        $captain = Captain::find($captainId);
+
+        return $captain->shipping_cost;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public function ValidateOrderdItems(Store $store, $ShoppingCart)
+    {
+        $cartService = new CartService();
+        $orderItems = [];
+
+
+
+        foreach ($ShoppingCart->items as $cartItem) {
+            $product = $cartService->findProduct($store, $cartItem->product_id);
+            $validatedQuantity = $cartService->validateQuantityForSingleProduct($product, $cartItem->quantity);
+
+            if (!$validatedQuantity) {
+                abort(response()->json('error in validation of quantities'));
+            }
+
+            //set order items in array
+            $orderItems[] = [
+                'product_id' => $product->id,
+                'quantity' => $validatedQuantity,
+            ];
         }
 
-        return $order;
+        return $orderItems;
+    }
+
+
+    public function setOrderItems(Order $order, array $validatedItems)
+    {
+        $itemsToInsert = [];
+        foreach ($validatedItems as $item) {
+            $itemsToInsert[] = new OrderItem([
+                'product_id' => $item['product_id'],
+                'quantity' => $item['quantity'],
+            ]);
+        }
+
+        return $order->items()->saveMany($itemsToInsert);
     }
 }

@@ -2,9 +2,7 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Js;
 use Modules\Store\Entities\Product;
-use Modules\Customer\Entities\ShoppingCart;
 
 class FeaturedProductService
 {
@@ -20,6 +18,9 @@ class FeaturedProductService
             ->whereHas('options.values', function ($query) use ($productOptionValue) {
                 $query->where('name', $productOptionValue);
             })->first();
+
+
+
         if (!$product) {
             abort(response()->json(['message' => 'error to find this product']));
         }
@@ -27,14 +28,22 @@ class FeaturedProductService
         return $product;
     }
 
+    function GetProductOptionValue($product, $requestedOptionValue)
+    {
+        $OptiondValue = $product['options']->flatMap(function ($option) use ($requestedOptionValue) {
+            return $option->values->where('name', $requestedOptionValue);
+        })->first();
 
+
+        return $OptiondValue;
+    }
     public function findProductInCartWithOptions($cart, $product, $optionName, $optionValue)
     {
         $existingProduct = $cart->items()->where('product_id', $product->id)
             ->where('product_option', $optionName)
-            ->where('product_option_value', $optionValue)
+            ->where('product_option_value', $optionValue->name)
             ->first();
-       
+
         return $existingProduct;
     }
 
@@ -42,15 +51,7 @@ class FeaturedProductService
     {
         $selectedOption = $product->options()->where('name', $optionName)->first();
 
-        if (!$selectedOption) {
-            abort(response()->json(['message' => 'Invalid option selected'], 400));
-        }
-
         $optionValueModel = $selectedOption->values()->where('name', $optionValue)->first();
-
-        if (!$optionValueModel) {
-            abort(response()->json(['message' => 'Invalid value selected for the option'], 400));
-        }
 
         return $optionValueModel->quantity;
     }
@@ -61,6 +62,23 @@ class FeaturedProductService
             abort(response()->json(['message' => 'Invalid quantity for the featured product'], 400));
         }
     }
+
+    public function calculateTotalQuantity($existingProduct, $requestedQuantity)
+    {
+        if ($existingProduct) {
+            return $existingProduct->quantity + $requestedQuantity;
+        }
+        return $requestedQuantity;
+    }
+
+    public function calculateTotalPrice($product, $productOptionValue, $requestedQuantity)
+    {
+        $totalPrice = $product->price + ($productOptionValue->additional_price * $requestedQuantity);
+
+        return $totalPrice;
+    }
+
+
     public function addItemToCart(
         $store,
         $cart,
@@ -82,7 +100,8 @@ class FeaturedProductService
             'store_id' =>         $store->id,
             'product_id' =>         $productId,
             'product_option' =>         $productOption,
-            'product_option_value' =>         $productOptionValue,
+            'product_option_value' =>         $productOptionValue->name,
+            'additional_price' =>         $productOptionValue->additional_price,
         ]);
     }
 }

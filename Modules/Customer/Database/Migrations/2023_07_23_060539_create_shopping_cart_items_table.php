@@ -36,8 +36,9 @@ return new class extends Migration
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
 
-            $table->foreignId('product_option')->nullable();
-            $table->foreignId('product_option_value')->nullable();
+            $table->string('product_option')->nullable();
+            $table->string('product_option_value')->nullable();
+            $table->bigInteger('additional_price')->nullable()->default(0);
         });
     }
 

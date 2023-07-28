@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use Modules\Shipping\Http\Controllers\ShippingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +15,4 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/shipping', function (Request $request) {
-    return $request->user();
-});
+Route::get('/cities', [ShippingController::class, 'cities']); // temp

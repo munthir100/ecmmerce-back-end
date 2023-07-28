@@ -16,5 +16,6 @@ class ShoppingCartItem extends Model
         'shopping_cart_id',
         'product_option',
         'product_option_value',
+        'additional_price'
     ];
 }

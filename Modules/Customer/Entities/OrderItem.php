@@ -3,16 +3,16 @@
 namespace Modules\Customer\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Store\Entities\Product;
 
-class OrderDetail extends Model
+class OrderItem extends Model
 {
     use HasFactory,SoftDeletes;
 
     protected $fillable = [
         'quantity',
-        'payment',
         'order_id',
         'product_id',
     ];
@@ -20,5 +20,9 @@ class OrderDetail extends Model
     public function order()
     {
         return $this->belongsTo(Order::class);
+    }
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
     }
 }

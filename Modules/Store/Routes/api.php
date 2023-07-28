@@ -17,6 +17,7 @@ use Modules\Store\Http\Controllers\StoreController;
 
 Route::prefix('{storeLink}')->name('store.')->group(function () {
     Route::get('/products', [StoreController::class, 'products'])->name('products');
+    Route::get('/products/featured', [StoreController::class, 'GetFeaturedProducts']);
     Route::get('/categories', [StoreController::class, 'categories'])->name('categories');
     Route::get('/products/{category}', [StoreController::class, 'categorizedProducts'])->name('categorized-products');
 

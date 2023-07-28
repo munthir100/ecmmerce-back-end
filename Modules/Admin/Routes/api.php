@@ -8,6 +8,7 @@ use Modules\Admin\Http\Controllers\BrandController;
 use Modules\Admin\Http\Controllers\CaptainController;
 use Modules\Admin\Http\Controllers\CategoryController;
 use Modules\Admin\Http\Controllers\CustomerController;
+use Modules\Admin\Http\Controllers\OrderController;
 use Modules\Admin\Http\Controllers\ProductController;
 
 /*
@@ -34,5 +35,6 @@ Route::middleware(['auth:sanctum'])
         Route::apiResource('brand', BrandController::class);
         Route::apiResource('customer', CustomerController::class);
         Route::apiResource('captain', CaptainController::class);
+        Route::apiResource('orders', OrderController::class);
         Route::patch('/products/{product}/quantities', [ProductController::class, 'updateQuantities']);
     });

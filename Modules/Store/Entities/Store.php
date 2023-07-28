@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Admin\Entities\Admin;
 use Modules\Customer\Entities\Customer;
+use Modules\Shipping\Entities\Captain;
 use Modules\Shipping\Entities\City;
 
 class Store extends Model
@@ -29,6 +30,10 @@ class Store extends Model
     function products()
     {
         return $this->hasMany(Product::class);
+    }
+    function captains()
+    {
+        return $this->hasMany(Captain::class);
     }
     function city()
     {

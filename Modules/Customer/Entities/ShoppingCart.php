@@ -30,7 +30,8 @@ class ShoppingCart extends Model
         return $this->belongsToMany(Product::class, 'shopping_cart_items')->withPivot(
             'quantity',
             'product_option',
-            'product_option_value'
+            'product_option_value',
+            'additional_price',
         );
     }
     public function items()
@@ -44,6 +45,17 @@ class ShoppingCart extends Model
 
         foreach ($this->products as $product) {
             $totalPrice += $product->price * $product->pivot->quantity;
+        }
+
+        return $totalPrice;
+    }
+
+    public function getFeaturedProductTotalPriceAttribute()
+    {
+        $totalPrice = 0;
+
+        foreach ($this->products as $product) {
+            $totalPrice += $product->price + ($product->pivot->quantity * $product->pivot->additional_price);
         }
 
         return $totalPrice;

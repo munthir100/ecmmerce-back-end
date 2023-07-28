@@ -6,12 +6,8 @@ use Illuminate\Http\Request;
 use App\Services\CartService;
 use Modules\Store\Entities\Store;
 use Illuminate\Routing\Controller;
-use Modules\Store\Entities\Product;
 use App\Http\Responses\MessageResponse;
 use App\Services\FeaturedProductService;
-use Modules\Customer\Entities\Customer;
-use Illuminate\Contracts\Support\Renderable;
-use Illuminate\Support\Facades\DB;
 use Modules\Customer\Http\Requests\AddFeaturedProductToCartRequest;
 use Modules\Customer\Http\Requests\AddToCartRequest;
 use Modules\Customer\Transformers\shoppingCartResource;
@@ -44,13 +40,14 @@ class ShoppingCartController extends Controller
         $customer = $request->user()->customer;
         $cart = $customer->shoppingCart()->firstOrCreate([]);
         $product = $this->cartService->findProduct($store, $productId);
-        $validatedQuantity = $this->cartService->validateProductQuantity($product,$data['quantity'],$cart);
+        $validatedQuantity = $this->cartService->validateProductQuantity($product, $data['quantity'], $cart);
         $ProductInCart = $this->cartService->CheckIfProductExistsInCart($product, $cart);
 
         $ProductInCart ?
-            $ProductInCart->update(['quantity' => $validatedQuantity])
+            $ProductInCart->update([
+                'quantity' => $validatedQuantity,
+            ])
             : $cart->items()->create([
-                'product_id' => $product->id,
                 'product_id' => $product->id,
                 'store_id' => $store->id,
                 'quantity' => $validatedQuantity,
@@ -82,11 +79,15 @@ class ShoppingCartController extends Controller
         $productOptionValue = $data['product_option_value'];
         $customer = $request->user()->customer;
         $cart = $customer->shoppingCart()->firstOrCreate([]);
+
         $product = $this->featuredProductService->findProduct($store, $productId, $productOption, $productOptionValue);
+        $productOptionValue = $this->featuredProductService->GetProductOptionValue($product, $productOptionValue);
         $existingProduct = $this->featuredProductService->findProductInCartWithOptions($cart, $product, $productOption, $productOptionValue);
-        $existingProduct ? $totalQuantity = $existingProduct->quantity + $data['quantity'] : $totalQuantity = $data['quantity'];
-        $availableQuantity = $this->featuredProductService->calculateOptionValueAvailableQuantity($product, $productOption, $productOptionValue);
+        $totalQuantity = $this->featuredProductService->calculateTotalQuantity($existingProduct, $data['quantity']);
+        $availableQuantity = $productOptionValue->quantity;
         $this->featuredProductService->validateQuantity($availableQuantity, $totalQuantity);
+        // $totalPrice = $this->featuredProductService->calculateTotalPrice($product, $productOptionValue, $data['quantity']);
+
         $this->featuredProductService->addItemToCart(
             $store,
             $cart,
@@ -97,7 +98,11 @@ class ShoppingCartController extends Controller
             $totalQuantity
         );
 
-        return new MessageResponse('product added to cart',statusCode:200);
+        return new MessageResponse(
+            message: 'shopping cart updated',
+            data: new shoppingCartResource($cart),
+            statusCode: 200
+        );
     }
 
 

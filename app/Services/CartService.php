@@ -11,13 +11,13 @@ class CartService
     public function findProduct($store, $productId)
     {
         $product = $store->products->find($productId);
-        if(!$product){
+        if (!$product) {
             abort(response()->json(['message' => 'product not found'], 404));
         }
         return $product;
     }
 
-    public function validateProductQuantity(Product $product,$quantity, ShoppingCart $cart)
+    public function validateProductQuantity(Product $product, $quantity, ShoppingCart $cart)
     {
         $existingProduct = $this->CheckIfProductExistsInCart($product, $cart);
         $totalQuantity = $this->calculateTotalQuantity($existingProduct, $quantity);
@@ -47,4 +47,5 @@ class CartService
 
         return $totalQuantity;
     }
+
 }

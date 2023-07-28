@@ -140,9 +140,26 @@ class StoreController extends Controller
             ];
         });
         $order->orderDetails()->createMany($cartItems->toArray());
-        $customer = Customer::find($order); $customer->update([
+        $customer = Customer::find($order);
+        $customer->update([
             'number_of_orders' => $customer->number_of_orders + 1
         ]);
         // delete shopping cart
+    }
+
+    function GetFeaturedProducts(Store $store)
+    {
+        $term = request()->query('term', '');
+        $perPage = request()->query('PerPage', 25);
+        $products = Product::search($term)
+            ->where('store_id', $store->id)
+            ->whereHas('options')
+            ->paginate($perPage);
+
+
+        return new MessageResponse(
+            data: ['products' => ProductResource::collection($products),],
+            statusCode: 200
+        );
     }
 }

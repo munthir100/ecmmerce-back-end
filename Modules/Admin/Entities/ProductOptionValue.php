@@ -3,6 +3,7 @@
 namespace Modules\Admin\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Modules\Admin\Entities\ProductOption;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ProductOptionValue extends Model
@@ -18,6 +19,6 @@ class ProductOptionValue extends Model
 
     public function option()
     {
-        return $this->belongsTo(Option::class);
+        return $this->belongsTo(ProductOption::class);
     }
 }
