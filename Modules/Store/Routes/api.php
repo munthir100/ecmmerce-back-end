@@ -22,6 +22,7 @@ Route::prefix('{storeLink}')->name('store.')->group(function () {
     Route::get('/products/{category}', [StoreController::class, 'categorizedProducts'])->name('categorized-products');
 
     Route::get('/brands', [StoreController::class, 'brands'])->name('brands');
+    Route::get('/captains', [StoreController::class, 'captains']);
     Route::get('/product/{productId}/details', [StoreController::class, 'productDetails'])->name('product-details');
 
     

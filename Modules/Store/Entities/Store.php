@@ -2,18 +2,27 @@
 
 namespace Modules\Store\Entities;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\HasUploads;
 use Modules\Admin\Entities\Admin;
-use Modules\Customer\Entities\Customer;
-use Modules\Shipping\Entities\Captain;
+use Spatie\MediaLibrary\HasMedia;
 use Modules\Shipping\Entities\City;
+use Modules\Shipping\Entities\Captain;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Customer\Entities\Customer;
+use Modules\Store\Entities\SocialMediaLink;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Store extends Model
+class Store extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia, HasUploads;
 
-    protected $fillable = ['admin_id','name','link'];
+    protected $fillable = ['admin_id', 'name', 'link'];
+
+    protected $uploadMedia = [
+        'store_logo',
+        'store_icon',
+    ];
 
     function admin()
     {
@@ -38,5 +47,9 @@ class Store extends Model
     function city()
     {
         return $this->belongsTo(City::class);
+    }
+    function socialMediaLinks()
+    {
+        return $this->hasOne(SocialMediaLink::class);
     }
 }

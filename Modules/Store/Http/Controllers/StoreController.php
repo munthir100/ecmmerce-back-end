@@ -11,6 +11,7 @@ use Modules\Shipping\Entities\Location;
 use Modules\Admin\Transformers\ProductResource;
 use Modules\Admin\Transformers\CategoryResource;
 use Modules\Admin\Http\Requests\AddLocationRequest;
+use Modules\Admin\Transformers\CaptainResource;
 use Modules\Admin\Transformers\ProductWithOptionsResource;
 use Modules\Customer\Entities\Customer;
 use Modules\Customer\Entities\Order;
@@ -161,5 +162,12 @@ class StoreController extends Controller
             data: ['products' => ProductResource::collection($products),],
             statusCode: 200
         );
+    }
+    function captains(Store $store)
+    {
+        $perPage = request()->query('PerPage', 25);
+        $captains = $store->captains()->where('is_active', true)->paginate($perPage);
+
+        return new MessageResponse('captains', CaptainResource::collection($captains), 200);
     }
 }

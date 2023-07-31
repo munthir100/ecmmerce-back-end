@@ -21,12 +21,13 @@ return new class extends Migration
             $table->boolean('cash_on_delivery')->default(false);
             $table->integer('cash_on_delivery_cost');
             $table->integer('expected_time_shipping');
-
+            $table->boolean('is_active');
 
             $table->foreignId('store_id')
-                ->constrained('stores')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
+                ->references('id')
+                ->on('stores')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
 
             $table->timestamps();
             $table->softDeletes();

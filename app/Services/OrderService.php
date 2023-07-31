@@ -33,6 +33,7 @@ class OrderService
         $order->payment_type = $data['payment_type']; // Set the payment type
         $order->captain_id = $data['captain_id']; // Set the captain
         $order->store_id = $storeId; // Set the store
+        $order->location_id = $data['location_id']; // Set the store
         $order->status = 'new'; // Set the initial status of the order
         $order->save();
 

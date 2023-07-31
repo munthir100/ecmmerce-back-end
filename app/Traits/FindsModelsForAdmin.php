@@ -2,13 +2,12 @@
 
 namespace App\Traits;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 trait FindsModelsForAdmin
 {
     private function findModelOrFail($modelClass, $modelId)
     {
-        $model = $modelClass::forAdmin(auth()->id())->findOrFail($modelId);
+        $model = $modelClass::forAdmin(auth()->user()->admin->id)->find($modelId);
 
         if(!$model){
             $modelName = class_basename($modelClass);

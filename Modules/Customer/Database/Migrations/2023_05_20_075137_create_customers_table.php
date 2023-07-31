@@ -18,7 +18,6 @@ return new class extends Migration
             $table->date('birth_date')->nullable();
             $table->string('gender')->nullable();
             $table->string('description')->nullable();
-            $table->integer('number_of_orders')->default(0);
             $table->timestamps();
             $table->softDeletes();
 

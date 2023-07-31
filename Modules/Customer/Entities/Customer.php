@@ -7,9 +7,10 @@ use Modules\Acl\Entities\User;
 use Modules\Store\Entities\Store;
 use Modules\Shipping\Entities\City;
 use Illuminate\Database\Eloquent\Model;
-use Modules\Customer\Entities\ShoppingCart;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Shipping\Entities\Location;
+use Modules\Customer\Entities\ShoppingCart;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Customer extends Model
 {
@@ -47,6 +48,10 @@ class Customer extends Model
     {
         return $this->hasMany(Location::class);
     }
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
 
     //scopes
     public function scopeForAdmin($query, $adminId)
@@ -54,5 +59,12 @@ class Customer extends Model
         return $query->whereHas('store.admin', function ($query) use ($adminId) {
             $query->where('id', $adminId);
         });
+    }
+
+    // attributed
+
+    protected function NumberOfOrders(): Attribute
+    {
+        return Attribute::make()->get(fn () => $this->orders()->count());
     }
 }

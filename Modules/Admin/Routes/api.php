@@ -10,6 +10,7 @@ use Modules\Admin\Http\Controllers\CategoryController;
 use Modules\Admin\Http\Controllers\CustomerController;
 use Modules\Admin\Http\Controllers\OrderController;
 use Modules\Admin\Http\Controllers\ProductController;
+use Modules\Admin\Http\Controllers\Settings\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,18 +24,23 @@ use Modules\Admin\Http\Controllers\ProductController;
 */
 
 
-Route::post('admin/register', [AuthController::class, 'register'])->name('admin.register');
-Route::post('admin/login', [AuthController::class, 'login'])->name('admin.login');
-Route::post('admin/logout', [AuthController::class, 'logout'])->name('admin.logout')->middleware('auth:sanctum');
+Route::post('admin/register', [AuthController::class, 'register']);
+Route::post('admin/login', [AuthController::class, 'login']);
+Route::post('admin/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 
 Route::middleware(['auth:sanctum'])
-    ->prefix('admin')->name('admin.')->group(function () {
+    ->prefix('admin')->group(function () {
         Route::apiResource('product', ProductController::class);
         Route::apiResource('category', CategoryController::class);
         Route::apiResource('brand', BrandController::class);
         Route::apiResource('customer', CustomerController::class);
         Route::apiResource('captain', CaptainController::class);
         Route::apiResource('orders', OrderController::class);
+        Route::post('orders/{order}/change-status', [OrderController::class, 'changeStatus']);
         Route::patch('/products/{product}/quantities', [ProductController::class, 'updateQuantities']);
+
+        Route::get('settings/profile', [ProfileController::class, 'index']);
+        Route::put('settings/profile', [ProfileController::class, 'update']);
+        Route::put('settings/profile/updatePassword', [ProfileController::class, 'updatePassword']);
     });

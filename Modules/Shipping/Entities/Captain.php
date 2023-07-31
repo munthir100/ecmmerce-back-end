@@ -6,6 +6,7 @@ use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Modules\Customer\Entities\Order;
 use Modules\Store\Entities\Store;
 
 class Captain extends Model
@@ -28,6 +29,10 @@ class Captain extends Model
     public function cities()
     {
         return $this->belongsToMany(City::class);
+    }
+    function orders()
+    {
+        return $this->hasMany(Order::class);
     }
     //scopes
     public function scopeForAdmin($query, $adminId)

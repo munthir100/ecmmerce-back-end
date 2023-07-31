@@ -9,6 +9,7 @@ use App\Http\Responses\MessageResponse;
 use App\Traits\FindsModelsForAdmin;
 use Illuminate\Contracts\Support\Renderable;
 use Modules\Admin\Transformers\OrderResource;
+use Modules\Admin\Transformers\OrderWithDetailsResource;
 
 class OrderController extends Controller
 {
@@ -34,10 +35,16 @@ class OrderController extends Controller
 
     public function show($orderId)
     {
-        $order = $this->findModelOrFail(Order::class, $orderId);
+        $order = Order::with([
+            'customer.user',
+            'captain:id,name,shipping_cost',
+            'location:id,name,phone,address_type,lang,lat',
+            'items',
+            'items.product',
+        ])->find($orderId);
 
         return new MessageResponse(
-            data: ['product' => new OrderResource($order)],
+            data: ['order' => new OrderWithDetailsResource($order)],
             statusCode: 200
         );
     }
@@ -48,8 +55,25 @@ class OrderController extends Controller
         //
     }
 
-    public function destroy($id)
+    public function destroy($orderId)
     {
-        //
+        $order = $this->findModelOrFail(Order::class, $orderId);
+
+        $order->delete();
+        return new MessageResponse('order deleted', statusCode: 200);
+    }
+
+    public function changeStatus($orderId, Request $request)
+    {
+        $data = $request->validate([
+            'status' => 'required|in:new,processing,ready,delivering,rejected',
+        ]);
+        $order = $this->findModelOrFail(Order::class, $orderId);
+
+        $order->update([
+            'status' => $data['status']
+        ]);
+
+        return new MessageResponse('status updated', new OrderWithDetailsResource($order), 200);
     }
 }
