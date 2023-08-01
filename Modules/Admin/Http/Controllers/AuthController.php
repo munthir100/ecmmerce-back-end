@@ -80,7 +80,8 @@ class AuthController extends Controller
             $store = $admin->store()->create([
                 'user_id' => $user->id,
                 'name' => $data['store_name'],
-                'link' => $data['link']
+                'link' => $data['link'],
+                'store_theme_id' => 1
             ]);
 
             DB::commit();

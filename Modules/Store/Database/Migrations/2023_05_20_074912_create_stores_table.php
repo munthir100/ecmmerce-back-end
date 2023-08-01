@@ -26,12 +26,18 @@ return new class extends Migration
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
 
+            $table->foreignId('store_theme_id')
+                ->nullable()
+                ->references('id')
+                ->on('store_themes')
+                ->nullOnDelete()
+                ->default(1);
+
             $table->foreignId('city_id')
                 ->nullable()
                 ->references('id')
                 ->on('cities')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
+                ->nullOnDelete();
         });
     }
 

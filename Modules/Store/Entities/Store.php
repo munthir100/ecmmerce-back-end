@@ -17,7 +17,7 @@ class Store extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia, HasUploads;
 
-    protected $fillable = ['admin_id', 'name', 'link'];
+    protected $fillable = ['admin_id','store_theme_id', 'name', 'link'];
 
     protected $uploadMedia = [
         'store_logo',
@@ -27,6 +27,10 @@ class Store extends Model implements HasMedia
     function admin()
     {
         return $this->belongsTo(Admin::class);
+    }
+    function theme()
+    {
+        return $this->belongsTo(StoreTheme::class);
     }
     public function customers()
     {
