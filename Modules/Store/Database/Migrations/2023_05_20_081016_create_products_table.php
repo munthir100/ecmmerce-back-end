@@ -16,15 +16,16 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('sku')->nullable();
+            $table->string('sku');
             $table->boolean('unspecified_quantity')->default(false);
             $table->integer('quantity')->nullable();
             $table->float('wheight')->nullable();
             $table->string('short_description', 20)->nullable();
             $table->string('description')->nullable();
             $table->bigInteger('price');
-            $table->float('cost')->nullable();
-            $table->float('discount')->nullable();
+            $table->bigInteger('cost')->nullable();
+            $table->boolean('is_discounted')->nullable();
+            $table->bigInteger('price_after_discount')->nullable();
             $table->boolean('free_shipping')->default(false);
             $table->boolean('is_active')->default(true);
             $table->boolean('is_digital')->default(false);

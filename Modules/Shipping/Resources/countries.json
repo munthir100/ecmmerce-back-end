@@ -3,36 +3,36 @@
         "name": "Saudi Arabia",
         "capital_city": "Riyadh",
         "currency_name": "Saudi riyal",
-        "code": "SAR",
+        "currency_code": "SAR",
         "symbol": "ر.س",
-        "phone_code": "+966",
+        "phone_code": "966",
         "phone_digits_number": "9"
     },
     {
         "name": "Sudan",
         "capital_city": "Khartoum",
         "currency_name": "Sudanese pound",
-        "code": "SDG",
+        "currency_code": "SDG",
         "symbol": "ج.س",
-        "phone_code": "+249",
+        "phone_code": "249",
         "phone_digits_number": "9"
     },
     {
         "name": "Egypt",
         "capital_city": "Cairo",
         "currency_name": "Egyptian pound",
-        "code": "EGP",
+        "currency_code": "EGP",
         "symbol": "£",
-        "phone_code": "+20",
+        "phone_code": "20",
         "phone_digits_number": "10"
     },
     {
         "name": "United Arab Emirates",
         "capital_city": "Abu Dhabi",
         "currency_name": "United Arab Emirates dirham",
-        "code": "AED",
+        "currency_code": "AED",
         "symbol": "د.إ",
-        "phone_code": "+971",
+        "phone_code": "971",
         "phone_digits_number": "9"
     }
 ]

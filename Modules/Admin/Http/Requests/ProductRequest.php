@@ -15,7 +15,7 @@ class ProductRequest extends FormRequest
     {
         return [
             'name'                     => 'required',
-            'sku'                      => 'sometimes',
+            'sku'                      => 'required',
             'is_virtual_product'       => 'sometimes|boolean',
             'has_unspecified_quantity' => 'sometimes|boolean',
             'quantity'                 => request()->input('has_unspecified_quantity') ? 'nullable' : 'required|integer',
@@ -24,10 +24,11 @@ class ProductRequest extends FormRequest
             'description'              => 'sometimes',
             'price'                    => 'required|numeric',
             'cost'                     => 'sometimes',
-            'discount'                 => 'sometimes',
+            'is_discounted'            => 'sometimes',
+            'price_after_discount'     => 'required_with:is_discounted|numeric',
             'free_shipping'            => 'sometimes',
             'main_image'               => 'required|image',
-            'sub_images.*'             => 'sometimes',
+            'sub_images.*'             => 'sometimes|image',
             'is_active'                => 'required|boolean',
             'category_id'              => 'sometimes|exists:categories,id',
             'brand_id'                 => 'required_with:category_id|exists:brands,id',
@@ -39,9 +40,6 @@ class ProductRequest extends FormRequest
             'options.*.values.*.additional_price' => 'numeric',
             'options.*.values.*.quantity'         => 'nullable|integer',
         ];
-
-
-        
     }
 
     /**

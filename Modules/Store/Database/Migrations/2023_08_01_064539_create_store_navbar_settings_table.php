@@ -13,14 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('countries', function (Blueprint $table) {
+        Schema::create('store_navbar_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('phone_code');
-            $table->string('phone_digits_number');
-            $table->string('currency_code');
+            $table->string('paragraph');
+            $table->string('color');
+            $table->string('link');
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('countries');
+        Schema::dropIfExists('store_navbar_settings');
     }
 };

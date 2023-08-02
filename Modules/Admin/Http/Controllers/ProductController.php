@@ -43,6 +43,7 @@ class ProductController extends Controller
     {
         $data = $request->validated();
         $data['store_id'] = $request->user()->admin->store->id;
+        $this->productService->validateSku($data['sku'],$data['store_id']);
         $optionsData = Arr::pull($data, 'options', []);
         try {
             $product = Product::create($data);
@@ -71,6 +72,7 @@ class ProductController extends Controller
         $product = $this->findModelOrFail(Product::class, $productId);
 
         $data = $request->validated();
+        $this->productService->validateSku($data['sku'],$data['store_id']);
         $optionsData = Arr::pull($data, 'options', []);
         try {
             $product->update($data);

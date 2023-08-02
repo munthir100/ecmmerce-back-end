@@ -42,7 +42,7 @@ class ProductService
         if (!$product->unspecified_quantity) {
             $this->checkQuantity($product, $totalValuesQuantity);
         }
-        
+
         foreach ($optionsData as $index => $optionData) {
             if (isset($optionData['values']) && is_array($optionData['values'])) {
                 $option = $product->options[$index];
@@ -58,6 +58,16 @@ class ProductService
         $productQuantity = isset($product->quantity) ? (int) $product->quantity : 0;
         if ($totalValuesQuantity > $productQuantity) {
             throw new InvalidQuantityException();
+        }
+    }
+
+    public function validateSku($sku, $storeId)
+    {
+        $isUniqueSku  = !Product::where('store_id', $storeId)
+            ->where('sku', $sku)
+            ->exists();
+        if (!$isUniqueSku) {
+            abort(response()->json('The provided SKU already exists for this store.'));
         }
     }
 }

@@ -19,6 +19,7 @@ class StoreResource extends JsonResource
             'name' => $this->name,
             'link' => $this->link,
             'theme' => $this->theme->name,
+            'currency_code' => $this->currency_code,
         ];
     }
 }

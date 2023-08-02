@@ -28,10 +28,7 @@ return new class extends Migration
                 ->nullOnDelete();
 
                 $table->foreignId('country_id')
-                ->nullable()
-                ->references('id')
-                ->on('countries')
-                ->nullOnDelete();
+                ->constrained();
         });
     }
 

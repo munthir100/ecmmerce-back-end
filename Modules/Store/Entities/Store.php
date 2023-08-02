@@ -17,7 +17,7 @@ class Store extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia, HasUploads;
 
-    protected $fillable = ['admin_id','store_theme_id', 'name', 'link'];
+    protected $fillable = ['admin_id','store_theme_id', 'name', 'link','currency_code'];
 
     protected $uploadMedia = [
         'store_logo',

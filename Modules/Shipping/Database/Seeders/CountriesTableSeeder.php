@@ -23,6 +23,9 @@ class CountriesTableSeeder extends Seeder
         foreach ($countries as $countryData) {
             Country::create([
                 'name' => $countryData['name'],
+                'phone_code' => $countryData['phone_code'],
+                'phone_digits_number' => $countryData['phone_digits_number'],
+                'currency_code' => $countryData['currency_code'],
             ]);
         }
     }

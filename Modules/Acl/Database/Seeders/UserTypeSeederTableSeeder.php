@@ -27,23 +27,5 @@ class UserTypeSeederTableSeeder extends Seeder
         ];
 
         DB::table('user_types')->insert($userTypes);
-
-        User::create([
-            'user_type_id' => 1,
-            'name' => 'a',
-            'email' => 'a@a.a',
-            'phone' => '1',
-            'password' => Hash::make('aaa'),
-            'country_id' => 1,
-        ]);
-        Admin::create([
-            'user_id' => 1
-        ]);
-        
-        Store::create([
-            'admin_id' => 1,
-            'name' => 'aaa',
-            'link' => 'aaa'
-        ]);
     }
 }

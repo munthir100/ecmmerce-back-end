@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('link');
+            $table->string('currency_code');
             $table->timestamps();
             $table->softDeletes();
 
