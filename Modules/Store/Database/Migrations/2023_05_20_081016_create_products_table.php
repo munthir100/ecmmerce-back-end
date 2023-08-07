@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('sku');
             $table->boolean('unspecified_quantity')->default(false);
             $table->integer('quantity')->nullable();
-            $table->float('wheight')->nullable();
+            $table->bigInteger('wheight')->nullable()->default(0);
             $table->string('short_description', 20)->nullable();
             $table->string('description')->nullable();
             $table->bigInteger('price');

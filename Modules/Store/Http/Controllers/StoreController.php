@@ -31,7 +31,10 @@ class StoreController extends Controller
             ->paginate($perPage);
 
         return new MessageResponse(
-            data: ['products' => ProductResource::collection($products),],
+            data: [
+                'products' => ProductResource::collection($products),
+                'currency' => $store->default_currency,
+            ],
             statusCode: 200
         );
     }
@@ -77,7 +80,10 @@ class StoreController extends Controller
             return new MessageResponse(message: 'this product not found', statusCode: 404);
         }
         return new MessageResponse(
-            data: new ProductWithOptionsResource($product),
+            data: [
+                new ProductWithOptionsResource($product),
+                'currency' => $store->default_currency,
+            ],
             statusCode: 200
         );
     }
@@ -93,7 +99,10 @@ class StoreController extends Controller
             ->paginate($perPage);
 
         return new MessageResponse(
-            data: ['products' => ProductResource::collection($products),],
+            data: [
+                'products' => ProductResource::collection($products),
+                'currency' => $store->default_currency,
+            ],
             statusCode: 200
         );
     }

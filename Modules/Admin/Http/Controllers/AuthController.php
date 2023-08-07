@@ -76,6 +76,7 @@ class AuthController extends Controller
                 $country->currency_code
             );
 
+            $adminRegisterService->createDefaultStoreCountry($store, $country);
 
             DB::commit();
 

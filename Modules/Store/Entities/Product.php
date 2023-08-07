@@ -61,6 +61,13 @@ class Product extends Model  implements HasMedia
         });
     }
 
+    public function scopeWithStoreCurrencyCode($query)
+    {
+        return $query->addSelect(['default_currency' => Store::select('default_currency')
+            ->whereColumn('id', 'products.store_id')
+            ->limit(1)
+        ]);
+    }
     // attributes
 
     protected function FeaturedProdcut(): Attribute

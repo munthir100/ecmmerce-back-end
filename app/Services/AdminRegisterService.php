@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Modules\Acl\Entities\User;
 use Illuminate\Support\Facades\Hash;
@@ -51,9 +52,19 @@ class AdminRegisterService
             'name' => $storeName,
             'link' => $storeLink,
             'store_theme_id' => 1,
-            'currency_code' => $currencyCode
+            'default_currency' => $currencyCode
         ]);
 
         return $store;
+    }
+
+    public function createDefaultStoreCountry($store, $country)
+    {
+        $store->countries()->attach($country, [
+            'is_default' => true,
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 }

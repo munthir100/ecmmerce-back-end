@@ -2,7 +2,9 @@
 
 namespace Modules\Shipping\Entities;
 
+use Modules\Store\Entities\Store;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Shipping\Database\factories\CountryFactory;
 
@@ -18,5 +20,14 @@ class Country extends Model
     function cities()
     {
         return $this->hasMany(City::class);
+    }
+    public function stores()
+    {
+        return $this->belongsToMany(Store::class, 'store_countries');
+    }
+    // scopes
+    public function scopeIsActive(Builder $query)
+    {
+        return $query->where('is_active', true);
     }
 }

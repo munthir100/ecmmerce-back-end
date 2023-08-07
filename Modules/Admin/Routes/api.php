@@ -11,6 +11,7 @@ use Modules\Admin\Http\Controllers\CustomerController;
 use Modules\Admin\Http\Controllers\OrderController;
 use Modules\Admin\Http\Controllers\ProductController;
 use Modules\Admin\Http\Controllers\Settings\ProfileController;
+use Modules\Admin\Http\Controllers\StoreCountriesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,4 +44,10 @@ Route::middleware(['auth:sanctum'])
         Route::get('settings/profile', [ProfileController::class, 'index']);
         Route::put('settings/profile', [ProfileController::class, 'update']);
         Route::put('settings/profile/updatePassword', [ProfileController::class, 'updatePassword']);
+
+
+        Route::apiResource('settings/countries', StoreCountriesController::class)->except('show', 'update');
+
+        Route::put('settings/countries/{countryId}/default', [StoreCountriesController::class, 'setAsDefault']);
+        Route::put('settings/countries/{countryId}/toggle', [StoreCountriesController::class, 'toggleActivation']);
     });

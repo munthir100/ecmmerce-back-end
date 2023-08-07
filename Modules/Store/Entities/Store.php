@@ -7,6 +7,7 @@ use Modules\Admin\Entities\Admin;
 use Spatie\MediaLibrary\HasMedia;
 use Modules\Shipping\Entities\City;
 use Modules\Shipping\Entities\Captain;
+use Modules\Shipping\Entities\Country;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Customer\Entities\Customer;
 use Modules\Store\Entities\SocialMediaLink;
@@ -17,7 +18,7 @@ class Store extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia, HasUploads;
 
-    protected $fillable = ['admin_id','store_theme_id', 'name', 'link','currency_code'];
+    protected $fillable = ['admin_id','store_theme_id', 'name', 'link','default_currency'];
 
     protected $uploadMedia = [
         'store_logo',
@@ -55,5 +56,9 @@ class Store extends Model implements HasMedia
     function socialMediaLinks()
     {
         return $this->hasOne(SocialMediaLink::class);
+    }
+    public function countries()
+    {
+        return $this->belongsToMany(Country::class, 'store_countries');
     }
 }
