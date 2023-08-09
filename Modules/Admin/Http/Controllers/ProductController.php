@@ -10,7 +10,7 @@ use Modules\Store\Entities\Product;
 use App\Http\Responses\MessageResponse;
 use function PHPUnit\Framework\isEmpty;
 use App\Exceptions\InvalidQuantityException;
-use App\Traits\FindsModelsForAdmin;
+use App\Traits\ModelsForAdmin;
 use Modules\Admin\Http\Requests\ProductRequest;
 use Modules\Admin\Transformers\ProductResource;
 use Modules\Admin\Http\Requests\UpdateProductRequest;
@@ -18,7 +18,7 @@ use Modules\Admin\Transformers\ProductWithOptionsResource;
 
 class ProductController extends Controller
 {
-    use FindsModelsForAdmin;
+    use ModelsForAdmin;
     protected $productService;
 
     public function __construct(ProductService $productService)
@@ -30,8 +30,7 @@ class ProductController extends Controller
     {
         $term = request()->get('term', '');
         $perPage = request()->get('perPage', 25);
-        $adminId = request()->user()->admin->id;
-        $products = Product::search($term)->ForAdmin($adminId)->paginate($perPage);
+        $products = $this->getAdminModels(Product::class, $term, $perPage);
 
         return new MessageResponse(
             data: ['products' => ProductResource::collection($products)],
@@ -43,7 +42,7 @@ class ProductController extends Controller
     {
         $data = $request->validated();
         $data['store_id'] = $request->user()->admin->store->id;
-        $this->productService->validateSku($data['sku'],$data['store_id']);
+        $this->productService->validateSku($data['sku'], $data['store_id']);
         $optionsData = Arr::pull($data, 'options', []);
         try {
             $product = Product::create($data);
@@ -58,7 +57,7 @@ class ProductController extends Controller
 
     public function show($productId)
     {
-        $product = $this->findModelOrFail(Product::class, $productId);
+        $product = $this->findAdminModel(Product::class, $productId);
 
         return new MessageResponse(
             data: ['product' => new ProductWithOptionsResource($product)],
@@ -69,10 +68,10 @@ class ProductController extends Controller
 
     public function update(UpdateProductRequest $request, $productId)
     {
-        $product = $this->findModelOrFail(Product::class, $productId);
+        $product = $this->findAdminModel(Product::class, $productId);
 
         $data = $request->validated();
-        $this->productService->validateSku($data['sku'],$data['store_id']);
+        $this->productService->validateSku($data['sku'], $data['store_id']);
         $optionsData = Arr::pull($data, 'options', []);
         try {
             $product->update($data);
@@ -104,7 +103,7 @@ class ProductController extends Controller
 
     public function destroy($productId)
     {
-        $product = $this->findModelOrFail(Product::class, $productId);
+        $product = $this->findAdminModel(Product::class, $productId);
 
         $product->delete();
 
@@ -115,47 +114,3 @@ class ProductController extends Controller
         );
     }
 }
-
-/*
-i have a product model :
-    public function options()
-    {
-        return $this->hasMany(ProductOption::class);
-    }
-and ProductOption :
-        protected $fillable = ['name','product_id'];
-
-    public function product()
-    {
-        return $this->belongsTo(Product::class);
-    }
-    public function values()
-    {
-        return $this->hasMany(ProductOptionValue::class);
-    }
-and ProductOptionValue:
-    protected $fillable = [
-        'name',
-        'additional_price',
-        'quantity',
-        'product_option_id',
-    ];
-
-    public function option()
-    {
-        return $this->belongsTo(Option::class);
-    }
-    what if the customer put the product in cart 
-*/
-
-
-
-
-
-
-
-
-
-
-
-

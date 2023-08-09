@@ -17,6 +17,7 @@ class BankAccountRequest extends FormRequest
             'bank_id' => 'required|exists:banks,id',
             'holder_name' => 'required|string|max:255',
             'details' => 'required|string|max:255',
+            'account_number' => 'required',
             'iban' => 'required|string|max:255',
         ];
     }

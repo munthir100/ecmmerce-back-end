@@ -6,14 +6,14 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Customer\Entities\Order;
 use App\Http\Responses\MessageResponse;
-use App\Traits\FindsModelsForAdmin;
+use App\Traits\ModelsForAdmin;
 use Illuminate\Contracts\Support\Renderable;
 use Modules\Admin\Transformers\OrderResource;
 use Modules\Admin\Transformers\OrderWithDetailsResource;
 
 class OrderController extends Controller
 {
-    use FindsModelsForAdmin;
+    use ModelsForAdmin;
     public function index()
     {
         $term = request()->get('term', '');
@@ -57,7 +57,7 @@ class OrderController extends Controller
 
     public function destroy($orderId)
     {
-        $order = $this->findModelOrFail(Order::class, $orderId);
+        $order = $this->findAdminModel(Order::class, $orderId);
 
         $order->delete();
         return new MessageResponse('order deleted', statusCode: 200);
@@ -68,7 +68,7 @@ class OrderController extends Controller
         $data = $request->validate([
             'status' => 'required|in:new,processing,ready,delivering,rejected',
         ]);
-        $order = $this->findModelOrFail(Order::class, $orderId);
+        $order = $this->findAdminModel(Order::class, $orderId);
 
         $order->update([
             'status' => $data['status']

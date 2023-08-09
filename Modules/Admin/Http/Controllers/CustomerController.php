@@ -7,7 +7,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Responses\MessageResponse;
-use App\Traits\FindsModelsForAdmin;
+use App\Traits\ModelsForAdmin;
 use Modules\Customer\Entities\Customer;
 use Modules\Admin\Http\Requests\CustomerRequest;
 use Modules\Admin\Transformers\CustomerResource;
@@ -15,7 +15,7 @@ use Modules\Admin\Http\Requests\UpdateCustomerRequest;
 
 class CustomerController extends Controller
 {
-    use FindsModelsForAdmin;
+    use ModelsForAdmin;
 
     public function index()
     {
@@ -72,7 +72,7 @@ class CustomerController extends Controller
 
     public function show($customerId)
     {
-        $customer = $this->findModelOrFail(Customer::class, $customerId);
+        $customer = $this->findAdminModel(Customer::class, $customerId);
         $store = request()->user()->admin->store;
 
         if (!$store->customers()->where('id', $customer->id)->exists()) {
@@ -91,7 +91,7 @@ class CustomerController extends Controller
 
     public function update(UpdateCustomerRequest $request, $customerId)
     {
-        $customer = $this->findModelOrFail(Customer::class, $customerId);
+        $customer = $this->findAdminModel(Customer::class, $customerId);
         return DB::transaction(function () use ($request, $customer) {
             $data = $request->validated();
             $store = $request->user()->admin->store;
@@ -122,7 +122,7 @@ class CustomerController extends Controller
 
     public function destroy($customerId)
     {
-        $customer = $this->findModelOrFail(Customer::class, $customerId);
+        $customer = $this->findAdminModel(Customer::class, $customerId);
         $store = request()->user()->admin->store;
 
         if (!$store->customers()->where('id', $customer->id)->exists()) {

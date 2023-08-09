@@ -15,12 +15,18 @@ return new class extends Migration
     {
         Schema::create('bank_accounts', function (Blueprint $table) {
             $table->id();
-            $table->string('account_number')->nullable();
             $table->string('holder_name');
             $table->string('details');
             $table->string('iban');
+            $table->string('account_number');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
+
+            $table->foreignId('admin_id')
+            ->references('id')
+            ->on('admins')
+            ->cascadeOnDelete()
+            ->cascadeOnUpdate();
 
             $table->foreignId('bank_id')
                 ->references('id')

@@ -5,6 +5,7 @@ namespace Modules\Acl\Entities;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Laravel\Sanctum\HasApiTokens;
 use Modules\Admin\Entities\Admin;
+use Spatie\Permission\Traits\HasRoles;
 use Modules\Customer\Entities\Customer;
 use Illuminate\Notifications\Notifiable;
 use Modules\Acl\Database\Factories\UserFactory;
@@ -13,8 +14,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
-    
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+
     protected static function newFactory()
     {
         return UserFactory::new();

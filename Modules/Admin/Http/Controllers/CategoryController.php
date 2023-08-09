@@ -2,27 +2,23 @@
 
 namespace Modules\Admin\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Store\Entities\Category;
 use App\Http\Responses\MessageResponse;
-use App\Traits\FindsModelsForAdmin;
-use Illuminate\Contracts\Support\Renderable;
+use App\Traits\ModelsForAdmin;
 use Modules\Admin\Http\Requests\CategoryRequest;
 use Modules\Admin\Transformers\CategoryResource;
 use Modules\Admin\Http\Requests\UpdateCategoryRequest;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CategoryController extends Controller
 {
-    use FindsModelsForAdmin;
-    
+    use ModelsForAdmin;
+
     public function index()
     {
         $term = request()->get('term', '');
         $perPage = request()->get('perPage', 25);
-        $adminId = request()->user()->admin->id;
-        $categories = Category::search($term)->ForAdmin($adminId)->paginate($perPage);
+        $categories = $this->getAdminModels(Category::class, $term, $perPage);
 
         return new MessageResponse(
             data: ['categories' => CategoryResource::collection($categories)],

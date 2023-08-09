@@ -17,5 +17,6 @@ class AclDatabaseSeeder extends Seeder
         Model::unguard();
 
         $this->call(UserTypeSeederTableSeeder::class);
+        $this->call(RolesTableSeeder::class);
     }
 }

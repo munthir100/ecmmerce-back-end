@@ -21,8 +21,12 @@ class Admin extends Model
     {
         return $this->hasOne(Store::class);
     }
-    function seller()
+    function sellers()
     {
-        return $this->hasOne(Seller::class);
+        return $this->hasMany(Seller::class);
+    }
+    function bankAccounts()
+    {
+        return $this->hasMany(BankAccount::class);
     }
 }

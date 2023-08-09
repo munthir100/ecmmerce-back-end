@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Responses\MessageResponse;
 use Modules\Admin\Http\Requests\Settings\Profile\UpdatePasswordRequest;
 use Modules\Admin\Transformers\UserResource;
-use Modules\Admin\Http\Requests\UpdateUserRequest;
 
 class ProfileController extends Controller
 {
@@ -26,7 +25,7 @@ class ProfileController extends Controller
     }
 
 
-    public function update(UpdateUserRequest $request, ValidateAdminProfile $profileService)
+    public function update(Request $request, ValidateAdminProfile $profileService)
     {
         $user = $request->user();
 

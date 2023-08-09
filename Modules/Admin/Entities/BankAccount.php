@@ -14,6 +14,7 @@ class BankAccount extends Model
         'holder_name',
         'details',
         'iban',
+        'admin_id',
         'bank_id',
     ];
 
@@ -21,7 +22,10 @@ class BankAccount extends Model
     {
         return $this->belongsTo(Bank::class);
     }
-
+    function admin()
+    {
+        return $this->belongsTo(Admin::class);
+    }
     public function scopeForAdmin($query, $adminId)
     {
         return $query->whereHas('admin', function ($query) use ($adminId) {

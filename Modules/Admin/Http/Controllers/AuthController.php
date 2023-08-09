@@ -2,24 +2,14 @@
 
 namespace Modules\Admin\Http\Controllers;
 
-use Inertia\Inertia;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Modules\Acl\Entities\User;
-use Modules\Admin\Entities\Admin;
-use Modules\Store\Entities\Store;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use App\Rules\ValidPhoneForCountry;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Modules\Shipping\Entities\Country;
 use App\Http\Responses\MessageResponse;
 use App\Services\AdminRegisterService;
-use Modules\Admin\Rules\UniqueEmailForAdmin;
-use Modules\Admin\Rules\UniquePhoneForAdmin;
-use Modules\Acl\Transformers\AuthenticatedUserResource;
 use Modules\Admin\Http\Requests\AdminRegisterRequest;
 
 class AuthController extends Controller
@@ -86,6 +76,7 @@ class AuthController extends Controller
                 'store' => $store,
                 'token' => $user->createToken('accessToken')->plainTextToken
             ];
+
             return new MessageResponse(message: 'Registration success', data: $jsonData, statusCode: 200);
         } catch (\Exception $e) {
             DB::rollBack();

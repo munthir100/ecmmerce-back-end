@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Shipping\Entities\Captain;
 use App\Http\Responses\MessageResponse;
-use App\Traits\FindsModelsForAdmin;
+use App\Traits\ModelsForAdmin;
 use Illuminate\Contracts\Support\Renderable;
 use Modules\Admin\Http\Requests\CaptainRequest;
 use Modules\Admin\Http\Requests\UpdateCaptainRequest;
@@ -14,7 +14,7 @@ use Modules\Admin\Transformers\CaptainResource;
 
 class CaptainController extends Controller
 {
-    use FindsModelsForAdmin;
+    use ModelsForAdmin;
     public function index()
     {
         $term = request()->get('term', '');
@@ -45,7 +45,7 @@ class CaptainController extends Controller
 
     public function show($captianId)
     {
-        $captain = $this->findModelOrFail(Captain::class, $captianId);
+        $captain = $this->findAdminModel(Captain::class, $captianId);
         return new MessageResponse(
             data: ['captain' => new CaptainResource($captain)],
             statusCode: 200
@@ -54,7 +54,7 @@ class CaptainController extends Controller
 
     public function update(UpdateCaptainRequest $request, $captianId)
     {
-        $captain = $this->findModelOrFail(Captain::class, $captianId);
+        $captain = $this->findAdminModel(Captain::class, $captianId);
         $data = $request->validated();
         $captain->update($data);
         if ($request->has('city_id')) {
@@ -69,7 +69,7 @@ class CaptainController extends Controller
 
     public function destroy($captianId)
     {
-        $captain = $this->findModelOrFail(Captain::class, $captianId);
+        $captain = $this->findAdminModel(Captain::class, $captianId);
         $captain->delete();
 
         return new MessageResponse(

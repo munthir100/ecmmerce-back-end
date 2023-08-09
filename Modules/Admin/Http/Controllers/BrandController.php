@@ -5,7 +5,7 @@ namespace Modules\Admin\Http\Controllers;
 use Illuminate\Http\Request;
 use Modules\Store\Entities\Brand;
 use Illuminate\Routing\Controller;
-use App\Traits\FindsModelsForAdmin;
+use App\Traits\ModelsForAdmin;
 use App\Http\Responses\MessageResponse;
 use Illuminate\Contracts\Support\Renderable;
 use Modules\Admin\Http\Requests\BrandRequest;
@@ -15,14 +15,13 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class BrandController extends Controller
 {
-    use FindsModelsForAdmin;
+    use ModelsForAdmin;
 
     public function index()
     {
         $term = request()->get('term', '');
         $perPage = request()->get('perPage', 25);
-        $adminId = request()->user()->admin->id;
-        $brands = Brand::search($term)->ForAdmin($adminId)->paginate($perPage);
+        $brands = $this->getAdminModels(Brand::class, $term, $perPage);
 
         return new MessageResponse(
             data: ['brands' => BrandResource::collection($brands)],
@@ -43,7 +42,7 @@ class BrandController extends Controller
 
     public function show($brandId)
     {
-        $brand = $this->findModelOrFail(Brand::class, $brandId);
+        $brand = $this->findAdminModel(Brand::class, $brandId);
 
         return new MessageResponse(
             data: ['brand' => new BrandResource($brand)]
@@ -52,7 +51,7 @@ class BrandController extends Controller
 
     public function update(UpdateBrandRequest $request, $brandId)
     {
-        $brand = $this->findModelOrFail(Brand::class, $brandId);
+        $brand = $this->findAdminModel(Brand::class, $brandId);
         if ($request->has('image')) {
             $brand->clearMediaCollection('image');
             $brand->uploadMedia();
@@ -67,7 +66,7 @@ class BrandController extends Controller
 
     public function destroy($brandId)
     {
-        $brand = $this->findModelOrFail(Brand::class, $brandId);
+        $brand = $this->findAdminModel(Brand::class, $brandId);
         $brand->delete();
 
         return new MessageResponse(

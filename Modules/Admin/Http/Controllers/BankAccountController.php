@@ -2,19 +2,17 @@
 
 namespace Modules\Admin\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use App\Traits\FindsModelsForAdmin;
+use App\Traits\ModelsForAdmin;
 use App\Http\Responses\MessageResponse;
 use Modules\Admin\Entities\BankAccount;
-use Illuminate\Contracts\Support\Renderable;
 use Modules\Admin\Http\Requests\BankAccountRequest;
 use Modules\Admin\Http\Requests\UpdateBankAccountRequest;
 use Modules\Admin\Transformers\BankAccountResource;
 
 class BankAccountController extends Controller
 {
-    use FindsModelsForAdmin;
+    use ModelsForAdmin;
 
     public function index()
     {
@@ -32,6 +30,7 @@ class BankAccountController extends Controller
     public function store(BankAccountRequest $request)
     {
         $data = $request->validated();
+        $data['admin_id'] = request()->user()->admin->id;
         $bankAccount = BankAccount::create($data);
 
         return new MessageResponse('bank account created', new BankAccountResource($bankAccount), 200);
@@ -40,7 +39,7 @@ class BankAccountController extends Controller
 
     public function show($bankAccountId)
     {
-        $bankAccount = $this->findModelOrFail(BankAccount::class, $bankAccountId);
+        $bankAccount = $this->findAdminModel(BankAccount::class, $bankAccountId);
 
         return new MessageResponse(
             data: ['bank_account' => new BankAccountResource($bankAccount)],
@@ -51,7 +50,7 @@ class BankAccountController extends Controller
     public function update(UpdateBankAccountRequest $request, $bankAccountId)
     {
         $data = $request->validated();
-        $bankAccount = $this->findModelOrFail(BankAccount::class, $bankAccountId);
+        $bankAccount = $this->findAdminModel(BankAccount::class, $bankAccountId);
         $bankAccount->update($data);
 
         return new MessageResponse(
@@ -64,7 +63,7 @@ class BankAccountController extends Controller
 
     public function destroy($bankAccountId)
     {
-        $bankAccount = $this->findModelOrFail(BankAccount::class, $bankAccountId);
+        $bankAccount = $this->findAdminModel(BankAccount::class, $bankAccountId);
         $bankAccount->delete();
 
         return new MessageResponse(
