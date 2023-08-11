@@ -11,15 +11,6 @@ trait ModelsForAdmin
         return $modelClass::search($term)->forAdmin($admin->id)->paginate($perPage);
     }
 
-    // private function createModelInAdminStore(string $modelClass, array $data)
-    // {
-    //     $admin = auth()->user()->admin;
-    //     $data['store_id'] = $admin->store->id;
-    //     $model = $modelClass::create($data);
-
-    //     return $model;
-    // }
-
     private function findAdminModel($modelClass, $modelId)
     {
         $admin = auth()->user()->admin;
@@ -31,10 +22,4 @@ trait ModelsForAdmin
         }
         return $model;
     }
-
-    // private function deleteAdminModel($modelClass, $modelId)
-    // {
-    //     $model = $this->findAdminModel($modelClass, $modelId);
-    //     $model->delete();
-    // }
 }

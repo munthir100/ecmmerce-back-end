@@ -13,6 +13,8 @@ use Modules\Customer\Entities\Customer;
 use Modules\Store\Entities\SocialMediaLink;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Admin\Entities\Coupon;
+use Modules\Admin\Entities\Seller;
 
 class Store extends Model implements HasMedia
 {
@@ -45,10 +47,15 @@ class Store extends Model implements HasMedia
     {
         return $this->hasMany(Product::class);
     }
+    public function coupons()
+    {
+        return $this->hasMany(Coupon::class);
+    }
     function captains()
     {
         return $this->hasMany(Captain::class);
     }
+
     function city()
     {
         return $this->belongsTo(City::class);

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email');
-            $table->string('phone');
+            $table->string('phone')->nullable();
             $table->string('password');
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
@@ -28,6 +28,7 @@ return new class extends Migration
                 ->nullOnDelete();
 
                 $table->foreignId('country_id')
+                ->nullable()
                 ->constrained();
         });
     }

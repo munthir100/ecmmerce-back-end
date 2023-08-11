@@ -4,6 +4,7 @@ namespace Modules\Acl\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Acl\Database\Seeders\PermissionsTableSeeder;
 
 class AclDatabaseSeeder extends Seeder
 {
@@ -17,6 +18,6 @@ class AclDatabaseSeeder extends Seeder
         Model::unguard();
 
         $this->call(UserTypeSeederTableSeeder::class);
-        $this->call(RolesTableSeeder::class);
+        $this->call(PermissionsTableSeeder::class);
     }
 }

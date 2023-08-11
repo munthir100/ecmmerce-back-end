@@ -11,10 +11,12 @@ use Illuminate\Notifications\Notifiable;
 use Modules\Acl\Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Modules\Admin\Entities\Seller;
+use Spatie\Permission\Traits\HasPermissions;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles,HasPermissions;
 
     protected static function newFactory()
     {
@@ -56,6 +58,6 @@ class User extends Authenticatable
     }
     function seller()
     {
-        return $this->hasOne(Sller::class);
+        return $this->hasOne(Seller::class);
     }
 }

@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class UserType extends Model
 {
     use HasFactory;
+    
+    const ADMIN = 1;
+    const CUSTOMER = 2;
+    const SELLER = 3;
 
     protected $fillable = ['name'];
 
