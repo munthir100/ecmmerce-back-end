@@ -22,7 +22,6 @@ use Modules\Customer\Http\Controllers\ShoppingCartController;
 Route::prefix('{storeLink}')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/register', [AuthController::class, 'register'])->name('register');
-    Route::post('/product/{product}/add-to-cart/', [CartController::class, 'addToCart'])->name('addToCart');
     
     
     Route::middleware(['auth:sanctum'])->group(function () {

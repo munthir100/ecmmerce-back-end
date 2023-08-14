@@ -18,10 +18,12 @@ class UpdateCaptainRequest extends FormRequest
             'shipping_cost' => 'sometimes|numeric',
             'expected_time_shipping' => 'sometimes|integer',
             'cash_on_delivery' => 'sometimes|boolean',
+            'is_active' => 'boolean',
             'cash_on_delivery_cost' => [
                 'required_if:cash_on_delivery,true',
                 'integer',
             ],
+            'is_active' => 'boolean',
             'city_id' => 'sometimes|array',
             'city_id.*' => 'exists:cities,id',
         ];

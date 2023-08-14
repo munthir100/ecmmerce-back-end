@@ -52,6 +52,10 @@ class Customer extends Model
     {
         return $this->hasMany(Order::class);
     }
+    public function couponUsages()
+    {
+        return $this->hasMany(CouponUsage::class);
+    }
 
     //scopes
     public function scopeForAdmin($query, $adminId)

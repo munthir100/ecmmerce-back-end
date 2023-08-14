@@ -27,7 +27,7 @@ class Product extends Model  implements HasMedia
         'description',
         'price',
         'cost',
-        'discount',
+        'is_discounted',
         'free_shipping',
         'is_active',
     ];
@@ -63,11 +63,17 @@ class Product extends Model  implements HasMedia
 
     public function scopeWithStoreCurrencyCode($query)
     {
-        return $query->addSelect(['default_currency' => Store::select('default_currency')
-            ->whereColumn('id', 'products.store_id')
-            ->limit(1)
+        return $query->addSelect([
+            'default_currency' => Store::select('default_currency')
+                ->whereColumn('id', 'products.store_id')
+                ->limit(1)
         ]);
     }
+    public function scopeDiscounted($query)
+    {
+        return $query->where('is_discounted', true);
+    }
+
     // attributes
 
     protected function FeaturedProdcut(): Attribute

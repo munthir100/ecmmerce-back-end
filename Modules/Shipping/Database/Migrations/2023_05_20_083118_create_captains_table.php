@@ -21,7 +21,7 @@ return new class extends Migration
             $table->boolean('cash_on_delivery')->default(false);
             $table->integer('cash_on_delivery_cost');
             $table->integer('expected_time_shipping');
-            $table->boolean('is_active');
+            $table->boolean('is_active')->default(true);
 
             $table->foreignId('store_id')
                 ->references('id')

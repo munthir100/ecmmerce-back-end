@@ -16,7 +16,8 @@ class UpdateBrandRequest extends FormRequest
         return [
             'name' => 'sometimes',
             'category_id' => 'sometimes',
-            'image' => 'sometimes',
+            'image' => 'sometimes|image',
+            'is_active' => 'boolean'
         ];
     }
 

@@ -7,25 +7,31 @@ use App\Services\CartService;
 use Modules\Store\Entities\Store;
 use Illuminate\Routing\Controller;
 use App\Http\Responses\MessageResponse;
+use App\Services\CustomerService;
 use App\Services\FeaturedProductService;
+use Modules\Customer\Entities\ShoppingCart;
 use Modules\Customer\Http\Requests\AddFeaturedProductToCartRequest;
 use Modules\Customer\Http\Requests\AddToCartRequest;
 use Modules\Customer\Transformers\shoppingCartResource;
 
 class ShoppingCartController extends Controller
 {
-    protected $cartService, $featuredProductService;
+    protected $cartService, $featuredProductService, $customerService;
 
-    public function __construct(CartService $cartService, FeaturedProductService $featuredProductService)
-    {
+    public function __construct(
+        CartService $cartService,
+        FeaturedProductService $featuredProductService,
+        CustomerService $customerService
+    ) {
         $this->cartService = $cartService;
         $this->featuredProductService = $featuredProductService;
+        $this->customerService = $customerService;
     }
 
     public function getCartByCustomer()
     {
         $customer = request()->user()->customer;
-        $cart = $customer->shoppingCart;
+        $cart = $this->customerService->findModel($customer, ShoppingCart::class);
 
         return $cart && !$cart->items->isEmpty()
             ? new MessageResponse(data: new shoppingCartResource($cart), statusCode: 200)
@@ -58,19 +64,6 @@ class ShoppingCartController extends Controller
             statusCode: 200
         );
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     public function addFeaturedProductToCart(Store $store, $productId, AddFeaturedProductToCartRequest $request)
     {
@@ -118,10 +111,10 @@ class ShoppingCartController extends Controller
 
 
 
-    public function removeProductFromCart(Store $store, $itemId)
+    public function removeProductFromCart(Store $store, $itemId, CustomerService $customerService)
     {
         $customer = request()->user()->customer;
-        $cart = $customer->shoppingCart;
+        $cart = $customerService->findModel($customer, ShoppingCart::class);
         $item = $cart->items->find($itemId);
         $item->delete();
 

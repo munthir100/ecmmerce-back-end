@@ -19,6 +19,7 @@ class BankAccountRequest extends FormRequest
             'details' => 'required|string|max:255',
             'account_number' => 'required',
             'iban' => 'required|string|max:255',
+            'is_active' => 'boolean',
         ];
     }
 

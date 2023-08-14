@@ -2,6 +2,7 @@
 
 namespace Modules\Shipping\Entities;
 
+use App\Traits\ModelsForStore;
 use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,7 +12,7 @@ use Modules\Store\Entities\Store;
 
 class Captain extends Model
 {
-    use HasFactory, SoftDeletes, Searchable;
+    use HasFactory, SoftDeletes, Searchable,ModelsForStore;
 
     protected $fillable = [
         'name',
@@ -20,6 +21,7 @@ class Captain extends Model
         'cash_on_delivery_cost',
         'expected_time_shipping',
         'store_id',
+        'is_active',
     ];
     protected $searchable = ['name', 'cities.name'];
     function store()

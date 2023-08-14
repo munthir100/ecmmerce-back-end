@@ -11,11 +11,28 @@ class CartService
     public function findProduct($store, $productId)
     {
         $product = $store->products->find($productId);
+   
+        if($product->FeaturedProdcut){
+            abort(response()->json(['message' => 'this is featured product'], 404));
+        }
         if (!$product) {
             abort(response()->json(['message' => 'product not found'], 404));
         }
         return $product;
     }
+
+    public function findProducts($store, array $productIds)
+    {
+        $products = $store->products->whereIn('id', $productIds);
+
+        if ($products->count() !== count($productIds)) {
+            $missingProductIds = array_diff($productIds, $products->pluck('id')->toArray());
+            abort(response()->json(['message' => 'products not found', 'missing_ids' => $missingProductIds], 404));
+        }
+
+        return $products;
+    }
+
 
     public function validateProductQuantity(Product $product, $quantity, ShoppingCart $cart)
     {
@@ -47,5 +64,4 @@ class CartService
 
         return $totalQuantity;
     }
-
 }

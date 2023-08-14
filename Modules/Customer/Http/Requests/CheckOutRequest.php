@@ -14,9 +14,10 @@ class CheckOutRequest extends FormRequest
     public function rules()
     {
         return [
-            'location_id' => 'required|exists:locations,id',
-            'captain_id' => 'required|exists:captains,id',
+            'location_id' => 'required',
+            'captain_id' => 'required',
             'payment_type' => 'required|in:bank,cash',
+            'coupon' => 'sometimes',
         ];
     }
 

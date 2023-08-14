@@ -33,6 +33,8 @@ class UpdateCouponRequest extends FormRequest
             'minimum_purchase' => 'required|numeric|min:0',
             'total_usage_times' => 'required|integer|min:1',
             'usage_per_customer' => 'required|integer|min:1',
+            'is_active' => 'boolean|sometimes'
+
         ];
     }
 

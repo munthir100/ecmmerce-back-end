@@ -17,6 +17,7 @@ class BrandRequest extends FormRequest
             'name' => 'required',
             'category_id' => 'required|exists:categories,id',
             'image' => 'required',
+            'is_active' => 'boolean'
         ];
     }
 

@@ -20,7 +20,7 @@ class Store extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia, HasUploads;
 
-    protected $fillable = ['admin_id','store_theme_id', 'name', 'link','default_currency'];
+    protected $fillable = ['admin_id', 'store_theme_id', 'name', 'link', 'default_currency'];
 
     protected $uploadMedia = [
         'store_logo',
@@ -68,4 +68,6 @@ class Store extends Model implements HasMedia
     {
         return $this->belongsToMany(Country::class, 'store_countries');
     }
+
+    
 }

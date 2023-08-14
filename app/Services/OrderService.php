@@ -3,109 +3,103 @@
 namespace App\Services;
 
 use App\Services\CartService;
+use Modules\Store\Entities\Store;
+use Modules\Shipping\Entities\City;
 use Modules\Customer\Entities\Order;
 use Modules\Customer\Entities\Customer;
 use Modules\Customer\Entities\OrderItem;
-use Modules\Customer\Entities\ShoppingCart;
 use Modules\Customer\Transformers\shoppingCartResource;
-use Modules\Shipping\Entities\Captain;
-use Modules\Store\Entities\Store;
 
 class OrderService
 {
+    public function __construct(private CartService $cartService)
+    {
+    }
+    public function getStoreCities(Store $store)
+    {
+        return City::join('captain_city', 'cities.id', '=', 'captain_city.city_id')
+            ->join('captains', 'captain_city.captain_id', '=', 'captains.id')
+            ->where('captains.store_id', $store->id)
+            ->distinct()
+            ->get(['cities.*']);
+    }
+
+    public function createOrder(Customer $customer, $productsTotalPrice, $shippingCost, array $data): Order
+    {
+        $totalPrice = $productsTotalPrice + $shippingCost;
+
+        $order = new Order([
+            'customer_id' => $customer->id,
+            'total_price' => $totalPrice,
+            'payment_type' => $data['payment_type'],
+            'captain_id' => $data['captain_id'],
+            'store_id' => $data['store_id'],
+            'location_id' => $data['location_id'],
+            'status' => 'new',
+        ]);
+        
+
+        return $order;
+    }
     public function validateShippingMethod($storeCities, $selectedLocation)
     {
         if (!$storeCities->contains('name', $selectedLocation->name)) {
             abort(response()->json('This location does not have a captain'));
         }
     }
-
-
-    public function SetOrderValues($storeId, Customer $customer, ShoppingCart $ShoppingCart, array $data): Order
+    public function calculateProductsTotalPrice($shoppingCart)
     {
-        $productsTotalPrice = $this->calculateProductsTotalPrice($ShoppingCart);
-        $shippingCost = $this->calculateShippingCost($data['captain_id']);
+        $totalPrice = $shoppingCart->products->sum(fn ($item) => $this->calculateProductPrice($item));
 
-        $totalPrice = $productsTotalPrice + $shippingCost;
-        $order = new Order();
-        $order->customer_id = $customer->id;
-        $order->total_price = $totalPrice; // Calculate the total price
-        $order->payment_type = $data['payment_type']; // Set the payment type
-        $order->captain_id = $data['captain_id']; // Set the captain
-        $order->store_id = $storeId; // Set the store
-        $order->location_id = $data['location_id']; // Set the store
-        $order->status = 'new'; // Set the initial status of the order
-        $order->save();
-
-        return $order;
-    }
-    public function calculateProductsTotalPrice($ShoppingCart)
-    {
-        $totalPrice = $ShoppingCart->products->sum(function ($item) {
-            $additionalPrice = $item->pivot->product_option_value ? $item->pivot->additional_price : 0;
-            return ($item->price + $additionalPrice) * $item->pivot->quantity;
-        });
-        $cartResource = new shoppingCartResource($ShoppingCart);
+        $cartResource = new ShoppingCartResource($shoppingCart);
         $cartResource->resource['total_price'] = $totalPrice;
 
         return $totalPrice;
     }
 
-    public function calculateShippingCost($captainId)
+
+    public function validateOrderedItems(Store $store, $shoppingCart)
     {
-        $captain = Captain::find($captainId);
+        $productIds = $shoppingCart->items->pluck('product_id')->toArray();
+        $products = $this->cartService->findProducts($store, $productIds);
 
-        return $captain->shipping_cost;
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public function ValidateOrderdItems(Store $store, $ShoppingCart)
-    {
-        $cartService = new CartService();
         $orderItems = [];
 
+        foreach ($shoppingCart->items as $cartItem) {
+            $product = $products->firstWhere('id', $cartItem->product_id);
 
+            if ($product) {
+                $validatedQuantity = $this->cartService->validateQuantityForSingleProduct($product, $cartItem->quantity);
 
-        foreach ($ShoppingCart->items as $cartItem) {
-            $product = $cartService->findProduct($store, $cartItem->product_id);
-            $validatedQuantity = $cartService->validateQuantityForSingleProduct($product, $cartItem->quantity);
-
-            if (!$validatedQuantity) {
-                abort(response()->json('error in validation of quantities'));
+                $orderItems[] = [
+                    'product_id' => $product->id,
+                    'quantity' => $validatedQuantity,
+                ];
             }
-
-            //set order items in array
-            $orderItems[] = [
-                'product_id' => $product->id,
-                'quantity' => $validatedQuantity,
-            ];
         }
 
         return $orderItems;
     }
 
 
+
     public function setOrderItems(Order $order, array $validatedItems)
     {
-        $itemsToInsert = [];
-        foreach ($validatedItems as $item) {
-            $itemsToInsert[] = new OrderItem([
+        $itemsToInsert = array_map(function ($item) {
+            return new OrderItem([
                 'product_id' => $item['product_id'],
                 'quantity' => $item['quantity'],
             ]);
-        }
+        }, $validatedItems);
 
-        return $order->items()->saveMany($itemsToInsert);
+        return $itemsToInsert;
+    }
+
+    private function calculateProductPrice($item)
+    {
+        $additionalPrice = $item->pivot->product_option_value ? $item->pivot->additional_price : 0;
+        return $item->is_discounted
+            ? ($item->price_after_discount + $additionalPrice) * $item->pivot->quantity
+            : ($item->price + $additionalPrice) * $item->pivot->quantity;
     }
 }

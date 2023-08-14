@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->bigInteger('price');
             $table->bigInteger('cost')->nullable();
-            $table->boolean('is_discounted')->nullable();
+            $table->boolean('is_discounted')->default(false);
             $table->bigInteger('price_after_discount')->nullable();
             $table->boolean('free_shipping')->default(false);
             $table->boolean('is_active')->default(true);

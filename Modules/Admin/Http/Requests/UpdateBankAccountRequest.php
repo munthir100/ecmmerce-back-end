@@ -18,6 +18,7 @@ class UpdateBankAccountRequest extends FormRequest
             'holder_name' => 'string|max:255',
             'details' => 'string|max:255',
             'iban' => 'string|max:255',
+            'is_active' => 'boolean',
         ];
     }
 
