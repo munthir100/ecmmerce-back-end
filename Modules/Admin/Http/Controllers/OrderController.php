@@ -66,12 +66,12 @@ class OrderController extends Controller
     public function changeStatus($orderId, Request $request)
     {
         $data = $request->validate([
-            'status' => 'required|in:new,processing,ready,delivering,rejected',
+            'status_id' => 'required|exists:statuses,id',
         ]);
         $order = $this->findAdminModel(Order::class, $orderId);
 
         $order->update([
-            'status' => $data['status']
+            'status_id' => $data['status_id']
         ]);
 
         return new MessageResponse('status updated', new OrderWithDetailsResource($order), 200);

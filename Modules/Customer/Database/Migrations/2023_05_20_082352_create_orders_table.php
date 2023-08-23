@@ -15,9 +15,11 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->enum('status', ['new', 'processing', 'ready', 'delivering', 'completed', 'rejected'])->default('new');
             $table->string('total_price');
             $table->string('payment_type');
+
+            $table->foreignId('status_id')
+                ->constrained();
 
             $table->foreignId('customer_id')
                 ->references('id')

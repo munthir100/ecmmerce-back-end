@@ -60,7 +60,6 @@ class AuthController extends Controller
             $admin = $user->admin()->create([]);
             $store = $adminRegisterService->createStore(
                 $admin,
-                $user->id,
                 $data['store_name'],
                 $data['link'],
                 $country->currency_code

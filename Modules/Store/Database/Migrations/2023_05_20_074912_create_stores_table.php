@@ -20,6 +20,22 @@ return new class extends Migration
             $table->string('default_currency');
             $table->timestamps();
             $table->softDeletes();
+            $table->string('commercial_registration_no')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->text('maintenance_message')->nullable();
+
+
+            $table->string('button_color')->default('#7367F0');
+            $table->string('text_color')->default('#7367F0');
+            $table->string('banner_color')->default('#7367F0');
+            $table->string('banner_content')->nullable();
+            $table->string('banner_link')->nullable();
+
+
+
+            $table->foreignId('language_id')
+                ->constrained('languages');
+
 
             $table->foreignId('admin_id')
                 ->references('id')
@@ -28,17 +44,11 @@ return new class extends Migration
                 ->cascadeOnUpdate();
 
             $table->foreignId('store_theme_id')
-                ->nullable()
-                ->references('id')
-                ->on('store_themes')
-                ->nullOnDelete()
-                ->default(1);
+                ->constrained('store_themes');
 
             $table->foreignId('city_id')
                 ->nullable()
-                ->references('id')
-                ->on('cities')
-                ->nullOnDelete();
+                ->constrained('cities');
         });
     }
 

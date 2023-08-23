@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Services\CartService;
+use Modules\Admin\Entities\Status;
 use Modules\Store\Entities\Store;
 use Modules\Shipping\Entities\City;
 use Modules\Customer\Entities\Order;
@@ -35,7 +36,7 @@ class OrderService
             'captain_id' => $data['captain_id'],
             'store_id' => $data['store_id'],
             'location_id' => $data['location_id'],
-            'status' => 'new',
+            'status_id' => Status::ORDER_NEW,
         ]);
         
 

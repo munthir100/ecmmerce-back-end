@@ -6,17 +6,14 @@ use Modules\Store\Entities\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class StoreTheme extends Model
+class AdditionalSetting extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name','price'];
+    protected $fillable = ['setting_name','setting_value','store_id'];
 
-    const DEFAULT = 1;
-    const FIRST = 1;
-    
-    public function stores()
+    function store()
     {
-        return $this->hasMany(Store::class);
+        return $this->belongsTo(Store::class);
     }
 }

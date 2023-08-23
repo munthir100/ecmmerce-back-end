@@ -3,14 +3,15 @@
 namespace Modules\Admin\Http\Controllers;
 
 use Illuminate\Support\Arr;
+use App\Traits\ModelsForAdmin;
 use App\Services\ProductService;
-use Illuminate\Routing\Controller;
 
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Modules\Store\Entities\Product;
 use App\Http\Responses\MessageResponse;
 use function PHPUnit\Framework\isEmpty;
 use App\Exceptions\InvalidQuantityException;
-use App\Traits\ModelsForAdmin;
 use Modules\Admin\Http\Requests\ProductRequest;
 use Modules\Admin\Transformers\ProductResource;
 use Modules\Admin\Http\Requests\UpdateProductRequest;
@@ -44,14 +45,13 @@ class ProductController extends Controller
         $data['store_id'] = $request->user()->admin->store->id;
         $this->productService->validateSku($data['sku'], $data['store_id']);
         $optionsData = Arr::pull($data, 'options', []);
-        try {
+
+        return DB::transaction(function () use ($data, $optionsData) {
             $product = Product::create($data);
             $product->uploadMedia();
             $this->productService->createProductOptions($product, $optionsData);
             return new MessageResponse('Product created successfully', ['product' => new ProductWithOptionsResource($product)]);
-        } catch (InvalidQuantityException $e) {
-            return new MessageResponse('Invalid quantity', [], 422);
-        }
+        });
     }
 
 

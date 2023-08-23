@@ -24,6 +24,7 @@ class Order extends Model
         'status',
         'total_price',
         'payment_type',
+        'status_id'
     ];
 
     function customer()

@@ -74,6 +74,12 @@ class Product extends Model  implements HasMedia
         return $query->where('is_discounted', true);
     }
 
+    public function scopeFreeShipping($query)
+    {
+        return $query->where('free_shipping', true);
+    }
+
+
     // attributes
 
     protected function FeaturedProdcut(): Attribute

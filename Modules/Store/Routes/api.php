@@ -15,19 +15,19 @@ use Modules\Store\Http\Controllers\StoreController;
 |
 */
 
-Route::prefix('{storeLink}')->name('store.')->group(function () {
-    Route::get('/products', [StoreController::class, 'products'])->name('products');
+Route::prefix('{storeLink}')->middleware('active_store')->group(function () {
+    Route::get('/products', [StoreController::class, 'products']);
     Route::get('/products/featured', [StoreController::class, 'GetFeaturedProducts']);
-    Route::get('/categories', [StoreController::class, 'categories'])->name('categories');
-    Route::get('/products/{category}', [StoreController::class, 'categorizedProducts'])->name('categorized-products');
+    Route::get('/categories', [StoreController::class, 'categories']);
+    Route::get('/products/{category}', [StoreController::class, 'categorizedProducts']);
 
-    Route::get('/brands', [StoreController::class, 'brands'])->name('brands');
+    Route::get('/brands', [StoreController::class, 'brands']);
     Route::get('/captains', [StoreController::class, 'captains']);
-    Route::get('/product/{productId}/details', [StoreController::class, 'productDetails'])->name('product-details');
+    Route::get('/product/{productId}/details', [StoreController::class, 'productDetails']);
 
     
-    Route::post('/add-location', [StoreController::class,'addLocation'])->name('addLocation');
-    Route::post('/delete-location', [StoreController::class,'deleteLocation'])->name('deleteLocation');
+    Route::post('/add-location', [StoreController::class,'addLocation']);
+    Route::post('/delete-location', [StoreController::class,'deleteLocation']);
 
 
 });

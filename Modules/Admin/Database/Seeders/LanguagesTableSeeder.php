@@ -4,8 +4,9 @@ namespace Modules\Admin\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Admin\Entities\Language;
 
-class AdminDatabaseSeeder extends Seeder
+class LanguagesTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,10 +15,11 @@ class AdminDatabaseSeeder extends Seeder
      */
     public function run()
     {
-        Model::unguard();
-
-        $this->call(LanguagesTableSeeder::class);
-        $this->call(StatusesTableSeeder::class);
-        $this->call(BankSeederTableSeeder::class);
+        Language::create([
+            'name' => 'اللغة العربية'
+        ]);
+        Language::create([
+            'name' => 'english'
+        ]);
     }
 }

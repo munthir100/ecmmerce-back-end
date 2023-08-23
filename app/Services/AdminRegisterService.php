@@ -6,7 +6,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Modules\Acl\Entities\User;
 use Illuminate\Support\Facades\Hash;
+use Modules\Admin\Entities\Language;
+use Modules\Admin\Entities\Status;
 use Modules\Shipping\Entities\Country;
+use Modules\Store\Entities\StoreTheme;
 
 class AdminRegisterService
 {
@@ -44,15 +47,15 @@ class AdminRegisterService
 
         return $user;
     }
-    public function createStore($admin, $userId, $storeName, $storeLink, $currencyCode)
+    public function createStore($admin, $storeName, $storeLink, $currencyCode)
     {
 
         $store = $admin->store()->create([
-            'user_id' => $userId,
             'name' => $storeName,
             'link' => $storeLink,
-            'store_theme_id' => 1,
-            'default_currency' => $currencyCode
+            'default_currency' => $currencyCode,
+            'language_id' => Language::ARABIC,
+            'store_theme_id' => StoreTheme::DEFAULT,
         ]);
 
         return $store;
