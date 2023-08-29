@@ -23,7 +23,7 @@ return new class extends Migration
             $table->decimal('minimum_purchase', 10, 2);
             $table->unsignedInteger('total_usage_times');
             $table->unsignedInteger('usage_per_customer');
-            $table->unsignedInteger('used_times');
+            $table->unsignedInteger('used_times')->default(0);
             $table->timestamps();
             $table->boolean('is_active')->default(true);
 

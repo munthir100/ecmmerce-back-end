@@ -5,7 +5,7 @@ namespace Modules\Admin\Http\Requests;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateCaptainRequest extends FormRequest
+class UpdateStoreRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -15,18 +15,16 @@ class UpdateCaptainRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'sometimes|string',
-            'shipping_cost' => 'sometimes|numeric',
-            'expected_time_shipping' => 'sometimes|integer',
-            'cash_on_delivery' => 'sometimes|boolean',
+            'name' => 'string|max:255',
+            'link' => 'string|max:255',
+            'description' => 'string|max:255',
+            'store_logo' => 'image',
+            'store_icon' => 'image',
+            'language_id' => 'exists:languages,id',
             'is_active' => 'boolean',
-            'cash_on_delivery_cost' => [
-                'required_if:cash_on_delivery,true',
-                'integer',
-            ],
-            'is_active' => 'boolean',
-            'city_id' => 'sometimes|array',
-            'city_id.*' => 'distinct',
+            'maintenance_message' => ['required_if:is_active,true', 'string', 'max:255'],
+            'button_color' => 'string',
+            'text_color' => 'string',
         ];
     }
 
@@ -41,6 +39,20 @@ class UpdateCaptainRequest extends FormRequest
                 }),
             ],
             'city_id.*' => 'distinct',
+        ]);
+    }
+    public function validateStoreLink($store)
+    {
+        return $this->validate([
+            'link' => [
+                Rule::unique('stores')->ignore($store),
+            ],
+        ]);
+    }
+    public function validateCommercialRegistration($store)
+    {
+        return $this->validate([
+            'commercial_registration_no' => Rule::unique('stores')->ignore($store),
         ]);
     }
 

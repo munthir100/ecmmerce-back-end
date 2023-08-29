@@ -6,8 +6,8 @@ use Modules\Acl\Entities\User;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Responses\MessageResponse;
 use App\Traits\ModelsForAdmin;
+use Essa\APIToolKit\Api\ApiResponse;
 use Modules\Customer\Entities\Customer;
 use Modules\Admin\Http\Requests\CustomerRequest;
 use Modules\Admin\Transformers\CustomerResource;
@@ -15,29 +15,16 @@ use Modules\Admin\Http\Requests\UpdateCustomerRequest;
 
 class CustomerController extends Controller
 {
-    use ModelsForAdmin;
+    use ModelsForAdmin, ApiResponse;
 
     public function index()
     {
-        $term = request()->get('term', '');
-        $perPage = request()->get('perPage', 25);
-        $store = request()->user()->admin->store;
 
-        $customers = $store->customers() // correct but need to review
-            ->with('user')
-            ->where(function ($query) use ($term) {
-                if (!empty($term)) {
-                    $query->where('name', 'like', '%' . $term . '%')
-                        ->orWhere('email', 'like', '%' . $term . '%')
-                        ->orWhere('phone', 'like', '%' . $term . '%');
-                }
-            })
-            ->paginate($perPage);
+        $store = auth()->user()->admin->store;
 
-        return new MessageResponse(
-            data: ['customers' => CustomerResource::collection($customers)],
-            statusCode: 200
-        );
+        $customers = $store->customers()->useFilters()->with('user')->dynamicPaginate();
+
+        return ['customer' => CustomerResource::collection($customers)];
     }
 
     public function store(CustomerRequest $request)
@@ -48,10 +35,7 @@ class CustomerController extends Controller
 
             $exists = $this->checkCustomerExistenceInStore($store, $data['email'], $data['phone']);
             if ($exists) {
-                return new MessageResponse(
-                    message: 'The email or phone number already exists in this store.',
-                    statusCode: 409
-                );
+                return $this->responseConflictError('The email or phone number already exists in this store.');
             }
 
             $data['user_type_id'] = 2;
@@ -62,36 +46,26 @@ class CustomerController extends Controller
             $data['store_id'] = $store->id;
             $customer = Customer::create($data);
 
-            return new MessageResponse(
-                message: 'Customer created successfully',
-                data: ['customer' => new CustomerResource($customer)],
-                statusCode: 200
+            return $this->responseCreated(
+                'Customer created successfully',
+                ['customer' => new CustomerResource($customer)],
             );
         });
     }
 
     public function show($customerId)
     {
-        $customer = $this->findAdminModel(Customer::class, $customerId);
-        $store = request()->user()->admin->store;
+        $customer = $this->findAdminModel(auth()->user()->admin, Customer::class, $customerId);
 
-        if (!$store->customers()->where('id', $customer->id)->exists()) {
-            return new MessageResponse(
-                message: 'Unauthorized access to customer data.',
-                statusCode: 401
-            );
-        }
-
-        return new MessageResponse(
-            data: ['customer' => new CustomerResource($customer)],
-            statusCode: 200
+        return $this->responseSuccess(
+            data: ['customer' => new CustomerResource($customer)]
         );
     }
 
 
     public function update(UpdateCustomerRequest $request, $customerId)
     {
-        $customer = $this->findAdminModel(Customer::class, $customerId);
+        $customer = $this->findAdminModel(auth()->user()->admin, Customer::class, $customerId);
         return DB::transaction(function () use ($request, $customer) {
             $data = $request->validated();
             $store = $request->user()->admin->store;
@@ -101,9 +75,8 @@ class CustomerController extends Controller
             if ($email || $phone) {
                 $exists = $this->checkCustomerExistenceInStore($store, $email, $phone, $customer->user_id);
                 if ($exists) {
-                    return new MessageResponse(
+                    return $this->responseUnprocessable(
                         message: 'The email or phone number already exists in this store.',
-                        statusCode: 409
                     );
                 }
             }
@@ -111,10 +84,9 @@ class CustomerController extends Controller
             $user->update($data);
             $customer->update($data);
 
-            return new MessageResponse(
+            return $this->responseSuccess(
                 'Customer data updated',
                 ['customer' => new CustomerResource($customer)],
-                statusCode: 200
             );
         });
     }
@@ -122,23 +94,10 @@ class CustomerController extends Controller
 
     public function destroy($customerId)
     {
-        $customer = $this->findAdminModel(Customer::class, $customerId);
-        $store = request()->user()->admin->store;
-
-        if (!$store->customers()->where('id', $customer->id)->exists()) {
-            return new MessageResponse(
-                message: 'Unauthorized access to customer data.',
-                statusCode: 401
-            );
-        }
-
+        $customer = $this->findAdminModel(auth()->user()->admin, Customer::class, $customerId);
         $customer->user->delete();
 
-        return new MessageResponse(
-            message: 'Customer deleted',
-            data: ['customer' => new CustomerResource($customer)],
-            statusCode: 200
-        );
+        return $this->responseSuccess('Customer deleted');
     }
 
 

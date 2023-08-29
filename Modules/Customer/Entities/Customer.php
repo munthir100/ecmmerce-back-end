@@ -2,11 +2,12 @@
 
 namespace Modules\Customer\Entities;
 
-use App\Traits\Searchable;
 use Modules\Acl\Entities\User;
+use App\Filters\CustomerFilters;
 use Modules\Store\Entities\Store;
 use Modules\Shipping\Entities\City;
 use Illuminate\Database\Eloquent\Model;
+use Essa\APIToolKit\Filters\Filterable;
 use Modules\Shipping\Entities\Location;
 use Modules\Customer\Entities\ShoppingCart;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Customer extends Model
 {
-    use HasFactory, Searchable;
+    use HasFactory, Filterable;
 
     protected $fillable = [
         'birth_date',
@@ -26,7 +27,7 @@ class Customer extends Model
         'store_id',
     ];
 
-    protected $searchable = ['user.name', 'user.email', 'user.phone', 'description'];
+    protected string $default_filters = CustomerFilters::class;
 
     function city()
     {

@@ -9,6 +9,7 @@ use Illuminate\Routing\Controller;
 use App\Http\Responses\MessageResponse;
 use App\Services\CustomerService;
 use App\Services\FeaturedProductService;
+use Essa\APIToolKit\Api\ApiResponse;
 use Modules\Customer\Entities\ShoppingCart;
 use Modules\Customer\Http\Requests\AddFeaturedProductToCartRequest;
 use Modules\Customer\Http\Requests\AddToCartRequest;
@@ -16,6 +17,7 @@ use Modules\Customer\Transformers\shoppingCartResource;
 
 class ShoppingCartController extends Controller
 {
+    use ApiResponse;
     protected $cartService, $featuredProductService, $customerService;
 
     public function __construct(
@@ -34,8 +36,8 @@ class ShoppingCartController extends Controller
         $cart = $this->customerService->findModel($customer, ShoppingCart::class);
 
         return $cart && !$cart->items->isEmpty()
-            ? new MessageResponse(data: new shoppingCartResource($cart), statusCode: 200)
-            : new MessageResponse(message: 'The cart is empty', statusCode: 200);
+            ? $this->responseSuccess(data: new shoppingCartResource($cart))
+            : $this->responseSuccess('The cart is empty');
     }
 
 
@@ -58,10 +60,9 @@ class ShoppingCartController extends Controller
                 'store_id' => $store->id,
                 'quantity' => $validatedQuantity,
             ]);
-        return new MessageResponse(
-            message: 'shopping cart updated',
+        return $this->responseSuccess(
+            'shopping cart updated',
             data: new shoppingCartResource($cart),
-            statusCode: 200
         );
     }
 
@@ -91,24 +92,11 @@ class ShoppingCartController extends Controller
             $totalQuantity
         );
 
-        return new MessageResponse(
-            message: 'shopping cart updated',
-            data: new shoppingCartResource($cart),
-            statusCode: 200
+        return $this->responseSuccess(
+            'shopping cart updated',
+            new shoppingCartResource($cart),
         );
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public function removeProductFromCart(Store $store, $itemId, CustomerService $customerService)
@@ -116,9 +104,12 @@ class ShoppingCartController extends Controller
         $customer = request()->user()->customer;
         $cart = $customerService->findModel($customer, ShoppingCart::class);
         $item = $cart->items->find($itemId);
+        if (!$item) {
+            return $this->responseNotFound('this item not exist in cart');
+        }
         $item->delete();
 
-        return new MessageResponse(message: 'Product removed from cart', statusCode: 200);
+        return $this->responseSuccess('Product removed from cart');
     }
 
 
@@ -127,7 +118,7 @@ class ShoppingCartController extends Controller
         $product = $store->products->find($productId);
 
         if (!$product) {
-            return new MessageResponse(message: 'The product does not exist in the store', statusCode: 404);
+            return $this->responseNotFound('The product does not exist in the store');
         }
 
         $data = $request->validated();
@@ -136,11 +127,11 @@ class ShoppingCartController extends Controller
         $cart = $customer->shoppingCart->with('items');
 
         if (!$cart || $cart->items()->isEmpty() || !$cart->items()->contains('id', $product->id)) {
-            return new MessageResponse(message: 'The product does not exist in the cart', statusCode: 404);
+            return $this->responseNotFound('The product does not exist in the cart');
         }
 
         $cart->products()->updateExistingPivot($product->id, ['quantity' => $newQuantity]);
 
-        return new MessageResponse(message: 'Product quantity updated in cart', statusCode: 200);
+        return $this->responseSuccess('Product quantity updated in cart');
     }
 }

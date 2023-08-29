@@ -19,9 +19,6 @@ class FeaturedProductService
                 $query->where('name', $productOptionValue);
             })->first();
 
-            if(!$product->FeaturedProdcut){
-                abort(response()->json(['message' => 'this is not featured product'], 404));
-            }
 
         if (!$product) {
             abort(response()->json(['message' => 'error to find this product']));

@@ -2,27 +2,25 @@
 
 namespace Modules\Admin\Http\Controllers;
 
-use Illuminate\Routing\Controller;
-use Modules\Store\Entities\Category;
-use App\Http\Responses\MessageResponse;
 use App\Traits\ModelsForAdmin;
+use Illuminate\Routing\Controller;
+use Essa\APIToolKit\Api\ApiResponse;
+use Modules\Store\Entities\Category;
 use Modules\Admin\Http\Requests\CategoryRequest;
 use Modules\Admin\Transformers\CategoryResource;
 use Modules\Admin\Http\Requests\UpdateCategoryRequest;
 
 class CategoryController extends Controller
 {
-    use ModelsForAdmin;
+    use ModelsForAdmin, ApiResponse;
+
+    
 
     public function index()
     {
-        $term = request()->get('term', '');
-        $perPage = request()->get('perPage', 25);
-        $categories = $this->getAdminModels(Category::class, $term, $perPage);
+        $categories = Category::useFilters()->forAdmin(auth()->user()->admin->id)->dynamicPaginate();
 
-        return new MessageResponse(
-            data: ['categories' => CategoryResource::collection($categories)],
-        );
+        return $this->responseSuccess('categories', new CategoryResource($categories));
     }
 
 
@@ -33,45 +31,37 @@ class CategoryController extends Controller
         $category = Category::create($data);
         $category->uploadMedia();
 
-        return new MessageResponse(
-            message: 'category created successfully',
-            data: ['category' => new CategoryResource($category)]
-        );
+        return $this->responseCreated('category created successfully', new CategoryResource($category));
     }
 
 
     public function show($categoryId)
     {
-        $category = $this->findModelOrFail(Category::class, $categoryId);
+        $category = $this->findAdminModel(auth()->user()->admin, Category::class, $categoryId);
 
-        return new MessageResponse(
-            data: ['category' => new CategoryResource($category)]
-        );
+        return $this->responseSuccess(data: new CategoryResource($category));
     }
 
     public function update(UpdateCategoryRequest $request, $categoryId)
     {
-        $category = $this->findModelOrFail(Category::class, $categoryId);
+        $category = $this->findAdminModel(auth()->user()->admin, Category::class, $categoryId);
         if ($request->has('image')) {
             $category->clearMediaCollection('image');
             $category->uploadMedia();
         }
         $category->update($request->validated());
 
-        return new MessageResponse(
-            message: 'category updated',
-            data: ['category' => new CategoryResource($category)]
+        return $this->responseSuccess(
+            'category updated',
+            ['category' => new CategoryResource($category)]
         );
     }
 
     public function destroy($categoryId)
     {
-        $category = $this->findModelOrFail(Category::class, $categoryId);
+        $category = $this->findAdminModel(auth()->user()->admin, Category::class, $categoryId);
         $category->delete();
 
-        return new MessageResponse(
-            message: 'category deleted',
-            data: ['category' => new CategoryResource($category)],
-        );
+        return $this->responseSuccess('category deleted');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Modules\Admin\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateProductRequest extends FormRequest
@@ -28,7 +29,6 @@ class UpdateProductRequest extends FormRequest
             'sub_images.*'      => 'sometimes',
             'is_active'         => 'sometimes|boolean',
             'category_id'       => 'nullable|integer',
-
             'options'                  => 'sometimes|array',
             'options.*.name'           => 'required_with:options|string',
             'options.*.values'         => 'required_with:options|array',
@@ -38,6 +38,17 @@ class UpdateProductRequest extends FormRequest
         ];
     }
 
+    public function validateSkuIsUnique($store, $product)
+    {
+        return $this->validate([
+            'sku' => [
+                Rule::unique('products', 'sku')->where(function ($query) use ($store, $product) {
+                    return $query->where('store_id', $store->id)
+                        ->where('id', '!=', $product->id);
+                }),
+            ],
+        ]);
+    }
     /**
      * Determine if the user is authorized to make this request.
      *

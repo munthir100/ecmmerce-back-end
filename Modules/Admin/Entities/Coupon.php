@@ -2,8 +2,9 @@
 
 namespace Modules\Admin\Entities;
 
-use App\Traits\Searchable;
+use App\Filters\CouponFilters;
 use App\Traits\ModelsForStore;
+use Essa\APIToolKit\Filters\Filterable;
 use Modules\Store\Entities\Store;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Customer\Entities\CouponUsage;
@@ -11,9 +12,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Coupon extends Model
 {
-    use HasFactory,Searchable,ModelsForStore;
+    use HasFactory,Filterable,ModelsForStore;
     
-    protected $searchable = ['promocode'];
+    protected string $default_filters = CouponFilters::class;
+
 
     protected $fillable = [
         'promocode',

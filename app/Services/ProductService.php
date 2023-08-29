@@ -3,71 +3,77 @@
 namespace App\Services;
 
 use Modules\Store\Entities\Product;
-use App\Exceptions\InvalidQuantityException;
 
 class ProductService
 {
     public function createProductOptions(Product $product, array $optionsData)
     {
+        $options = $this->prepareOptions($optionsData);
+        $totalValuesQuantity = $this->calculateTotalValuesQuantity($options);
+        $this->validateQuantityMatch($product, $totalValuesQuantity);
+        $this->createOptions($product, $options);
+        $this->createOptionValues($product, $options);
+    }
+
+    private function prepareOptions(array $optionsData)
+    {
         $options = [];
-        $totalValuesQuantity = 0;
 
         foreach ($optionsData as $optionData) {
-            $options[] = [
+            $option = [
                 'name' => $optionData['name'],
+                'values' => [],
             ];
 
             if (isset($optionData['values']) && is_array($optionData['values'])) {
-                $values = [];
-
                 foreach ($optionData['values'] as $valueData) {
-                    $value = [
+                    $quantity = isset($valueData['quantity']) ? (int) $valueData['quantity'] : 0;
+                    $option['values'][] = [
                         'name' => $valueData['name'],
                         'additional_price' => $valueData['additional_price'] ?? 0,
-                        'quantity' => $valueData['quantity'] ?? null,
+                        'quantity' => $quantity,
                     ];
-
-                    $quantity = isset($valueData['quantity']) ? (int) $valueData['quantity'] : 0;
-                    $totalValuesQuantity += $quantity;
-
-                    $values[] = $value;
                 }
-
-                $options[count($options) - 1]['values'] = $values;
             }
+
+            $options[] = $option;
         }
 
+        return $options;
+    }
+
+    private function createOptions(Product $product, array $options)
+    {
         $product->options()->createMany($options);
+    }
 
-        if (!$product->unspecified_quantity) {
-            $this->checkQuantity($product, $totalValuesQuantity);
-        }
+    private function calculateTotalValuesQuantity(array $options)
+    {
+        $totalValuesQuantity = 0;
 
-        foreach ($optionsData as $index => $optionData) {
-            if (isset($optionData['values']) && is_array($optionData['values'])) {
-                $option = $product->options[$index];
-                $values = $options[$index]['values'];
-
-                $option->values()->createMany($values);
+        foreach ($options as $option) {
+            foreach ($option['values'] as $value) {
+                $totalValuesQuantity += $value['quantity'];
             }
         }
+
+        return $totalValuesQuantity;
     }
 
-    private function checkQuantity(Product $product, int $totalValuesQuantity)
+    private function validateQuantityMatch(Product $product, int $totalValuesQuantity)
     {
-        $productQuantity = isset($product->quantity) ? (int) $product->quantity : 0;
-        if ($totalValuesQuantity > $productQuantity) {
-            throw new InvalidQuantityException();
+        if ($product->quantity != $totalValuesQuantity) {
+            abort(response()->json('Invalid quantity'));
         }
     }
 
-    public function validateSku($sku, $storeId)
+    private function createOptionValues(Product $product, array $options)
     {
-        $isUniqueSku  = !Product::where('store_id', $storeId)
-            ->where('sku', $sku)
-            ->exists();
-        if (!$isUniqueSku) {
-            abort(response()->json('The provided SKU already exists for this store.'));
+        foreach ($options as $index => $option) {
+            if (!empty($option['values'])) {
+                $optionModel = $product->options[$index];
+                $optionModel->values()->createMany($option['values']);
+            }
         }
     }
 }

@@ -7,12 +7,13 @@ use Illuminate\Routing\Controller;
 use Modules\Shipping\Entities\Country;
 use App\Http\Responses\MessageResponse;
 use App\Services\StoreCountriesService;
+use Essa\APIToolKit\Api\ApiResponse;
 use Modules\Admin\Http\Requests\StoreCountriesRequest;
 use Modules\Store\Entities\StoreCountry;
 
 class StoreCountriesController extends Controller
 {
-    use FindsModels;
+    use FindsModels,ApiResponse;
     public $storeCountriesService;
     public function __construct(StoreCountriesService $storeCountriesService)
     {
@@ -21,60 +22,55 @@ class StoreCountriesController extends Controller
 
     public function index()
     {
-        $store = request()->user()->admin->store;
-        $countries = $this->storeCountriesService->getStoreCountries($store);
+        $countries = $this->storeCountriesService->getStoreCountries(auth()->user()->admin->store);
 
-        return new MessageResponse('supported countries', ['countries' => $countries], 200);
+        return $this->responseSuccess('supported countries', ['countries' => $countries]);
     }
 
     public function store(StoreCountriesRequest $request)
     {
-        $store = request()->user()->admin->store;
         $data = $request->validated();
         $country = $this->findModel(Country::class, $data['country_id']);
-        $this->storeCountriesService->checkIfCountryExestsInStore($store, $country);
-        $this->storeCountriesService->createStoreCountry($store, $country, $data);
+        $this->storeCountriesService->checkIfCountryExestsInStore(auth()->user()->admin->store, $country);
+        $this->storeCountriesService->createStoreCountry(auth()->user()->admin->store, $country, $data);
 
 
-        return new MessageResponse('country created', statusCode: 200);
+        return $this->responseSuccess('country created');
     }
 
     public function setAsDefault($countryId)
     {
-        $store = request()->user()->admin->store;
         $country = $this->findModel(Country::class, $countryId);
-        $this->storeCountriesService->checkIfCountryNotExestsInStore($store, $country);
-        $this->storeCountriesService->checkIfCountryIsActivated($store->countries(), $countryId);
-        $this->storeCountriesService->SetDefaultCountry($store->countries(), $countryId);
-        $this->storeCountriesService->setDefaultStoreCurruncy($store,$country->currency_code);
-        return new MessageResponse('Country is been default', statusCode: 200);
+        $this->storeCountriesService->checkIfCountryNotExestsInStore(auth()->user()->admin->store, $country);
+        $this->storeCountriesService->checkIfCountryIsActivated(auth()->user()->admin->store->countries(), $countryId);
+        $this->storeCountriesService->SetDefaultCountry(auth()->user()->admin->store->countries(), $countryId);
+        $this->storeCountriesService->setDefaultStoreCurruncy(auth()->user()->admin->store,$country->currency_code);
+
+        return $this->responseSuccess('Country is been default');
     }
 
 
     public function destroy($countryId)
     {
-        $store = request()->user()->admin->store;
         $country = $this->findModel(Country::class, $countryId);
-        $this->storeCountriesService->checkIfCountryNotExestsInStore($store, $country);
-        $this->storeCountriesService->checkIfCountryIsDefault($store->countries(), $countryId);
-        
-        $store->countries()->detach($countryId);
+        $this->storeCountriesService->checkIfCountryNotExestsInStore(auth()->user()->admin->store, $country);
+        $this->storeCountriesService->checkIfCountryIsDefault(auth()->user()->admin->store->countries(), $countryId);
+        $this->store->countries()->detach($countryId);
 
-        return new MessageResponse('country deleted');
+        return $this->responseSuccess('country deleted');
     }
 
     public function toggleActivation($countryId)
     {
-        $store = request()->user()->admin->store;
         $country = $this->findModel(Country::class, $countryId);
-        $this->storeCountriesService->checkIfCountryNotExestsInStore($store, $country);
-        $this->storeCountriesService->checkIfCountryIsDefault($store->countries(), $countryId);
-
+        $this->storeCountriesService->checkIfCountryNotExestsInStore(auth()->user()->admin->store, $country);
+        $this->storeCountriesService->checkIfCountryIsDefault(auth()->user()->admin->store->countries(), $countryId);
         $storeCountry = StoreCountry::where('country_id', $countryId)->first();
+        
         $storeCountry->update([
             'is_active' => !$storeCountry->is_active
         ]);
 
-        return new MessageResponse('Country status updated.', statusCode: 200);
+        return $this->responseSuccess('Country status updated.');
     }
 }

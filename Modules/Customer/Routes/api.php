@@ -20,27 +20,24 @@ use Modules\Customer\Http\Controllers\ShoppingCartController;
 */
 
 Route::prefix('{storeLink}')->group(function () {
-    Route::post('/login', [AuthController::class, 'login'])->name('login');
-    Route::post('/register', [AuthController::class, 'register'])->name('register');
-    
-    
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register']);
+
+
     Route::middleware(['auth:sanctum'])->group(function () {
-        Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth:sanctum');
-        
-        
-        Route::get('/cart', [ShoppingCartController::class, 'getCartByCustomer']);
-        Route::post('/product/{product}/add-to-cart', [ShoppingCartController::class, 'addProductToCart']);
-        Route::post('/product/featured/{product}/add-to-cart', [ShoppingCartController::class, 'addFeaturedProductToCart']);
-        Route::delete('/cart/remove/{product}', [ShoppingCartController::class, 'removeProductFromCart']);
-        Route::put('/cart/update/{product}', [ShoppingCartController::class, 'updateProductQuantity']);
-        
+        Route::post('/logout', [AuthController::class, 'logout']);
+
+        Route::prefix('cart')->group(function () {
+            Route::get('/', [ShoppingCartController::class, 'getCartByCustomer']);
+            Route::post('product/{product}/add-to-cart', [ShoppingCartController::class, 'addProductToCart']);
+            Route::post('product/featured/{product}/add-to-cart', [ShoppingCartController::class, 'addFeaturedProductToCart']);
+            Route::delete('remove/{product}', [ShoppingCartController::class, 'removeProductFromCart']);
+            Route::put('update/{product}', [ShoppingCartController::class, 'updateProductQuantity']);
+        });
+
         Route::apiResource('locations', CustomerLocationsController::class);
 
 
         Route::post('/checkout', [CheckoutController::class, 'checkout']);
-
-        
     });
-
 });
-

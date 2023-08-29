@@ -2,6 +2,7 @@
 
 namespace Modules\Admin\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ProductRequest extends FormRequest
@@ -40,6 +41,17 @@ class ProductRequest extends FormRequest
             'options.*.values.*.additional_price' => 'numeric',
             'options.*.values.*.quantity'         => 'nullable|integer',
         ];
+    }
+
+    public function validateSkuIsUnique($store)
+    {
+        return $this->validate([
+            'sku' => [
+                Rule::unique('products', 'sku')->where(function ($query) use ($store) {
+                    return $query->where('store_id', $store->id);
+                }),
+            ],
+        ]);
     }
 
     /**

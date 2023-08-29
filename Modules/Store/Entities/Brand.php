@@ -2,8 +2,10 @@
 
 namespace Modules\Store\Entities;
 
+use App\Filters\BrandFilters;
 use App\Traits\HasUploads;
 use App\Traits\Searchable;
+use Essa\APIToolKit\Filters\Filterable;
 use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -11,10 +13,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Brand extends Model implements HasMedia
 {
-    use HasFactory, Searchable, InteractsWithMedia, HasUploads;
+    use HasFactory, Filterable, InteractsWithMedia, HasUploads;
 
-    protected $fillable = ['category_id', 'name','is_active'];
-    protected $searchable = ['name'];
+    protected $fillable = ['category_id', 'name', 'is_active'];
+
+    protected string $default_filters = BrandFilters::class;
+
     protected $uploadMedia = [
         'image',
     ];

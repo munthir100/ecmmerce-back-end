@@ -3,16 +3,17 @@
 namespace Modules\Shipping\Entities;
 
 use App\Traits\ModelsForStore;
-use App\Traits\Searchable;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Modules\Customer\Entities\Order;
+use App\Filters\CaptainFilters;
 use Modules\Store\Entities\Store;
+use Modules\Customer\Entities\Order;
+use Essa\APIToolKit\Filters\Filterable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Captain extends Model
 {
-    use HasFactory, SoftDeletes, Searchable,ModelsForStore;
+    use HasFactory, SoftDeletes,ModelsForStore,Filterable;
 
     protected $fillable = [
         'name',
@@ -23,7 +24,8 @@ class Captain extends Model
         'store_id',
         'is_active',
     ];
-    protected $searchable = ['name', 'cities.name'];
+    protected string $default_filters = CaptainFilters::class;
+
     function store()
     {
         return $this->belongsTo(Store::class);

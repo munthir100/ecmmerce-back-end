@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Modules\Store\Entities\Store;
 use App\Http\Controllers\Controller;
 use App\Http\Responses\MessageResponse;
+use Essa\APIToolKit\Api\ApiResponse;
 use Modules\Customer\Http\Requests\LocationRequest;
 use Modules\Customer\Http\Requests\UpdateLocationRequest;
 use Modules\Customer\Transformers\LocationResource;
@@ -14,12 +15,13 @@ use Modules\Shipping\Entities\Location;
 
 class CustomerLocationsController extends Controller
 {
+    use ApiResponse;
     public function index(Store $store)
     {
         $customer = auth()->user()->customer;
         $locations = $customer->locations;
 
-        return new MessageResponse(data: LocationResource::collection($locations));
+        return $this->responseSuccess(data: LocationResource::collection($locations));
     }
 
     public function store(LocationRequest $request, Store $store)
@@ -29,10 +31,9 @@ class CustomerLocationsController extends Controller
         $customer = $request->user()->customer;
         $location = $customer->locations()->create($data);
 
-        return new MessageResponse(
-            message: 'Location created successfully',
+        return $this->responseSuccess(
+            'Location created successfully',
             data: new LocationResource($location),
-            statusCode: 200
         );
     }
 
@@ -40,12 +41,11 @@ class CustomerLocationsController extends Controller
     {
         $customer = auth()->user()->customer;
         if ($location->customer_id !== $customer->id) {
-            return response()->json('Unauthorized', 401);
+            return $this->responseUnAuthorized('Unauthorized');
         }
 
-        return new MessageResponse(
+        return $this->responseSuccess(
             data: new LocationResource($location),
-            statusCode: 200
         );
     }
 
@@ -55,9 +55,8 @@ class CustomerLocationsController extends Controller
 
         $location->update($data);
 
-        return new MessageResponse(
+        return $this->responseSuccess(
             data: new LocationResource($location),
-            statusCode: 200
         );
     }
 
@@ -65,9 +64,8 @@ class CustomerLocationsController extends Controller
     {
         $location->delete();
 
-        return new MessageResponse(
-            message: 'Location deleted successfully',
-            statusCode: 200
+        return $this->responseSuccess(
+            'Location deleted successfully',
         );
     }
 }

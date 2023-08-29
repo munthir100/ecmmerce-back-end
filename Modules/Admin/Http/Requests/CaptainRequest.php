@@ -2,6 +2,7 @@
 
 namespace Modules\Admin\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CaptainRequest extends FormRequest
@@ -24,8 +25,22 @@ class CaptainRequest extends FormRequest
             'expected_time_shipping' => 'required|integer',
             'is_active' => 'boolean',
             'city_id' => 'required|array',
-            'city_id.*' => 'exists:cities,id',
+            'city_id.*' => 'distinct',
         ];
+    }
+
+    public function validateStoreCity($store)
+    {
+        return $this->validate([
+            'city_id' => [
+                'required',
+                'array',
+                Rule::exists('cities', 'id')->where(function ($query) use ($store) {
+                    $query->whereIn('country_id', $store->countries->pluck('id'));
+                }),
+            ],
+            'city_id.*' => 'distinct',
+        ]);
     }
 
     /**

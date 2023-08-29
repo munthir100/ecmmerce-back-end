@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\Admin\Http\Requests;
+namespace Modules\Customer\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateColorsRequest extends FormRequest
+class CustomerRegisterRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -14,8 +14,10 @@ class UpdateColorsRequest extends FormRequest
     public function rules()
     {
         return [
-            'button_color' => 'required|string',
-            'text_color' => 'required|string',
+            'name' => 'required',
+            'email' => 'required',
+            'phone' => ['required'],
+            'password' => 'required',
         ];
     }
 

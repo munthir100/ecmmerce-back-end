@@ -7,24 +7,20 @@ use Illuminate\Routing\Controller;
 use Modules\Customer\Entities\Order;
 use App\Http\Responses\MessageResponse;
 use App\Traits\ModelsForAdmin;
-use Illuminate\Contracts\Support\Renderable;
+use Essa\APIToolKit\Api\ApiResponse;
 use Modules\Admin\Transformers\OrderResource;
 use Modules\Admin\Transformers\OrderWithDetailsResource;
 
 class OrderController extends Controller
 {
-    use ModelsForAdmin;
+    use ModelsForAdmin, ApiResponse;
+
     public function index()
     {
-        $term = request()->get('term', '');
-        $perPage = request()->get('perPage', 25);
-        $adminId = request()->user()->admin->id;
-        $orders = Order::search($term)->ForAdmin($adminId)
-            ->with('customer.user', 'captain')->paginate($perPage);
+        $orders = Order::useFilters()->ForAdmin(auth()->user()->admin->id)->with('customer.user', 'captain')->dynamicPaginate();
 
-        return new MessageResponse(
+        return $this->responseSuccess(
             data: ['orders' => OrderResource::collection($orders)],
-            statusCode: 200
         );
     }
 
@@ -35,17 +31,16 @@ class OrderController extends Controller
 
     public function show($orderId)
     {
-        $order = Order::with([
+        $order = $this->findAdminModel(auth()->user()->admin, Order::class, $orderId)->with([
             'customer.user',
             'captain:id,name,shipping_cost',
             'location:id,name,phone,address_type,lang,lat',
             'items',
             'items.product',
-        ])->find($orderId);
+        ]);
 
-        return new MessageResponse(
+        return $this->responseSuccess(
             data: ['order' => new OrderWithDetailsResource($order)],
-            statusCode: 200
         );
     }
 
@@ -57,10 +52,10 @@ class OrderController extends Controller
 
     public function destroy($orderId)
     {
-        $order = $this->findAdminModel(Order::class, $orderId);
-
+        $order = $this->findAdminModel(auth()->user()->admin, Order::class, $orderId);
         $order->delete();
-        return new MessageResponse('order deleted', statusCode: 200);
+
+        return $this->responseSuccess('order deleted');
     }
 
     public function changeStatus($orderId, Request $request)
@@ -68,12 +63,12 @@ class OrderController extends Controller
         $data = $request->validate([
             'status_id' => 'required|exists:statuses,id',
         ]);
-        $order = $this->findAdminModel(Order::class, $orderId);
+        $order = $this->findAdminModel(auth()->user()->admin, Order::class, $orderId);
 
         $order->update([
             'status_id' => $data['status_id']
         ]);
 
-        return new MessageResponse('status updated', new OrderWithDetailsResource($order), 200);
+        return $this->responseSuccess('status updated', new OrderWithDetailsResource($order));
     }
 }

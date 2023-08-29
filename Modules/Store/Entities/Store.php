@@ -6,7 +6,7 @@ use App\Traits\HasUploads;
 use Modules\Admin\Entities\Admin;
 use Spatie\MediaLibrary\HasMedia;
 use Modules\Admin\Entities\Coupon;
-use Modules\Admin\Entities\Seller;
+use willvincent\Rateable\Rateable;
 use Modules\Shipping\Entities\City;
 use Modules\Shipping\Entities\Captain;
 use Modules\Shipping\Entities\Country;
@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Store extends Model implements HasMedia
 {
-    use HasFactory, InteractsWithMedia, HasUploads;
+    use HasFactory, InteractsWithMedia, HasUploads, Rateable;
 
     protected $fillable = [
         'admin_id',
@@ -28,6 +28,7 @@ class Store extends Model implements HasMedia
         'link',
         'default_currency',
         'status_id',
+        'is_active',
         'city_id',
         'commercial_registration_no',
         'language_id',
@@ -62,6 +63,10 @@ class Store extends Model implements HasMedia
     function products()
     {
         return $this->hasMany(Product::class);
+    }
+    function brands()
+    {
+        return $this->hasManyThrough(Brand::class, Category::class);
     }
     public function coupons()
     {

@@ -2,19 +2,21 @@
 
 namespace Modules\Customer\Entities;
 
-use App\Traits\Searchable;
+use App\Filters\OrderFilters;
+use App\Filters\ProductFilters;
 use Modules\Store\Entities\Store;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Shipping\Entities\Captain;
+use Essa\APIToolKit\Filters\Filterable;
+use Illuminate\Database\Eloquent\Model;
 use Modules\Shipping\Entities\Location;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Order extends Model
 {
-    use HasFactory,SoftDeletes,Searchable;
+    use HasFactory,SoftDeletes,Filterable;
 
-    protected $searchable = ['items.product.name'];
+    protected string $default_filters = OrderFilters::class;
     
     protected $fillable = [
         'customer_id',

@@ -8,23 +8,23 @@ use Modules\Admin\Entities\Coupon;
 use App\Http\Controllers\Controller;
 use App\Http\Responses\MessageResponse;
 use App\Actions\ValidateCouponPromocode;
+use Essa\APIToolKit\Api\ApiResponse;
 use Modules\Admin\Http\Requests\CouponRequest;
 use Modules\Admin\Transformers\CouponResource;
 use Modules\Admin\Http\Requests\UpdateCouponRequest;
 
 class CouponController extends Controller
 {
-    use ModelsForAdmin;
+    use ModelsForAdmin, ApiResponse;
+
     public function index()
     {
-        $term = request()->get('term', '');
-        $perPage = request()->get('perPage', 25);
-        $coupons = $this->getAdminModels(Coupon::class, $term, $perPage);
+        $coupons = Coupon::useFilters()->ForAdmin(auth()->user()->admin->id)->dynamicPaginate();
 
         return new MessageResponse('coupons', CouponResource::collection($coupons));
     }
 
-    public function store(CouponRequest $request,ValidateCouponPromocode $action)
+    public function store(CouponRequest $request, ValidateCouponPromocode $action)
     {
         $validatedData = $request->validated();
         $store = $request->user()->admin->store;
@@ -32,32 +32,32 @@ class CouponController extends Controller
         $validatedData['store_id'] = $store->id;
         $coupon = Coupon::create($validatedData);
 
-        return new CouponResource($coupon);
+        return $this->responseSuccess('coupon created',new CouponResource($coupon));
     }
 
 
     public function show($couponId)
     {
-        $coupon = $this->findAdminModel(Coupon::class, $couponId);
+        $coupon = $this->findAdminModel(auth()->user()->admin,Coupon::class, $couponId);
+        
         return new CouponResource($coupon);
     }
 
-    public function update(UpdateCouponRequest $request,$couponId ,ValidateCouponPromocode $action)
+    public function update(UpdateCouponRequest $request, $couponId, ValidateCouponPromocode $action)
     {
-        $coupon = $this->findAdminModel(Coupon::class, $couponId);
+        $coupon = $this->findAdminModel(auth()->user()->admin,Coupon::class, $couponId);
         $store = $request->user()->admin->store;
-        $action->validateExestingPromocode($couponId,$request->promocode, $store);
+        $action->validateExestingPromocode($couponId, $request->promocode, $store);
         $coupon->update($request->validated());
-        return new CouponResource($coupon);
+
+        return $this->responseSuccess('coupon updated',new CouponResource($coupon));
     }
 
     public function destroy($couponId)
     {
-        $coupon = $this->findAdminModel(Coupon::class, $couponId);
+        $coupon = $this->findAdminModel(auth()->user()->admin,Coupon::class, $couponId);
         $coupon->delete();
 
-        return response()->json(['message' => 'Coupon deleted']);
+        return $this->responseSuccess('coupon deleted');
     }
-
-    
 }

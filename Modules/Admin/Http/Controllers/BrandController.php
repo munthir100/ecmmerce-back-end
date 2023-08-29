@@ -2,28 +2,23 @@
 
 namespace Modules\Admin\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Traits\ModelsForAdmin;
 use Modules\Store\Entities\Brand;
 use Illuminate\Routing\Controller;
-use App\Traits\ModelsForAdmin;
-use App\Http\Responses\MessageResponse;
-use Illuminate\Contracts\Support\Renderable;
+use Essa\APIToolKit\Api\ApiResponse;
 use Modules\Admin\Http\Requests\BrandRequest;
 use Modules\Admin\Transformers\BrandResource;
 use Modules\Admin\Http\Requests\UpdateBrandRequest;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class BrandController extends Controller
 {
-    use ModelsForAdmin;
+    use ModelsForAdmin, ApiResponse;
 
     public function index()
     {
-        $term = request()->get('term', '');
-        $perPage = request()->get('perPage', 25);
-        $brands = $this->getAdminModels(Brand::class, $term, $perPage);
+        $brands = Brand::useFilters()->forAdmin(auth()->user()->admin->id)->dynamicPaginate();
 
-        return new MessageResponse(
+        return $this->responseSuccess(
             data: ['brands' => BrandResource::collection($brands)],
         );
     }
@@ -34,53 +29,42 @@ class BrandController extends Controller
         $brand = Brand::create($data);
         $brand->uploadMedia();
 
-        return new MessageResponse(
-            message: 'brand created successfully',
-            data: ['brand' => new BrandResource($brand)]
+        return $this->responseCreated(
+            'brand created successfully',
+            new BrandResource($brand)
         );
     }
 
     public function show($brandId)
     {
-        $brand = $this->findAdminModel(Brand::class, $brandId);
+        $brand = $this->findAdminModel(auth()->user()->admin, Brand::class, $brandId);
 
-        return new MessageResponse(
-            data: ['brand' => new BrandResource($brand)]
+        return $this->responseSuccess(
+            data: new BrandResource($brand)
         );
     }
 
     public function update(UpdateBrandRequest $request, $brandId)
     {
-        $brand = $this->findAdminModel(Brand::class, $brandId);
+        $brand = $this->findAdminModel(auth()->user()->admin, Brand::class, $brandId);
         if ($request->has('image')) {
             $brand->clearMediaCollection('image');
             $brand->uploadMedia();
         }
         $brand->update($request->validated());
 
-        return new MessageResponse(
-            message: 'brand updated',
-            data: ['brand' => new BrandResource($brand)],
+        return $this->responseSuccess(
+            'brand updated',
+            new BrandResource($brand),
         );
     }
 
     public function destroy($brandId)
     {
-        $brand = $this->findAdminModel(Brand::class, $brandId);
+        $brand = $this->findAdminModel(auth()->user()->admin, Brand::class, $brandId);
         $brand->delete();
 
-        return new MessageResponse(
-            message: 'brand deleted',
-            data: ['brand' => new BrandResource($brand)],
-        );
+        return $this->responseSuccess('brand deleted');
     }
 
-    private function findBrandOrFail($brandId)
-    {
-        try {
-            return Brand::forAdmin(auth()->id())->findOrFail($brandId);
-        } catch (ModelNotFoundException $e) {
-            abort(response()->json(['message' => 'Brand not found'], 404));
-        }
-    }
 }

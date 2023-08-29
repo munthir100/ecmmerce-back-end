@@ -2,7 +2,11 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Modules\Store\Http\Controllers\StoreBrandController;
+use Modules\Store\Http\Controllers\StoreCaptainController;
+use Modules\Store\Http\Controllers\StoreCategoryController;
 use Modules\Store\Http\Controllers\StoreController;
+use Modules\Store\Http\Controllers\StoreProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,18 +20,21 @@ use Modules\Store\Http\Controllers\StoreController;
 */
 
 Route::prefix('{storeLink}')->middleware('active_store')->group(function () {
-    Route::get('/products', [StoreController::class, 'products']);
-    Route::get('/products/featured', [StoreController::class, 'GetFeaturedProducts']);
-    Route::get('/categories', [StoreController::class, 'categories']);
-    Route::get('/products/{category}', [StoreController::class, 'categorizedProducts']);
 
-    Route::get('/brands', [StoreController::class, 'brands']);
-    Route::get('/captains', [StoreController::class, 'captains']);
-    Route::get('/product/{productId}/details', [StoreController::class, 'productDetails']);
+    Route::get('/categories', [StoreCategoryController::class, 'categories']);
 
-    
-    Route::post('/add-location', [StoreController::class,'addLocation']);
-    Route::post('/delete-location', [StoreController::class,'deleteLocation']);
+    Route::prefix('products')->group(function () {
+        Route::get('/', [StoreProductController::class, 'products']);
+        Route::get('featured', [StoreProductController::class, 'featuredProducts']);
+        Route::get('category/{category}', [StoreProductController::class, 'categorizedProducts']);
+        Route::get('details/{productId}', [StoreProductController::class, 'productDetails']);
+        Route::post('rate/{productId}', [StoreProductController::class, 'rateProduct']);
+    });
 
+    Route::get('/brands', [StoreBrandController::class, 'brands']);
 
+    Route::get('/captains', [StoreCaptainController::class, 'captains']);
+
+    Route::get('ratings', [StoreController::class, 'ratings']);
+    Route::post('rate', [StoreController::class, 'rate']);
 });

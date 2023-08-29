@@ -65,7 +65,7 @@ class StoreCountriesService
         $isDefault =  $countries->where('countries.id', $countryId)
             ->where('store_countries.is_default', true)
             ->count() > 0;
-        abort_if($isDefault, response()->json('can not de activate default country'));
+        abort_if($isDefault, response()->json('can not de activate or delete default country'));
 
         return true;
     }

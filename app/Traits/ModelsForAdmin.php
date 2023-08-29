@@ -5,15 +5,8 @@ namespace App\Traits;
 
 trait ModelsForAdmin
 {
-    private function getAdminModels($modelClass, $term, $perPage)
+    private function findAdminModel($admin,$modelClass, $modelId)
     {
-        $admin = auth()->user()->admin;
-        return $modelClass::search($term)->forAdmin($admin->id)->paginate($perPage);
-    }
-
-    private function findAdminModel($modelClass, $modelId)
-    {
-        $admin = auth()->user()->admin;
         $model = $modelClass::forAdmin($admin->id)->find($modelId);
 
         if (!$model) {

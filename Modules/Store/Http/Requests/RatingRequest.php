@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\Admin\Http\Requests;
+namespace Modules\Store\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateStoreStatusRequest extends FormRequest
+class RatingRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -14,8 +14,7 @@ class UpdateStoreStatusRequest extends FormRequest
     public function rules()
     {
         return [
-            'is_active' => 'required|boolean',
-            'maintenance_message' => ['required_if:is_active,true', 'string', 'max:255']
+            'rating' => 'required|numeric|between:1,5'
         ];
     }
 

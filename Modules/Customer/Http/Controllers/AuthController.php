@@ -8,11 +8,13 @@ use Modules\Store\Entities\Store;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Responses\MessageResponse;
+use Essa\APIToolKit\Api\ApiResponse;
 use Modules\Customer\Entities\Customer;
-use Illuminate\Contracts\Support\Renderable;
+use Modules\Customer\Http\Requests\CustomerRegisterRequest;
 
 class AuthController extends Controller
 {
+    use ApiResponse;
     function login(Request $request, Store $store)
     {
         $data = $request->validate([
@@ -28,25 +30,20 @@ class AuthController extends Controller
                 ->where('user_type_id', 2);
         })->first();
         if (!$user || !Hash::check($password, $user->password)) {
-            return new MessageResponse(message: 'invaild credantials');
+            return $this->responseConflictError('invaild credantials');
         }
         $customer = $user->customer;
         if (!$customer || !$store->customers()->exists()) {
-            return new MessageResponse('Customer does not have an account in this store');
+            return $this->responseConflictError('Customer does not have an account in this store');
         }
 
         $token = $user->createToken('token')->plainTextToken;
-        return new MessageResponse('Login successful', ['token' => $token], 200);
+        return $this->responseSuccess('Login successful', ['token' => $token], 200);
     }
 
-    function register(Request $request, Store $store)
+    function register(CustomerRegisterRequest $request, Store $store)
     {
-        $data = $request->validate([
-            'name' => 'required',
-            'email' => 'required',
-            'phone' => ['required'],
-            'password' => 'required',
-        ]);
+        $data = $request->validated();
         $data['user_type_id'] = 2;
         $data['password'] = Hash::make($data['password']);
 
@@ -57,25 +54,23 @@ class AuthController extends Controller
                 ->orWhere('phone', $phone);
         })->exists();
         if ($exists) {
-            return new MessageResponse('the email or phone is already exist');
+            return $this->responseConflictError('the email or phone is already exist');
         }
         $user = User::create($data);
-        $customer = Customer::create([
-            'user_id' => $user->id,
+        $user->customer()->create([
             'store_id' => $store->id
         ]);
         $token = $user->createToken('token')->plainTextToken;
 
-        return new MessageResponse(
+        return $this->responseSuccess(
             message: 'register successfull',
             data: ['token' => $token],
-            statusCode: 200
         );
     }
 
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
-        return new MessageResponse('Successfully logged out');
+        return $this->responseSuccess('Successfully logged out');
     }
 }

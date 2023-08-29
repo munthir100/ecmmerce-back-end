@@ -2,7 +2,9 @@
 
 namespace Modules\Admin\Entities;
 
+use App\Filters\SellerFilters;
 use App\Traits\Searchable;
+use Essa\APIToolKit\Filters\Filterable;
 use Modules\Acl\Entities\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,9 +12,9 @@ use Modules\Store\Entities\Store;
 
 class Seller extends Model
 {
-    use HasFactory,Searchable;
+    use HasFactory,Filterable;
 
-    protected $searchable = ['user.name', 'user.email'];
+    protected string $default_filters = SellerFilters::class;
     
     protected $fillable = ['user_id','admin_id'];
 

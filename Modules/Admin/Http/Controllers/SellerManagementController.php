@@ -24,9 +24,7 @@ class SellerManagementController extends Controller
 
     public function index()
     {
-        $term = request()->get('term', '');
-        $perPage = request()->get('perPage', 25);
-        $sellers = $this->getAdminModels(Seller::class, $term, $perPage);
+        $sellers = Seller::useFilters()->forAdmin(auth()->user()->admin->id)->dynamicPaginate();
 
         return new MessageResponse('sellers', SellerResource::collection($sellers), 200);
     }

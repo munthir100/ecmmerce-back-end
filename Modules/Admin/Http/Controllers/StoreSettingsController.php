@@ -6,66 +6,57 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Routing\Controller;
 use App\Http\Responses\MessageResponse;
+use Essa\APIToolKit\Api\ApiResponse;
 use Modules\Admin\Transformers\StoreResource;
-use Modules\Admin\Http\Requests\UpdateStoreLogoRequest;
-use Modules\Shipping\Entities\City;
+use Modules\Admin\Http\Requests\UpdateStoreRequest;
 
 class StoreSettingsController extends Controller
 {
-    function updateBasicInformation(Request $request)
+    use ApiResponse;
+    function updateBasicInformation(UpdateStoreRequest $request)
     {
+        $data = $request->validated();
         $store = $this->getStoreFromRequestUser();
-
-        $data = $request->validate([
-            'name' => 'required|string',
-            'link' => "required|string|unique:stores,link,{$store->id}",
-        ]);
-
+        $data += $request->validateStoreLink($store);
         $store->update($data);
 
-        return new MessageResponse(
-            'store data updated',
-            new StoreResource($store),
-            200
-        );
+        return $this->responseSuccess('store data updated', new StoreResource($store));
     }
 
-    function updateStoreLogo(Request $request)
+    function UpdateStoreLogo(UpdateStoreRequest $request)
     {
-        $request->validate(['store_logo' => 'image|required']);
+        $request->validated();
         $store = $this->getStoreFromRequestUser();
 
-        $store->clearMediaCollection();
-        $store->uploadMedia('store_logo');
+        if ($request->has('store_logo')) {
+            $store->clearMediaCollection('store_logo');
+            $store->addMediaFromRequest('store_logo')->toMediaCollection('store_logo');
+        }
 
-        return new MessageResponse('logo updated', new StoreResource($store), 200);
+        return $this->responseSuccess('store logo updated', new StoreResource($store));
+    }
+    function UpdateStoreIcon(UpdateStoreRequest $request)
+    {
+        $request->validated();
+        $store = $this->getStoreFromRequestUser();
+
+        if ($request->has('store_icon')) {
+            $store->clearMediaCollection('store_icon');
+            $store->addMediaFromRequest('store_icon')->toMediaCollection('store_icon');
+        }
+
+        return $this->responseSuccess('store icon updated', new StoreResource($store));
     }
 
-    function UpdateStoreIcon(Request $request)
-    {
-        $request->validate(['store_icon' => 'image|required']);
-        $store = $this->getStoreFromRequestUser();
-
-        $store->clearMediaCollection();
-        $store->uploadMedia('store_icon');
-
-        return new MessageResponse('icon updated', new StoreResource($store), 200);
-    }
-
-    function UpdateStoreCity(Request $request)
+    function UpdateStoreCity(UpdateStoreRequest $request)
     {
         $store = $this->getStoreFromRequestUser();
-        $data = $request->validate([
-            'city_id' => [
-                'required',
-                Rule::exists('cities', 'id')->whereIn('country_id', $store->countries->pluck('id'))
-            ]
-        ]);
+        $data = $request->validateStoreCity($store);
         $store->update($data);
 
-        return new MessageResponse('store city updated', ['city' => $store->city], 200);
+        return $this->responseSuccess('store city updated', new StoreResource($store));
     }
-
+    
     private function getStoreFromRequestUser()
     {
         return request()->user()->admin->store;

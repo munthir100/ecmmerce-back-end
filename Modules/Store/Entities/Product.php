@@ -4,7 +4,10 @@ namespace Modules\Store\Entities;
 
 use App\Traits\HasUploads;
 use App\Traits\Searchable;
+use App\Filters\ProductFilters;
 use Spatie\MediaLibrary\HasMedia;
+use willvincent\Rateable\Rateable;
+use Essa\APIToolKit\Filters\Filterable;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Admin\Entities\ProductOption;
 use Modules\Customer\Entities\ShoppingCart;
@@ -14,7 +17,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends Model  implements HasMedia
 {
-    use HasFactory, Searchable, InteractsWithMedia, HasUploads;
+    use HasFactory, Filterable, InteractsWithMedia, HasUploads,Rateable;
 
     protected $fillable = [
         'category_id',
@@ -31,8 +34,8 @@ class Product extends Model  implements HasMedia
         'free_shipping',
         'is_active',
     ];
+    protected string $default_filters = ProductFilters::class;
 
-    protected $searchable = ['name', 'short_description'];
     protected $uploadMedia = [
         'main_image',
         'sub_images',

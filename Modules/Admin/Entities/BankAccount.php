@@ -2,12 +2,14 @@
 
 namespace Modules\Admin\Entities;
 
+use App\Filters\BankAccountsFilters;
+use Essa\APIToolKit\Filters\Filterable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class BankAccount extends Model
 {
-    use HasFactory;
+    use HasFactory,Filterable;
 
     protected $fillable = [
         'account_number',
@@ -17,6 +19,7 @@ class BankAccount extends Model
         'admin_id',
         'bank_id',
     ];
+    protected string $default_filters = BankAccountsFilters::class;
 
     function bank()
     {

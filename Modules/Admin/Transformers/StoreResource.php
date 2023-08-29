@@ -20,6 +20,7 @@ class StoreResource extends JsonResource
             'link' => $this->link,
             'default_currency' => $this->default_currency,
             'language_id' => $this->language_id,
+            'is_active' => $this->is_active,
             'store_theme_id' => $this->store_theme_id, // for store module
             'commercial_registration_no' => $this->commercial_registration_no, // for store module
             'button_color' => $this->button_color, // for store module

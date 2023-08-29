@@ -2,16 +2,19 @@
 
 namespace Modules\Admin\Http\Controllers\Settings;
 
-use App\Actions\ValidateAdminProfile;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Hash;
+use App\Actions\ValidateAdminProfile;
 use App\Http\Responses\MessageResponse;
-use Modules\Admin\Http\Requests\Settings\Profile\UpdatePasswordRequest;
+use Essa\APIToolKit\Api\ApiResponse;
 use Modules\Admin\Transformers\UserResource;
+use Modules\Admin\Http\Requests\Settings\Profile\UpdatePasswordRequest;
 
 class ProfileController extends Controller
 {
+    use ApiResponse;
     public function index()
     {
         $user = request()->user();
@@ -21,31 +24,62 @@ class ProfileController extends Controller
             'phone' => $user->phone,
         ];
 
-        return new MessageResponse(data: $userData, statusCode: 200);
+        return $this->responseSuccess(data: $userData);
     }
 
 
-    public function update(Request $request, ValidateAdminProfile $profileService)
+    public function update(Request $request)
     {
         $user = $request->user();
 
-        $data = $profileService->validateProfileData($user);
-
+        $data = $this->validateProfileData($user);
+        return $data;
         $user->update($data);
 
-        return new MessageResponse('user data updated', new UserResource($user), 200);
+        return $this->responseSuccess('user data updated', new UserResource($user), 200);
     }
 
-    public function updatePassword(UpdatePasswordRequest $request)
+    public function changePassword(UpdatePasswordRequest $request)
     {
         $user = $request->user();
         $data = $request->validated();
         $vaildPassword = Hash::check($data['password'], $user->password);
+
         if (!$vaildPassword) {
-            return new MessageResponse('invaild password', statusCode: 404);
+            return $this->responseConflictError('invaild password');
         }
+        
         $user->update(['password' => Hash::make($data['new_password'])]);
 
-        return new MessageResponse('password updated', new UserResource($user), 200);
+        return $this->responseSuccess('password updated', new UserResource($user), 200);
     }
+
+
+
+
+    function validateProfileData($user)
+        {
+            return request()->validate([
+                'name' => 'required|string|max:255',
+                'email' => [
+                    'required',
+                    'string',
+                    'email',
+                    Rule::unique('users', 'email')->where(function ($query) use ($user) {
+                        return $query->where('user_type_id', 1)
+                            ->where('id', '!=', $user->id);
+                            // ->whereNull('deleted_at');
+                    }),
+                ],
+                'phone' => [
+                    'required',
+                    'string',
+                    Rule::unique('users', 'phone')->where(function ($query) use ($user) {
+                        return $query->where('user_type_id', 1)
+                            ->where('id', '!=', $user->id);
+                            // ->whereNull('deleted_at');
+                    }),
+                ],
+            ]);
+        }
 }

@@ -31,7 +31,6 @@ class ProductWithOptionsResource extends JsonResource
             'is_active' => $this->is_active,
             'product_images' => $this->resource->retrieveMedia(),
             'options' => ProductOptionResource::collection($this->options),
-
         ];
     }
 }
