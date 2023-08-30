@@ -18,13 +18,14 @@ return new class extends Migration
             $table->string('icon');
             $table->string('title');
             $table->string('subtitle');
-
+            $table->timestamps();
+            $table->softDeletes();
+            
             $table->foreignId('store_feature_id')
                 ->references('id')
                 ->on('store_features')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->timestamps();
         });
     }
 

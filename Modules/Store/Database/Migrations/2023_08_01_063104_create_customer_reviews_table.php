@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('customer_reviews', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->softDeletes();
             $table->foreignId('customer_id')
                 ->references('id')
                 ->on('customers')

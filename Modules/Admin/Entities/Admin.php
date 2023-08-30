@@ -5,11 +5,12 @@ namespace Modules\Admin\Entities;
 use Modules\Acl\Entities\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Store\Entities\Store;
 
 class Admin extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
 
     protected $fillable = ['user_id'];
 

@@ -10,13 +10,14 @@ use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Category extends Model  implements HasMedia
 {
-    use HasFactory, Filterable, InteractsWithMedia, HasUploads;
+    use HasFactory, Filterable, InteractsWithMedia, HasUploads, SoftDeletes;
 
     protected $fillable = ['store_id', 'name', 'parent_id', 'is_active'];
-    
+
     protected string $default_filters = CategoryFilters::class;
 
     protected $uploadMedia = [

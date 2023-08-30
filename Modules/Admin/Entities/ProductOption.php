@@ -6,10 +6,11 @@ use Modules\Store\Entities\Product;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Admin\Entities\ProductOptionValue;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductOption extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
 
     protected $fillable = ['name','product_id'];
 

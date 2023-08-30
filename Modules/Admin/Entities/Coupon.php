@@ -9,10 +9,11 @@ use Modules\Store\Entities\Store;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Customer\Entities\CouponUsage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Coupon extends Model
 {
-    use HasFactory,Filterable,ModelsForStore;
+    use HasFactory,Filterable,ModelsForStore,SoftDeletes;
     
     protected string $default_filters = CouponFilters::class;
 

@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('store_countries', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->softDeletes();
             
             $table->boolean('is_active')->default(true);
 

@@ -26,7 +26,8 @@ return new class extends Migration
             $table->string('google_play')->nullable();
             $table->string('app_store')->nullable();
             $table->timestamps();
-
+            $table->softDeletes();
+            
             $table->foreignId('store_id')
                 ->references('id')
                 ->on('stores')

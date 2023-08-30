@@ -17,12 +17,14 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('customizable_id');
             $table->string('customizable_type');
+            $table->timestamps();
+            $table->softDeletes();
+            
             $table->foreignId('store_id')
                 ->references('id')
                 ->on('stores')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->timestamps();
         });
     }
 

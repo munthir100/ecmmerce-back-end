@@ -10,13 +10,14 @@ use Modules\Customer\Entities\Customer;
 use Illuminate\Notifications\Notifiable;
 use Modules\Acl\Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Modules\Admin\Entities\Seller;
 use Spatie\Permission\Traits\HasPermissions;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles,HasPermissions;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles,HasPermissions,SoftDeletes;
 
     protected static function newFactory()
     {

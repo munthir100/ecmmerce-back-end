@@ -10,10 +10,11 @@ use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Brand extends Model implements HasMedia
 {
-    use HasFactory, Filterable, InteractsWithMedia, HasUploads;
+    use HasFactory, Filterable, InteractsWithMedia, HasUploads,SoftDeletes;
 
     protected $fillable = ['category_id', 'name', 'is_active'];
 

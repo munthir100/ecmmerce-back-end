@@ -18,7 +18,8 @@ return new class extends Migration
             $table->string('setting_name');
             $table->string('setting_value');
             $table->timestamps();
-
+            $table->softDeletes();
+            
             $table->foreignId('store_id')
                 ->references('id')
                 ->on('stores')

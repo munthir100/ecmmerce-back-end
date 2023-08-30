@@ -21,7 +21,8 @@ return new class extends Migration
             $table->string('account_number');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
-
+            $table->softDeletes();
+            
             $table->foreignId('admin_id')
             ->references('id')
             ->on('admins')

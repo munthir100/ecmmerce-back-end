@@ -3,7 +3,6 @@
 namespace Modules\Store\Entities;
 
 use App\Traits\HasUploads;
-use App\Traits\Searchable;
 use App\Filters\ProductFilters;
 use Spatie\MediaLibrary\HasMedia;
 use willvincent\Rateable\Rateable;
@@ -14,10 +13,11 @@ use Modules\Customer\Entities\ShoppingCart;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model  implements HasMedia
 {
-    use HasFactory, Filterable, InteractsWithMedia, HasUploads,Rateable;
+    use HasFactory, Filterable, InteractsWithMedia, HasUploads, Rateable, SoftDeletes;
 
     protected $fillable = [
         'category_id',

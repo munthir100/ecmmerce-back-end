@@ -16,10 +16,11 @@ use Modules\Store\Entities\SocialMediaLink;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Modules\Store\Entities\AdditionalSetting;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Store extends Model implements HasMedia
 {
-    use HasFactory, InteractsWithMedia, HasUploads, Rateable;
+    use HasFactory, InteractsWithMedia, HasUploads, Rateable,SoftDeletes;
 
     protected $fillable = [
         'admin_id',

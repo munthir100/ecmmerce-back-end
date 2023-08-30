@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('store_features', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-
+            $table->softDeletes();
+            
             $table->foreignId('store_id')
                 ->references('id')
                 ->on('stores')

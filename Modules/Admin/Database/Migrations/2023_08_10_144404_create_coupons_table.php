@@ -25,6 +25,7 @@ return new class extends Migration
             $table->unsignedInteger('usage_per_customer');
             $table->unsignedInteger('used_times')->default(0);
             $table->timestamps();
+            $table->softDeletes();
             $table->boolean('is_active')->default(true);
 
             $table->foreignId('store_id')

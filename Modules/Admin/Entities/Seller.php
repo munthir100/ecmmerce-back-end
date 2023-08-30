@@ -8,11 +8,12 @@ use Essa\APIToolKit\Filters\Filterable;
 use Modules\Acl\Entities\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Store\Entities\Store;
 
 class Seller extends Model
 {
-    use HasFactory,Filterable;
+    use HasFactory,Filterable,SoftDeletes;
 
     protected string $default_filters = SellerFilters::class;
     

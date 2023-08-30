@@ -20,7 +20,8 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
-
+            $table->softDeletes();
+            
             $table->foreignId('user_type_id')
                 ->nullable()
                 ->references('id')

@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('sellers', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-
+            $table->softDeletes();
+            
             $table->foreignId('user_id')
                 ->references('id')
                 ->on('users')

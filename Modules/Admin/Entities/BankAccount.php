@@ -6,10 +6,11 @@ use App\Filters\BankAccountsFilters;
 use Essa\APIToolKit\Filters\Filterable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BankAccount extends Model
 {
-    use HasFactory,Filterable;
+    use HasFactory,Filterable,SoftDeletes;
 
     protected $fillable = [
         'account_number',
