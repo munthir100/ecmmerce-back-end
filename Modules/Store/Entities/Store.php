@@ -14,13 +14,25 @@ use Illuminate\Database\Eloquent\Model;
 use Modules\Customer\Entities\Customer;
 use Modules\Store\Entities\SocialMediaLink;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Modules\Store\Entities\AdditionalSetting;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Modules\Store\Entities\AdditionalSetting;
+use Dyrynda\Database\Support\CascadeSoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Store extends Model implements HasMedia
 {
-    use HasFactory, InteractsWithMedia, HasUploads, Rateable,SoftDeletes;
+    use HasFactory, InteractsWithMedia, HasUploads, Rateable, SoftDeletes, CascadeSoftDeletes;
+
+    protected $cascadeDeletes = [
+        'customers',
+        'categories',
+        'products',
+        'brands',
+        'coupons',
+        'captains',
+        'additionalSettings',
+        'socialMediaLinks',
+    ];
 
     protected $fillable = [
         'admin_id',

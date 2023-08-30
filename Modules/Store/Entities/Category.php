@@ -2,20 +2,25 @@
 
 namespace Modules\Store\Entities;
 
-use App\Filters\CategoryFilters;
 use App\Traits\HasUploads;
 use App\Traits\Searchable;
-use Essa\APIToolKit\Filters\Filterable;
+use App\Filters\CategoryFilters;
 use Spatie\MediaLibrary\HasMedia;
+use Essa\APIToolKit\Filters\Filterable;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Dyrynda\Database\Support\CascadeSoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Category extends Model  implements HasMedia
 {
-    use HasFactory, Filterable, InteractsWithMedia, HasUploads, SoftDeletes;
+    use HasFactory, Filterable, InteractsWithMedia, HasUploads, SoftDeletes, CascadeSoftDeletes;
 
+    protected $cascadeDeletes = [
+        'brands',
+        'children',
+    ];
     protected $fillable = ['store_id', 'name', 'parent_id', 'is_active'];
 
     protected string $default_filters = CategoryFilters::class;

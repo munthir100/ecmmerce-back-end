@@ -3,18 +3,22 @@
 namespace Modules\Customer\Entities;
 
 use App\Filters\OrderFilters;
-use App\Filters\ProductFilters;
 use Modules\Store\Entities\Store;
 use Modules\Shipping\Entities\Captain;
 use Essa\APIToolKit\Filters\Filterable;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Shipping\Entities\Location;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Order extends Model
 {
-    use HasFactory,SoftDeletes,Filterable;
+    use HasFactory,SoftDeletes,Filterable, CascadeSoftDeletes;
+
+    protected $cascadeDeletes = [
+        'items',
+    ];
 
     protected string $default_filters = OrderFilters::class;
     

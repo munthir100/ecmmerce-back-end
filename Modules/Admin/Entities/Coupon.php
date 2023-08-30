@@ -4,6 +4,7 @@ namespace Modules\Admin\Entities;
 
 use App\Filters\CouponFilters;
 use App\Traits\ModelsForStore;
+use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Essa\APIToolKit\Filters\Filterable;
 use Modules\Store\Entities\Store;
 use Illuminate\Database\Eloquent\Model;
@@ -13,8 +14,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Coupon extends Model
 {
-    use HasFactory,Filterable,ModelsForStore,SoftDeletes;
+    use HasFactory,Filterable,ModelsForStore,SoftDeletes,CascadeSoftDeletes;
     
+    protected $cascadeDeletes = [
+        'usages',
+    ];
+
     protected string $default_filters = CouponFilters::class;
 
 
@@ -34,7 +39,7 @@ class Coupon extends Model
     {
         return $this->belongsTo(Store::class);
     }
-    public function couponUsages()
+    public function usages()
     {
         return $this->hasMany(CouponUsage::class);
     }

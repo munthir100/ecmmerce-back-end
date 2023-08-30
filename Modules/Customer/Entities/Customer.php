@@ -6,17 +6,25 @@ use Modules\Acl\Entities\User;
 use App\Filters\CustomerFilters;
 use Modules\Store\Entities\Store;
 use Modules\Shipping\Entities\City;
-use Illuminate\Database\Eloquent\Model;
 use Essa\APIToolKit\Filters\Filterable;
+use Illuminate\Database\Eloquent\Model;
 use Modules\Shipping\Entities\Location;
 use Modules\Customer\Entities\ShoppingCart;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Customer extends Model
 {
-    use HasFactory, Filterable,SoftDeletes;
+    use HasFactory, Filterable, SoftDeletes, CascadeSoftDeletes;
+
+    protected $cascadeDeletes = [
+        'locations',
+        'orders',
+        'couponUsages',
+        'shoppingCart'
+    ];
 
     protected $fillable = [
         'birth_date',

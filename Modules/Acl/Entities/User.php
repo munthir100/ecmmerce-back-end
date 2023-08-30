@@ -5,19 +5,22 @@ namespace Modules\Acl\Entities;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Laravel\Sanctum\HasApiTokens;
 use Modules\Admin\Entities\Admin;
+use Modules\Admin\Entities\Seller;
 use Spatie\Permission\Traits\HasRoles;
 use Modules\Customer\Entities\Customer;
 use Illuminate\Notifications\Notifiable;
-use Modules\Acl\Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Modules\Admin\Entities\Seller;
 use Spatie\Permission\Traits\HasPermissions;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Modules\Acl\Database\Factories\UserFactory;
+use Dyrynda\Database\Support\CascadeSoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles,HasPermissions,SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles,HasPermissions,SoftDeletes,CascadeSoftDeletes;
+
+    protected $cascadeDeletes = ['admin','customer','seller'];
 
     protected static function newFactory()
     {

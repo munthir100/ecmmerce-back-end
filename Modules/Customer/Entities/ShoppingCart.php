@@ -4,14 +4,19 @@ namespace Modules\Customer\Entities;
 
 use Modules\Store\Entities\Product;
 use Illuminate\Database\Eloquent\Model;
-use Modules\Customer\Entities\ShoppingCartItem;
 use Modules\Customer\Entities\Customer;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Modules\Customer\Entities\ShoppingCartItem;
+use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ShoppingCart extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, CascadeSoftDeletes;
+
+    protected $cascadeDeletes = [
+        'items',
+    ];
 
     protected $fillable = [
         'customer_id',
