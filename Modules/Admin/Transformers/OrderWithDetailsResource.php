@@ -23,7 +23,7 @@ class OrderWithDetailsResource extends JsonResource
             'note' => $this->note,
             'date' => $formattedDate,
             'time' => $formattedTime,
-            'status' => $this->status,
+            'status' => $this->status->name,
             'customer' => [
                 'name' => $this->customer->user->name,
                 'email' => $this->customer->user->email,

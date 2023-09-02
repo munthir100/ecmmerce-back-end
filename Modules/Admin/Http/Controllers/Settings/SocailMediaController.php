@@ -2,17 +2,24 @@
 
 namespace Modules\Admin\Http\Controllers\Settings;
 
-use App\Http\Responses\MessageResponse;
 use Illuminate\Http\Request;
+use App\Services\StoreService;
 use Illuminate\Routing\Controller;
+use App\Http\Responses\MessageResponse;
 use Modules\Admin\Transformers\Settings\SocialMediaLinksResource;
 
 class SocailMediaController extends Controller
 {
+    protected $storeService, $store, $storeCountriesService;
+
+    public function __construct(StoreService $storeService)
+    {
+        $this->storeService = $storeService;
+        $this->store = $this->storeService->getStore();
+    }
     public function update(Request $request)
     {
-        $store = auth()->user()->admin->store;
-        $socialMediaLinks = $store->socialMediaLink()->firstOrCreate([]);
+        $socialMediaLinks = $this->store->socialMediaLink()->firstOrCreate([]);
 
         $data = $request->validate([
             'facebook' => 'nullable|string',

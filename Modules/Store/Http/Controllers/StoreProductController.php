@@ -2,19 +2,14 @@
 
 namespace Modules\Store\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Modules\Store\Entities\Store;
 use Illuminate\Routing\Controller;
-use Modules\Store\Entities\Product;
-use App\Http\Responses\MessageResponse;
-use Essa\APIToolKit\Api\ApiResponse;
 use Modules\Store\Http\Requests\RatingRequest;
 use Modules\Admin\Transformers\ProductResource;
 use Modules\Admin\Transformers\ProductWithOptionsResource;
 
 class StoreProductController extends Controller
 {
-    use ApiResponse;
     public function products(Store $store)
     {
         $products = $store->products()->useFilters()->dynamicPaginate();

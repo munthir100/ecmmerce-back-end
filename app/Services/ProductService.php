@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Http\Response;
 use Modules\Store\Entities\Product;
 
 class ProductService
@@ -75,5 +76,14 @@ class ProductService
                 $optionModel->values()->createMany($option['values']);
             }
         }
+    }
+
+    function deleteProduct($product)
+    {
+        if ($product->orderItems()->exists()) {
+            abort(response()->json('the product has an orders', Response::HTTP_CONFLICT));
+        }
+
+        $product->delete();
     }
 }

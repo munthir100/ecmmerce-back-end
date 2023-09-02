@@ -6,6 +6,7 @@ use Modules\Customer\Http\Controllers\AuthController;
 use Modules\Customer\Http\Controllers\CartController;
 use Modules\Customer\Http\Controllers\CheckoutController;
 use Modules\Customer\Http\Controllers\CustomerLocationsController;
+use Modules\Customer\Http\Controllers\OrderController;
 use Modules\Customer\Http\Controllers\ShoppingCartController;
 
 /*
@@ -39,5 +40,7 @@ Route::prefix('{storeLink}')->group(function () {
 
 
         Route::post('/checkout', [CheckoutController::class, 'checkout']);
+        
+        Route::get('/orders', [OrderController::class, 'index']);
     });
 });

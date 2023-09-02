@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('payment_type');
 
             $table->foreignId('status_id')
-                ->constrained();
+                ->constrained()->default(1);
 
             $table->foreignId('customer_id')
                 ->references('id')

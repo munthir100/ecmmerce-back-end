@@ -6,15 +6,11 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Hash;
-use App\Actions\ValidateAdminProfile;
-use App\Http\Responses\MessageResponse;
-use Essa\APIToolKit\Api\ApiResponse;
 use Modules\Admin\Transformers\UserResource;
 use Modules\Admin\Http\Requests\Settings\Profile\UpdatePasswordRequest;
 
 class ProfileController extends Controller
 {
-    use ApiResponse;
     public function index()
     {
         $user = request()->user();

@@ -24,7 +24,6 @@ class CaptainRequest extends FormRequest
             ],
             'expected_time_shipping' => 'required|integer',
             'is_active' => 'boolean',
-            'city_id' => 'required|array',
             'city_id.*' => 'distinct',
         ];
     }

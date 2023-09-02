@@ -2,21 +2,26 @@
 
 namespace Modules\Admin\Http\Controllers;
 
-use App\Traits\ModelsForAdmin;
+use App\Services\StoreService;
 use Modules\Store\Entities\Brand;
 use Illuminate\Routing\Controller;
-use Essa\APIToolKit\Api\ApiResponse;
 use Modules\Admin\Http\Requests\BrandRequest;
 use Modules\Admin\Transformers\BrandResource;
 use Modules\Admin\Http\Requests\UpdateBrandRequest;
 
 class BrandController extends Controller
 {
-    use ModelsForAdmin, ApiResponse;
+    protected $storeService, $store;
+
+    public function __construct(StoreService $storeService)
+    {
+        $this->storeService = $storeService;
+        $this->store = $this->storeService->getStore();
+    }
 
     public function index()
     {
-        $brands = Brand::useFilters()->forAdmin(auth()->user()->admin->id)->dynamicPaginate();
+        $brands = $this->store->brands()->useFilters()->dynamicPaginate();
 
         return $this->responseSuccess(
             data: ['brands' => BrandResource::collection($brands)],
@@ -37,7 +42,7 @@ class BrandController extends Controller
 
     public function show($brandId)
     {
-        $brand = $this->findAdminModel(auth()->user()->admin, Brand::class, $brandId);
+        $brand = $this->storeService->findStoreModel($this->store, Brand::class, $brandId);
 
         return $this->responseSuccess(
             data: new BrandResource($brand)
@@ -46,7 +51,7 @@ class BrandController extends Controller
 
     public function update(UpdateBrandRequest $request, $brandId)
     {
-        $brand = $this->findAdminModel(auth()->user()->admin, Brand::class, $brandId);
+        $brand = $this->storeService->findStoreModel($this->store, Brand::class, $brandId);
         if ($request->has('image')) {
             $brand->clearMediaCollection('image');
             $brand->uploadMedia();
@@ -61,10 +66,9 @@ class BrandController extends Controller
 
     public function destroy($brandId)
     {
-        $brand = $this->findAdminModel(auth()->user()->admin, Brand::class, $brandId);
+        $brand = $this->storeService->findStoreModel($this->store, Brand::class, $brandId);
         $brand->delete();
 
         return $this->responseSuccess('brand deleted');
     }
-
 }

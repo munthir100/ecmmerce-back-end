@@ -12,9 +12,9 @@ use Modules\Admin\Transformers\SellerResource;
 
 class SellerService
 {
-    public function validateEmail($email, $store)
+    public function validateEmail($email,$admin)
     {
-        $existingSeller = $store->admin->sellers()->whereExists(function ($query) use ($email) {
+        $existingSeller = $admin->sellers()->whereExists(function ($query) use ($email) {
             $query->selectRaw(1)
                 ->from('users')
                 ->where('email', $email)

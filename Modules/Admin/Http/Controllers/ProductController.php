@@ -3,16 +3,12 @@
 namespace Modules\Admin\Http\Controllers;
 
 use Illuminate\Support\Arr;
-use App\Traits\ModelsForAdmin;
 use App\Services\ProductService;
-
+use App\Services\StoreService;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\Store\Entities\Product;
-use App\Http\Responses\MessageResponse;
 use function PHPUnit\Framework\isEmpty;
-use App\Exceptions\InvalidQuantityException;
-use Essa\APIToolKit\Api\ApiResponse;
 use Modules\Admin\Http\Requests\ProductRequest;
 use Modules\Admin\Transformers\ProductResource;
 use Modules\Admin\Http\Requests\UpdateProductRequest;
@@ -20,17 +16,18 @@ use Modules\Admin\Transformers\ProductWithOptionsResource;
 
 class ProductController extends Controller
 {
-    use ModelsForAdmin, ApiResponse;
-    protected $productService;
+    protected $productService, $storeService,$store;
 
-    public function __construct(ProductService $productService)
+    public function __construct(ProductService $productService, StoreService $storeService)
     {
         $this->productService = $productService;
+        $this->storeService = $storeService;
+        $this->store = $this->storeService->getStore();
     }
 
     public function index()
     {
-        $products = Product::useFilters()->forAdmin(auth()->user()->admin->id)->dynamicPaginate();
+        $products = $this->store->products()->useFilters()->dynamicPaginate();
 
         return $this->responseSuccess('products', ProductResource::collection($products));
     }
@@ -38,12 +35,11 @@ class ProductController extends Controller
     public function store(ProductRequest $request)
     {
         $data = $request->validated();
-        $store = $request->user()->admin->store;
-        $request->validateSkuIsUnique($store);
+        $request->validateSkuIsUnique($this->store);
         $optionsData = Arr::pull($data, 'options', []);
 
-        return DB::transaction(function () use ($data, $optionsData, $store) {
-            $product = $store->products()->create($data);
+        return DB::transaction(function () use ($data, $optionsData) {
+            $product = $this->store->products()->create($data);
             $product->uploadMedia();
             $this->productService->createProductOptions($product, $optionsData);
 
@@ -54,7 +50,7 @@ class ProductController extends Controller
 
     public function show($productId)
     {
-        $product = $this->findAdminModel(auth()->user()->admin, Product::class, $productId);
+        $product = $this->storeService->findStoreModel($this->store, Product::class, $productId);
 
         return $this->responseSuccess(data: new ProductWithOptionsResource($product));
     }
@@ -62,11 +58,9 @@ class ProductController extends Controller
 
     public function update(UpdateProductRequest $request, $productId)
     {
-        $admin = auth()->user()->admin;
-        $product = $this->findAdminModel($admin, Product::class, $productId);
-
+        $product = $this->storeService->findStoreModel($this->store, Product::class, $productId);
         $data = $request->validated();
-        $request->validateSkuIsUnique($admin->store,$product);
+        $request->validateSkuIsUnique($this->store, $product);
 
 
 
@@ -95,9 +89,8 @@ class ProductController extends Controller
 
     public function destroy($productId)
     {
-        $product = $this->findAdminModel(auth()->user()->admin, Product::class, $productId);
-
-        $product->delete();
+        $product = $this->storeService->findStoreModel($this->store, Product::class, $productId);
+        $this->productService->deleteProduct($product);
 
         return $this->responseSuccess('product deleted');
     }

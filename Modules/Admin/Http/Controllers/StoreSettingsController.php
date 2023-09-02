@@ -2,63 +2,58 @@
 
 namespace Modules\Admin\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use App\Services\StoreService;
 use Illuminate\Routing\Controller;
-use App\Http\Responses\MessageResponse;
-use Essa\APIToolKit\Api\ApiResponse;
 use Modules\Admin\Transformers\StoreResource;
 use Modules\Admin\Http\Requests\UpdateStoreRequest;
 
 class StoreSettingsController extends Controller
 {
-    use ApiResponse;
+    protected $storeService,$store;
+
+    public function __construct(StoreService $storeService)
+    {
+        $this->storeService = $storeService;
+        $this->store = $this->storeService->getStore();
+    }
     function updateBasicInformation(UpdateStoreRequest $request)
     {
         $data = $request->validated();
-        $store = $this->getStoreFromRequestUser();
-        $data += $request->validateStoreLink($store);
-        $store->update($data);
+        $data += $request->validateStoreLink($this->store);
+        $updatedStore = $this->store->update($data);
 
-        return $this->responseSuccess('store data updated', new StoreResource($store));
+        return $this->responseSuccess('store data updated', new StoreResource($updatedStore));
     }
 
     function UpdateStoreLogo(UpdateStoreRequest $request)
     {
         $request->validated();
-        $store = $this->getStoreFromRequestUser();
 
         if ($request->has('store_logo')) {
-            $store->clearMediaCollection('store_logo');
-            $store->addMediaFromRequest('store_logo')->toMediaCollection('store_logo');
+            $this->store->clearMediaCollection('store_logo');
+            $this->store->addMediaFromRequest('store_logo')->toMediaCollection('store_logo');
         }
 
-        return $this->responseSuccess('store logo updated', new StoreResource($store));
+        return $this->responseSuccess('store logo updated');
     }
     function UpdateStoreIcon(UpdateStoreRequest $request)
     {
         $request->validated();
-        $store = $this->getStoreFromRequestUser();
 
         if ($request->has('store_icon')) {
-            $store->clearMediaCollection('store_icon');
-            $store->addMediaFromRequest('store_icon')->toMediaCollection('store_icon');
+            $this->store->clearMediaCollection('store_icon');
+            $this->store->addMediaFromRequest('store_icon')->toMediaCollection('store_icon');
         }
 
-        return $this->responseSuccess('store icon updated', new StoreResource($store));
+        return $this->responseSuccess('store icon updated');
     }
 
     function UpdateStoreCity(UpdateStoreRequest $request)
     {
-        $store = $this->getStoreFromRequestUser();
-        $data = $request->validateStoreCity($store);
-        $store->update($data);
+        $data = $request->validateStoreCity($this->store);
+        $this->store->update($data);
 
-        return $this->responseSuccess('store city updated', new StoreResource($store));
+        return $this->responseSuccess('store city updated', $data);
     }
     
-    private function getStoreFromRequestUser()
-    {
-        return request()->user()->admin->store;
-    }
 }

@@ -3,6 +3,7 @@
 namespace Modules\Admin\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CreateSellerRequest extends FormRequest
 {
@@ -20,6 +21,20 @@ class CreateSellerRequest extends FormRequest
             'role' => 'required|string',
             'permissions' => 'nullable|array',
         ];
+    }
+
+
+    public function validateEmail($admin, $store)
+    {
+        $this->validate([
+            'email' => [
+                Rule::unique('users')->where(function ($query) use ($store, $admin) {
+                    
+                    $query->where('store_id', $store->id)
+                        ->where('admin_id', $admin->id);
+                }),
+            ],
+        ]);
     }
 
     /**

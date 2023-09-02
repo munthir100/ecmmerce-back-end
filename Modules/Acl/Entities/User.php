@@ -13,14 +13,15 @@ use Spatie\Permission\Traits\HasPermissions;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Acl\Database\Factories\UserFactory;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles,HasPermissions,SoftDeletes,CascadeSoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, HasPermissions, SoftDeletes, CascadeSoftDeletes;
 
-    protected $cascadeDeletes = ['admin','customer','seller'];
+    protected $cascadeDeletes = ['admin', 'customer', 'seller'];
 
     protected static function newFactory()
     {
@@ -63,5 +64,20 @@ class User extends Authenticatable
     function seller()
     {
         return $this->hasOne(Seller::class);
+    }
+
+    // attributes
+
+    protected function IsAdmin(): Attribute
+    {
+        return Attribute::make()->get(fn () => $this->user_type_id == 1);
+    }
+    protected function IsCustomer(): Attribute
+    {
+        return Attribute::make()->get(fn () => $this->user_type_id == 2);
+    }
+    protected function IsSeller(): Attribute
+    {
+        return Attribute::make()->get(fn () => $this->user_type_id == 3);
     }
 }

@@ -3,6 +3,7 @@
 namespace Modules\Admin\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Services\StoreService;
 use App\Traits\ModelsForAdmin;
 use App\Services\SellerService;
 use Illuminate\Routing\Controller;
@@ -13,20 +14,21 @@ use Modules\Admin\Http\Requests\CreateSellerRequest;
 
 class SellerManagementController extends Controller
 {
-    use ModelsForAdmin;
+    protected $storeService, $store, $sellerService;
 
-    private $sellerService;
-
-    public function __construct(SellerService $sellerService)
+    public function __construct(SellerService $sellerService, StoreService $storeService)
     {
+        $this->storeService = $storeService;
+        $this->store = $this->storeService->getStore();
         $this->sellerService = $sellerService;
     }
 
+
     public function index()
     {
-        $sellers = Seller::useFilters()->forAdmin(auth()->user()->admin->id)->dynamicPaginate();
+        $sellers = Seller::forAdmin(auth()->user()->admin->id)->useFilters()->dynamicPaginate();
 
-        return new MessageResponse('sellers', SellerResource::collection($sellers), 200);
+        return $this->responseSuccess('sellers', SellerResource::collection($sellers));
     }
 
     public function store(CreateSellerRequest $request)
@@ -34,25 +36,27 @@ class SellerManagementController extends Controller
         $data = $request->validated();
         $admin = $request->user()->admin;
         $store = $admin->store;
-        $user = $this->sellerService->validateEmail($data['email'],$store);
+
+        $this->sellerService->validateEmail($data['email'], $admin);
+
         $user = $this->sellerService->createSellerUser($data);
         $this->sellerService->createSeller($admin, $store, $user);
         [$role, $permissions] = $this->sellerService->assignRoleAndPermissions($data, $user);
         $responseData = $this->sellerService->prepareResponseData($user, $role, $permissions);
 
-        return new MessageResponse('Seller created', $responseData, 200);
+        return $this->responseCreated('Seller created', $responseData);
     }
 
     public function show($sellerId)
     {
-        $seller = $this->findAdminModel(Seller::class, $sellerId);
+        $seller = $this->findAdminModel(auth()->user()->admin, Seller::class, $sellerId);
 
-        return new MessageResponse('seller', new SellerResource($seller), 200);
+        return $this->responseSuccess('seller', new SellerResource($seller));
     }
 
     public function update(Request $request, $sellerId)
     {
-        $seller = $this->findAdminModel(Seller::class, $sellerId);
+        $seller = $this->findAdminModel(auth()->user()->admin, Seller::class, $sellerId);
 
         $data = $request->validate([
             'name' => 'required|string|max:255',
@@ -68,16 +72,16 @@ class SellerManagementController extends Controller
 
         [$role, $permissions] = $this->sellerService->assignRoleAndPermissions($data, $seller->user);
         $responseData = $this->sellerService->prepareResponseData($seller->user, $role, $permissions);
-        
-        return new MessageResponse('Seller updated', $responseData, 200);
+
+        return $this->responseSuccess('Seller updated', $responseData);
     }
 
     public function destroy($sellerId)
     {
-        $seller = $this->findAdminModel(Seller::class, $sellerId);
+        $seller = $this->findAdminModel(auth()->user()->admin, Seller::class, $sellerId);
 
         $seller->user->delete();
 
-        return new MessageResponse('Seller deleted', [], 200);
+        return $this->responseSuccess('Seller deleted');
     }
 }

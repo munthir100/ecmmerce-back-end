@@ -2,22 +2,27 @@
 
 namespace Modules\Admin\Http\Controllers;
 
-use Essa\APIToolKit\Api\ApiResponse;
+use App\Services\StoreService;
 use Illuminate\Routing\Controller;
-use Modules\Admin\Transformers\CityResource;
 use Modules\Shipping\Entities\City;
+use Essa\APIToolKit\Api\ApiResponse;
+use Modules\Admin\Transformers\CityResource;
 
 class StoreCitiesController extends Controller
 {
-    use ApiResponse;
+    protected $storeService,$store;
+
+    public function __construct(StoreService $storeService)
+    {
+        $this->storeService = $storeService;
+        $this->store = $this->storeService->getStore();
+    }
     public function index()
     {
-        $storeId = auth()->user()->admin->store->id;
-
-        $cities = City::whereIn('country_id', function ($query) use ($storeId) {
+        $cities = City::whereIn('country_id', function ($query){
             $query->select('country_id')
                 ->from('store_countries')
-                ->where('store_id', $storeId);
+                ->where('store_id', $this->store->id);
         })
         ->dynamicPaginate();
 

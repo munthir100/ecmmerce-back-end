@@ -44,7 +44,7 @@ class OrderService
     }
     public function validateShippingMethod($storeCities, $selectedLocation)
     {
-        if (!$storeCities->contains('name', $selectedLocation->name)) {
+        if (!$storeCities->contains('id', $selectedLocation->city_id)) {
             abort(response()->json('This location does not have a captain'));
         }
     }

@@ -2,24 +2,27 @@
 
 namespace Modules\Admin\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Traits\ModelsForAdmin;
+use App\Services\StoreService;
 use Illuminate\Routing\Controller;
-use Essa\APIToolKit\Api\ApiResponse;
 use Modules\Shipping\Entities\Captain;
 use App\Http\Responses\MessageResponse;
-use Illuminate\Contracts\Support\Renderable;
 use Modules\Admin\Http\Requests\CaptainRequest;
 use Modules\Admin\Transformers\CaptainResource;
 use Modules\Admin\Http\Requests\UpdateCaptainRequest;
 
 class CaptainController extends Controller
 {
-    use ModelsForAdmin, ApiResponse;
+    protected $storeService,$store;
+
+    public function __construct(StoreService $storeService)
+    {
+        $this->storeService = $storeService;
+        $this->store = $this->storeService->getStore();
+    }
 
     public function index()
     {
-        $captains = auth()->user()->admin->store->captains()->useFilters()->with('cities')->dynamicPaginate();
+        $captains = $this->store->captains()->useFilters()->dynamicPaginate();
 
         return $this->responseSuccess(
             data: ['captains' => CaptainResource::collection($captains)],
@@ -29,9 +32,8 @@ class CaptainController extends Controller
     public function store(CaptainRequest $request)
     {
         $data = $request->validated();
-        $store = $request->user()->admin->store;
-        $data += $request->validateStoreCity($store);
-        $captain = $store->captains()->create($data);
+        $data += $request->validateStoreCity($this->store);
+        $captain = $this->store->captains()->create($data);
         $captain->cities()->attach($data['city_id']);
 
         return $this->responseSuccess(
@@ -42,7 +44,8 @@ class CaptainController extends Controller
 
     public function show($captianId)
     {
-        $captain = $this->findAdminModel(auth()->user()->admin, Captain::class, $captianId);
+        $captain = $this->storeService->findStoreModel($this->store, Captain::class, $captianId);
+        
         return new MessageResponse(
             data: ['captain' => new CaptainResource($captain)],
             statusCode: 200
@@ -52,11 +55,11 @@ class CaptainController extends Controller
     public function update(UpdateCaptainRequest $request, $captianId)
     {
         $data = $request->validated();
-        $admin = auth()->user()->admin;
-        $captain = $this->findAdminModel($admin, Captain::class, $captianId);
-        $data += $request->validateStoreCity($admin->store);
+        $captain = $this->storeService->findStoreModel($this->store, Captain::class, $captianId);
+
+        $data += $request->validateStoreCity($this->store);
         $captain->update($data);
-        
+
         if ($request->has('city_id')) {
             $captain->cities()->detach();
             $captain->cities()->sync($data['city_id']);
@@ -69,7 +72,7 @@ class CaptainController extends Controller
 
     public function destroy($captianId)
     {
-        $captain = $this->findAdminModel(auth()->user()->admin, Captain::class, $captianId);
+        $captain = $this->storeService->findStoreModel($this->store, Captain::class, $captianId);
         $captain->delete();
 
         return $this->responseSuccess(

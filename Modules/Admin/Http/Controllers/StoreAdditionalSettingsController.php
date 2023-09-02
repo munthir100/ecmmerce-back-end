@@ -2,55 +2,52 @@
 
 namespace Modules\Admin\Http\Controllers;
 
+use App\Services\StoreService;
 use App\Http\Controllers\Controller;
-use Essa\APIToolKit\Api\ApiResponse;
 use Modules\Admin\Transformers\StoreResource;
 use Modules\Admin\Http\Requests\UpdateStoreRequest;
 
 class StoreAdditionalSettingsController extends Controller
 {
-    use ApiResponse;
+    protected $storeService, $store;
+
+    public function __construct(StoreService $storeService)
+    {
+        $this->storeService = $storeService;
+        $this->store = $this->storeService->getStore();
+    }
+
     public function updateCommercialRegistration(UpdateStoreRequest $request)
     {
-        $store = $this->getStoreFromRequestUser();
-        $data = $request->validateCommercialRegistration($store);
-        $store->update($data);
+        $data = $request->validateCommercialRegistration($this->store);
+        $this->store->update($data);
 
-        return $this->responseSuccess('Commercial registration number updated',new StoreResource($store));
+        return $this->responseSuccess('Commercial registration number updated', new StoreResource($this->store));
     }
 
     public function updateStoreLanguage(UpdateStoreRequest $request)
     {
-        $store = $this->getStoreFromRequestUser();
         $data = $request->validated();
-        $store->update($data);
+        $this->store->update($data);
 
-        return $this->responseSuccess('Language updated', new StoreResource($store));
+        return $this->responseSuccess('Language updated', new StoreResource($this->store));
     }
 
     public function updateStatus(UpdateStoreRequest $request)
     {
-        $store = $this->getStoreFromRequestUser();
         $data = $request->validated();
-        $store->update($data);
+        $this->store->update($data);
 
-        return $this->responseSuccess('Store status updated.',new StoreResource($store));
+        return $this->responseSuccess('Store status updated.', new StoreResource($this->store));
     }
 
     public function updateColors(UpdateStoreRequest $request)
     {
-        $store = $this->getStoreFromRequestUser();
         $validatedData = $request->validated();
 
-        $store->update($validatedData);
+        $this->store->update($validatedData);
 
-        return $this->responseSuccess('Store colors updated.',new StoreResource($store));
+        return $this->responseSuccess('Store colors updated.', new StoreResource($this->store));
     }
 
-
-
-    private function getStoreFromRequestUser()
-    {
-        return request()->user()->admin->store;
-    }
 }

@@ -26,9 +26,9 @@ class CheckoutController extends Controller
         $data = $request->validated();
         $data['store_id'] = $store->id;
         $customer = $request->user()->customer;
-        $captain = Captain::findModelById($store, Captain::class, $data['captain_id']);
+        $captain = Captain::findStoreModel($store, Captain::class, $data['captain_id']);
         $storeCities = $orderService->getStoreCities($store);
-        $selectedLocation = $customerService->findModelById($customer, Location::class, $data['location_id']);
+        $selectedLocation = $customerService->findCustomerModel($customer, Location::class, $data['location_id']);
 
         $orderService->validateShippingMethod($storeCities, $selectedLocation);
         $shoppingCart = $customerService->findModel($customer, ShoppingCart::class);

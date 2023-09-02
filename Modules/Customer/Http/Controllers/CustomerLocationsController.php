@@ -3,11 +3,8 @@
 namespace Modules\Customer\Http\Controllers;
 
 
-use Illuminate\Http\Request;
 use Modules\Store\Entities\Store;
 use App\Http\Controllers\Controller;
-use App\Http\Responses\MessageResponse;
-use Essa\APIToolKit\Api\ApiResponse;
 use Modules\Customer\Http\Requests\LocationRequest;
 use Modules\Customer\Http\Requests\UpdateLocationRequest;
 use Modules\Customer\Transformers\LocationResource;
@@ -15,7 +12,6 @@ use Modules\Shipping\Entities\Location;
 
 class CustomerLocationsController extends Controller
 {
-    use ApiResponse;
     public function index(Store $store)
     {
         $customer = auth()->user()->customer;
@@ -27,13 +23,13 @@ class CustomerLocationsController extends Controller
     public function store(LocationRequest $request, Store $store)
     {
         $data = $request->validated();
-
+        $data += $request->validateStoreCity($store);
         $customer = $request->user()->customer;
         $location = $customer->locations()->create($data);
 
         return $this->responseSuccess(
             'Location created successfully',
-            data: new LocationResource($location),
+            new LocationResource($location),
         );
     }
 

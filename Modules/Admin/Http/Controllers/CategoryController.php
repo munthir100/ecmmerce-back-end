@@ -2,9 +2,8 @@
 
 namespace Modules\Admin\Http\Controllers;
 
-use App\Traits\ModelsForAdmin;
+use App\Services\StoreService;
 use Illuminate\Routing\Controller;
-use Essa\APIToolKit\Api\ApiResponse;
 use Modules\Store\Entities\Category;
 use Modules\Admin\Http\Requests\CategoryRequest;
 use Modules\Admin\Transformers\CategoryResource;
@@ -12,13 +11,16 @@ use Modules\Admin\Http\Requests\UpdateCategoryRequest;
 
 class CategoryController extends Controller
 {
-    use ModelsForAdmin, ApiResponse;
+    protected $storeService,$store;
 
-    
-
+    public function __construct(StoreService $storeService)
+    {
+        $this->storeService = $storeService;
+        $this->store = $this->storeService->getStore();
+    }
     public function index()
     {
-        $categories = Category::useFilters()->forAdmin(auth()->user()->admin->id)->dynamicPaginate();
+        $categories = $this->store->categories()->useFilters()->dynamicPaginate();
 
         return $this->responseSuccess('categories', new CategoryResource($categories));
     }
@@ -27,8 +29,7 @@ class CategoryController extends Controller
     public function store(CategoryRequest $request)
     {
         $data = $request->validated();
-        $data['store_id'] = $request->user()->admin->store->id;
-        $category = Category::create($data);
+        $category = $this->store->categories->create($data);
         $category->uploadMedia();
 
         return $this->responseCreated('category created successfully', new CategoryResource($category));
@@ -37,14 +38,14 @@ class CategoryController extends Controller
 
     public function show($categoryId)
     {
-        $category = $this->findAdminModel(auth()->user()->admin, Category::class, $categoryId);
+        $category = $this->storeService->findStoreModel($this->store, Category::class, $categoryId);
 
         return $this->responseSuccess(data: new CategoryResource($category));
     }
 
     public function update(UpdateCategoryRequest $request, $categoryId)
     {
-        $category = $this->findAdminModel(auth()->user()->admin, Category::class, $categoryId);
+        $category = $this->storeService->findStoreModel($this->store, Category::class, $categoryId);
         if ($request->has('image')) {
             $category->clearMediaCollection('image');
             $category->uploadMedia();
@@ -59,7 +60,7 @@ class CategoryController extends Controller
 
     public function destroy($categoryId)
     {
-        $category = $this->findAdminModel(auth()->user()->admin, Category::class, $categoryId);
+        $category = $this->storeService->findStoreModel($this->store, Category::class, $categoryId);
         $category->delete();
 
         return $this->responseSuccess('category deleted');

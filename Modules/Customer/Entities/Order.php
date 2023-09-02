@@ -11,6 +11,7 @@ use Modules\Shipping\Entities\Location;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Admin\Entities\Status;
 
 class Order extends Model
 {
@@ -27,7 +28,6 @@ class Order extends Model
         'store_id',
         'captain_id',
         'location_id',
-        'status',
         'total_price',
         'payment_type',
         'status_id'
@@ -53,7 +53,10 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
-
+    function status()
+    {
+        return $this->belongsTo(Status::class);
+    }
     //scopes 
 
     public function scopeForAdmin($query, $adminId)

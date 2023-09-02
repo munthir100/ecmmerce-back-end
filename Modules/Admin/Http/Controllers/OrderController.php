@@ -3,39 +3,46 @@
 namespace Modules\Admin\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Services\StoreService;
 use Illuminate\Routing\Controller;
 use Modules\Customer\Entities\Order;
-use App\Http\Responses\MessageResponse;
-use App\Traits\ModelsForAdmin;
-use Essa\APIToolKit\Api\ApiResponse;
 use Modules\Admin\Transformers\OrderResource;
+use Modules\Admin\Http\Requests\ChangeOrderStatus;
+use Modules\Admin\Http\Requests\CreateOrderRequest;
 use Modules\Admin\Transformers\OrderWithDetailsResource;
 
 class OrderController extends Controller
 {
-    use ModelsForAdmin, ApiResponse;
+    protected $storeService, $store;
+
+    public function __construct(StoreService $storeService)
+    {
+        $this->storeService = $storeService;
+        $this->store = $this->storeService->getStore();
+    }
 
     public function index()
     {
-        $orders = Order::useFilters()->ForAdmin(auth()->user()->admin->id)->with('customer.user', 'captain')->dynamicPaginate();
+        $orders = $this->store->orders()->useFilters()->with('customer.user', 'captain')->dynamicPaginate();
 
         return $this->responseSuccess(
             data: ['orders' => OrderResource::collection($orders)],
         );
     }
 
-    public function store(Request $request)
+    public function store(CreateOrderRequest $request)
     {
         //
     }
 
     public function show($orderId)
     {
-        $order = $this->findAdminModel(auth()->user()->admin, Order::class, $orderId)->with([
+        $order = $this->storeService->findStoreModel($this->store, Order::class, $orderId)->with([
             'customer.user',
             'captain:id,name,shipping_cost',
             'location:id,name,phone,address_type,lang,lat',
             'items',
+            'status',
             'items.product',
         ]);
 
@@ -45,29 +52,19 @@ class OrderController extends Controller
     }
 
 
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
     public function destroy($orderId)
     {
-        $order = $this->findAdminModel(auth()->user()->admin, Order::class, $orderId);
+        $order = $this->storeService->findStoreModel($this->store, Order::class, $orderId);
         $order->delete();
 
         return $this->responseSuccess('order deleted');
     }
 
-    public function changeStatus($orderId, Request $request)
+    public function changeStatus($orderId, ChangeOrderStatus $request)
     {
-        $data = $request->validate([
-            'status_id' => 'required|exists:statuses,id',
-        ]);
-        $order = $this->findAdminModel(auth()->user()->admin, Order::class, $orderId);
-
-        $order->update([
-            'status_id' => $data['status_id']
-        ]);
+        $data = $request->validated();
+        $order = $this->storeService->findStoreModel($this->store, Order::class, $orderId);
+        $order->update($data);
 
         return $this->responseSuccess('status updated', new OrderWithDetailsResource($order));
     }

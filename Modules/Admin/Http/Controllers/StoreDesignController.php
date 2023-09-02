@@ -2,36 +2,37 @@
 
 namespace Modules\Admin\Http\Controllers;
 
+use App\Services\StoreService;
 use Illuminate\Routing\Controller;
-use App\Http\Responses\MessageResponse;
-use Essa\APIToolKit\Api\ApiResponse;
 use Modules\Admin\Transformers\StoreResource;
-use Modules\Admin\Http\Requests\UpdateStoreNavbarRequest;
 use Modules\Admin\Http\Requests\UpdateStoreThemeRequest;
+use Modules\Admin\Http\Requests\UpdateStoreNavbarRequest;
 
 class StoreDesignController extends Controller
 {
-    use ApiResponse;
+    protected $storeService, $store;
+
+    public function __construct(StoreService $storeService)
+    {
+        $this->storeService = $storeService;
+        $this->store = $this->storeService->getStore();
+    }
+
     public function updateNavbar(UpdateStoreNavbarRequest $request)
     {
-        $store = $this->getStoreFromRequestUser();
+        
         $validatedData = $request->validated();
-        $store->update($validatedData);
+        $updatedStore = $this->store->update($validatedData);
 
-        return $this->responseSuccess('Store navbar updated.',new StoreResource($store));
+        return $this->responseSuccess('Store navbar updated.', new StoreResource($updatedStore));
     }
 
     public function updateTheme(UpdateStoreThemeRequest $request)
     {
-        $store = $this->getStoreFromRequestUser();
+        
         $validatedData = $request->validated();
-        $store->update($validatedData);
+        $updatedStore = $this->store->update($validatedData);
 
-        return $this->responseSuccess('Store theme updated.',new StoreResource($store));
-    }
-
-    private function getStoreFromRequestUser()
-    {
-        return request()->user()->admin->store;
+        return $this->responseSuccess('Store theme updated.', new StoreResource($updatedStore));
     }
 }

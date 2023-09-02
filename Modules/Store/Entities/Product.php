@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Customer\Entities\OrderItem;
 
 class Product extends Model  implements HasMedia
 {
@@ -23,7 +24,7 @@ class Product extends Model  implements HasMedia
     protected $cascadeDeletes = [
         'options',
     ];
-    
+
     protected $fillable = [
         'category_id',
         'store_id',
@@ -60,6 +61,10 @@ class Product extends Model  implements HasMedia
     public function options()
     {
         return $this->hasMany(ProductOption::class);
+    }
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
     }
     //scopes
     public function scopeForAdmin($query, $adminId)

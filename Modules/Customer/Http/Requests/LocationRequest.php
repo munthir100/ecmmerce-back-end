@@ -2,6 +2,7 @@
 
 namespace Modules\Customer\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class LocationRequest extends FormRequest
@@ -22,6 +23,17 @@ class LocationRequest extends FormRequest
         ];
     }
 
+    public function validateStoreCity($store)
+    {
+        return $this->validate([
+            'city_id' => [
+                'required',
+                Rule::exists('cities', 'id')->where(function ($query) use ($store) {
+                    $query->whereIn('country_id', $store->countries->pluck('id'));
+                }),
+            ],
+        ]);
+    }
     /**
      * Determine if the user is authorized to make this request.
      *

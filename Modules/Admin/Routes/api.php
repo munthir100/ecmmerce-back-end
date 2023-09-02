@@ -11,7 +11,7 @@ use Modules\Admin\Http\Controllers\CouponController;
 use Modules\Admin\Http\Controllers\CaptainController;
 use Modules\Admin\Http\Controllers\ProductController;
 use Modules\Admin\Http\Controllers\CategoryController;
-use Modules\Admin\Http\Controllers\CustomerController;
+use Modules\Admin\Http\Controllers\CustomerManagementController;
 use Modules\Admin\Http\Controllers\BankAccountController;
 use Modules\Admin\Http\Controllers\StoreCitiesController;
 use Modules\Admin\Http\Controllers\StoreDesignController;
@@ -43,7 +43,7 @@ Route::middleware(['auth:sanctum'])
         Route::apiResource('products', ProductController::class);
         Route::apiResource('categories', CategoryController::class);
         Route::apiResource('brands', BrandController::class);
-        Route::apiResource('customers', CustomerController::class);
+        Route::apiResource('customers', CustomerManagementController::class);
         Route::apiResource('captains', CaptainController::class);
         Route::apiResource('orders', OrderController::class);
         Route::apiResource('coupons', CouponController::class);
@@ -63,10 +63,9 @@ Route::middleware(['auth:sanctum'])
             Route::put('profile/change-password', [ProfileController::class, 'changePassword']);
 
 
-
-
-
             Route::apiResource('BankAccounts', BankAccountController::class)->except('show');
+
+            
             Route::apiResource('sellers', SellerManagementController::class);
 
 

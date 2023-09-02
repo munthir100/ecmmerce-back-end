@@ -2,27 +2,31 @@
 
 namespace Modules\Admin\Http\Controllers;
 
+use App\Services\StoreService;
+use App\Traits\ModelsForAdmin;
 use Modules\Acl\Entities\User;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use App\Traits\ModelsForAdmin;
 use Essa\APIToolKit\Api\ApiResponse;
+use Illuminate\Support\Facades\Hash;
 use Modules\Customer\Entities\Customer;
 use Modules\Admin\Http\Requests\CustomerRequest;
 use Modules\Admin\Transformers\CustomerResource;
 use Modules\Admin\Http\Requests\UpdateCustomerRequest;
 
-class CustomerController extends Controller
+class CustomerManagementController extends Controller
 {
-    use ModelsForAdmin, ApiResponse;
+    protected $storeService, $store;
+
+    public function __construct(StoreService $storeService)
+    {
+        $this->storeService = $storeService;
+        $this->store = $this->storeService->getStore();
+    }
 
     public function index()
     {
-
-        $store = auth()->user()->admin->store;
-
-        $customers = $store->customers()->useFilters()->with('user')->dynamicPaginate();
+        $customers = $this->store->customers()->useFilters()->with('user')->dynamicPaginate();
 
         return ['customer' => CustomerResource::collection($customers)];
     }
@@ -31,9 +35,8 @@ class CustomerController extends Controller
     {
         return DB::transaction(function () use ($request) {
             $data = $request->validated();
-            $store = $request->user()->admin->store;
 
-            $exists = $this->checkCustomerExistenceInStore($store, $data['email'], $data['phone']);
+            $exists = $this->checkCustomerExistenceInStore($this->store, $data['email'], $data['phone']);
             if ($exists) {
                 return $this->responseConflictError('The email or phone number already exists in this store.');
             }
@@ -43,7 +46,7 @@ class CustomerController extends Controller
 
             $user = User::create($data);
             $data['user_id'] = $user->id;
-            $data['store_id'] = $store->id;
+            $data['store_id'] = $this->store->id;
             $customer = Customer::create($data);
 
             return $this->responseCreated(
@@ -55,7 +58,7 @@ class CustomerController extends Controller
 
     public function show($customerId)
     {
-        $customer = $this->findAdminModel(auth()->user()->admin, Customer::class, $customerId);
+        $customer = $this->storeService->findStoreModel($this->store, Customer::class, $customerId);
 
         return $this->responseSuccess(
             data: ['customer' => new CustomerResource($customer)]
@@ -65,15 +68,14 @@ class CustomerController extends Controller
 
     public function update(UpdateCustomerRequest $request, $customerId)
     {
-        $customer = $this->findAdminModel(auth()->user()->admin, Customer::class, $customerId);
+        $customer = $this->storeService->findStoreModel($this->store, Customer::class, $customerId);
         return DB::transaction(function () use ($request, $customer) {
             $data = $request->validated();
-            $store = $request->user()->admin->store;
             $email = $data['email'] ?? null;
             $phone = $data['phone'] ?? null;
 
             if ($email || $phone) {
-                $exists = $this->checkCustomerExistenceInStore($store, $email, $phone, $customer->user_id);
+                $exists = $this->checkCustomerExistenceInStore($this->store, $email, $phone, $customer->user_id);
                 if ($exists) {
                     return $this->responseUnprocessable(
                         message: 'The email or phone number already exists in this store.',
@@ -94,7 +96,7 @@ class CustomerController extends Controller
 
     public function destroy($customerId)
     {
-        $customer = $this->findAdminModel(auth()->user()->admin, Customer::class, $customerId);
+        $customer = $this->storeService->findStoreModel($this->store, Customer::class, $customerId);
         $customer->user->delete();
 
         return $this->responseSuccess('Customer deleted');

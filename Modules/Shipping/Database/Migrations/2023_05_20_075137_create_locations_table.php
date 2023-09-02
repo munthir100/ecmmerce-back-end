@@ -26,7 +26,13 @@ return new class extends Migration
                 ->on('customers')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-                
+
+            $table->foreignId('city_id')
+                ->references('id')
+                ->on('cities')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+
             $table->timestamps();
             $table->softDeletes();
         });

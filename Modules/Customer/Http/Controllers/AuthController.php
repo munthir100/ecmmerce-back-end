@@ -7,14 +7,10 @@ use Modules\Acl\Entities\User;
 use Modules\Store\Entities\Store;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Responses\MessageResponse;
-use Essa\APIToolKit\Api\ApiResponse;
-use Modules\Customer\Entities\Customer;
 use Modules\Customer\Http\Requests\CustomerRegisterRequest;
 
 class AuthController extends Controller
 {
-    use ApiResponse;
     function login(Request $request, Store $store)
     {
         $data = $request->validate([

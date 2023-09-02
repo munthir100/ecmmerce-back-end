@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Store\Entities\AdditionalSetting;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Customer\Entities\Order;
 
 class Store extends Model implements HasMedia
 {
@@ -89,7 +90,6 @@ class Store extends Model implements HasMedia
     {
         return $this->hasMany(Captain::class);
     }
-
     function city()
     {
         return $this->belongsTo(City::class);
@@ -105,5 +105,9 @@ class Store extends Model implements HasMedia
     public function additionalSettings()
     {
         return $this->hasMany(AdditionalSetting::class);
+    }
+    function orders()
+    {
+        return $this->hasMany(Order::class);
     }
 }

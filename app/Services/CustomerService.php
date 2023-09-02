@@ -13,7 +13,7 @@ use Modules\Customer\Transformers\shoppingCartResource;
 
 class CustomerService
 {
-    function findModelById(Customer $customer,$modelClass, $modelId)
+    function findCustomerModel(Customer $customer,$modelClass, $modelId)
     {
         $model = $modelClass::where('customer_id',$customer->id)->find($modelId);
         if (!$model) {

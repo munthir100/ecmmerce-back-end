@@ -2,16 +2,12 @@
 
 namespace Modules\Store\Http\Controllers;
 
-use App\Http\Responses\MessageResponse;
-use Essa\APIToolKit\Api\ApiResponse;
-use Illuminate\Http\Request;
 use Modules\Store\Entities\Store;
 use Illuminate\Routing\Controller;
 use Modules\Store\Http\Requests\RatingRequest;
 
 class StoreController extends Controller
 {
-    use ApiResponse;
     function ratings(Store $store)
     {
         $data = [

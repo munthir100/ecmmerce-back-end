@@ -6,10 +6,8 @@ use Illuminate\Http\Request;
 use App\Services\CartService;
 use Modules\Store\Entities\Store;
 use Illuminate\Routing\Controller;
-use App\Http\Responses\MessageResponse;
 use App\Services\CustomerService;
 use App\Services\FeaturedProductService;
-use Essa\APIToolKit\Api\ApiResponse;
 use Modules\Customer\Entities\ShoppingCart;
 use Modules\Customer\Http\Requests\AddFeaturedProductToCartRequest;
 use Modules\Customer\Http\Requests\AddToCartRequest;
@@ -17,7 +15,6 @@ use Modules\Customer\Transformers\shoppingCartResource;
 
 class ShoppingCartController extends Controller
 {
-    use ApiResponse;
     protected $cartService, $featuredProductService, $customerService;
 
     public function __construct(
