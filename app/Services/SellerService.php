@@ -12,22 +12,6 @@ use Modules\Admin\Transformers\SellerResource;
 
 class SellerService
 {
-    public function validateEmail($email,$admin)
-    {
-        $existingSeller = $admin->sellers()->whereExists(function ($query) use ($email) {
-            $query->selectRaw(1)
-                ->from('users')
-                ->where('email', $email)
-                ->whereColumn('users.id', 'sellers.user_id')
-                ->limit(1);
-        })->exists();
-
-        if ($existingSeller) {
-            return Response::json(['message' => 'This seller email is already registered for this store'], 400)->throwResponse();
-        }
-
-        return null;
-    }
     public function createSellerUser(array $data)
     {
         return User::create([

@@ -10,30 +10,38 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Responses\MessageResponse;
 use App\Services\AdminRegisterService;
+use Modules\Acl\Entities\UserType;
 use Modules\Admin\Http\Requests\AdminRegisterRequest;
+use Modules\Admin\Http\Requests\LoginRequest;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $data = $request->validate([
-            'username' => 'required',
-            'password' => 'required',
-        ]);
-        $username = $data['username'];
-        $password = $data['password'];
+        $data = $request->validated();
+        $credentials = $request->only(['username', 'password']);
+        $username = $credentials['username'];
+
         $user = User::where(function ($query) use ($username) {
-            $query->where('user_type_id', 1)
-                ->where('email', $username)
-                ->orWhere('phone', $username);
+            $query->where(function ($query) use ($username) {
+                $query->where('email', $username)
+                    ->orWhere('phone', $username);
+            })->where('user_type_id', UserType::ADMIN)
+
+                ->orWhere(function ($query) use ($username) {
+                    $query->where('email', $username);
+                })->where('user_type_id', UserType::SELLER);
         })->first();
-        if (!$user || !Hash::check($password, $user->password)) {
-            return new MessageResponse(message: 'user not found');
+
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
+            return new MessageResponse(message: 'User not found', statusCode: 401);
         }
+
         $token = $user->createToken('token')->plainTextToken;
 
-        return new MessageResponse(message: 'login successfull', data: ['token' => $token], statusCode: 200);
+        return new MessageResponse(message: 'Login successful', data: ['token' => $token], statusCode: 200);
     }
+
 
     public function logout(Request $request)
     {

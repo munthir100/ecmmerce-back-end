@@ -3,13 +3,14 @@
 namespace Modules\Admin\Entities;
 
 use App\Filters\SellerFilters;
-use App\Traits\Searchable;
 use Essa\APIToolKit\Filters\Filterable;
 use Modules\Acl\Entities\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Store\Entities\Store;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class Seller extends Model
 {
@@ -17,7 +18,7 @@ class Seller extends Model
 
     protected string $default_filters = SellerFilters::class;
     
-    protected $fillable = ['user_id','admin_id'];
+    protected $fillable = ['user_id','admin_id','store_id'];
 
     function user()
     {
@@ -27,7 +28,18 @@ class Seller extends Model
     {
         return $this->belongsTo(Admin::class);
     }
-
+    function store()
+    {
+        return $this->belongsTo(Store::class);
+    }
+    function role()
+    {
+        return $this->hasMany(Role::class);
+    }
+    function permissions()
+    {
+        return $this->hasMany(Permission::class);
+    }
     // scopes
 
     public function scopeForAdmin($query, $adminId)

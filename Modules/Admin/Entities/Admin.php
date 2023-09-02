@@ -13,7 +13,7 @@ class Admin extends Model
 {
     use HasFactory,SoftDeletes,CascadeSoftDeletes;
 
-    protected $cascadeDeletes = ['store','sellers','bankAccounts'];
+    protected $cascadeDeletes = ['store','sellers','bankAccounts','notifications'];
 
     protected $fillable = ['user_id'];
 
@@ -32,5 +32,13 @@ class Admin extends Model
     function bankAccounts()
     {
         return $this->hasMany(BankAccount::class);
+    }
+    function notifications()
+    {
+        return $this->hasMany(AdminNotification::class);
+    }
+    function contactMessages()
+    {
+        return $this->hasMany(ContactMessage::class);
     }
 }

@@ -13,24 +13,18 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('sellers', function (Blueprint $table) {
+        Schema::create('contact_messages', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('email');
+            $table->string('phone');
+            $table->string('details');
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreignId('user_id')
-                ->references('id')
-                ->on('users')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
             $table->foreignId('admin_id')
                 ->references('id')
                 ->on('admins')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->foreignId('store_id')
-                ->references('id')
-                ->on('stores')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
         });
@@ -43,6 +37,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sellers');
+        Schema::dropIfExists('contact_messages');
     }
 };

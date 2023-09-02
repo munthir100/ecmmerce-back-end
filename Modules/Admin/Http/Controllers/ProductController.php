@@ -5,6 +5,7 @@ namespace Modules\Admin\Http\Controllers;
 use Illuminate\Support\Arr;
 use App\Services\ProductService;
 use App\Services\StoreService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\Store\Entities\Product;
@@ -16,6 +17,7 @@ use Modules\Admin\Transformers\ProductWithOptionsResource;
 
 class ProductController extends Controller
 {
+    use AuthorizesRequests;
     protected $productService, $storeService,$store;
 
     public function __construct(ProductService $productService, StoreService $storeService)

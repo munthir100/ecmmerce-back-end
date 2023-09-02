@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Modules\Admin\Entities\Bank;
 use Modules\Admin\Entities\Language;
 use Illuminate\Support\Facades\Route;
+use Modules\Admin\Http\Controllers\AdminNotificationController;
 use Modules\Admin\Http\Controllers\AuthController;
 use Modules\Admin\Http\Controllers\BrandController;
 use Modules\Admin\Http\Controllers\OrderController;
@@ -13,6 +14,7 @@ use Modules\Admin\Http\Controllers\ProductController;
 use Modules\Admin\Http\Controllers\CategoryController;
 use Modules\Admin\Http\Controllers\CustomerManagementController;
 use Modules\Admin\Http\Controllers\BankAccountController;
+use Modules\Admin\Http\Controllers\ContactMessagesController;
 use Modules\Admin\Http\Controllers\StoreCitiesController;
 use Modules\Admin\Http\Controllers\StoreDesignController;
 use Modules\Admin\Http\Controllers\StoreSettingsController;
@@ -47,6 +49,10 @@ Route::middleware(['auth:sanctum'])
         Route::apiResource('captains', CaptainController::class);
         Route::apiResource('orders', OrderController::class);
         Route::apiResource('coupons', CouponController::class);
+        Route::apiResource('notifications', AdminNotificationController::class)->only('index','destroy');
+        Route::apiResource('contactMessages', ContactMessagesController::class)->only('index','destroy');
+        
+        
         Route::post('orders/{order}/change-status', [OrderController::class, 'changeStatus']);
         Route::get('store-cities', [StoreCitiesController::class, 'index']);
 
@@ -65,7 +71,7 @@ Route::middleware(['auth:sanctum'])
 
             Route::apiResource('BankAccounts', BankAccountController::class)->except('show');
 
-            
+
             Route::apiResource('sellers', SellerManagementController::class);
 
 

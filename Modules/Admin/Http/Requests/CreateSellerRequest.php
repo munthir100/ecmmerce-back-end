@@ -2,8 +2,9 @@
 
 namespace Modules\Admin\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Foundation\Http\FormRequest;
 
 class CreateSellerRequest extends FormRequest
 {
@@ -16,10 +17,21 @@ class CreateSellerRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'email' => 'required|email',
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('users')->where(function ($query) {
+                    return $query->where('user_type_id', 3);
+                }),
+            ],
             'password' => 'required|string|min:8',
-            'role' => 'required|string',
-            'permissions' => 'nullable|array',
+            'role' => 'nullable|string',
+            'permissions' => [
+                'nullable',
+                'array',
+                'distinct',
+                Rule::in(DB::table('permissions')->pluck('name')->toArray()),
+            ],
         ];
     }
 
@@ -29,7 +41,7 @@ class CreateSellerRequest extends FormRequest
         $this->validate([
             'email' => [
                 Rule::unique('users')->where(function ($query) use ($store, $admin) {
-                    
+
                     $query->where('store_id', $store->id)
                         ->where('admin_id', $admin->id);
                 }),
