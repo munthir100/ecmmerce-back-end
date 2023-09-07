@@ -32,8 +32,8 @@ class CouponController extends Controller
     {
         $validatedData = $request->validated();
         $action->validatePromocode($request->promocode, $this->store);
-        $coupon = $this->store->coupons->create($validatedData);
-
+        $coupon = $this->store->coupons()->create($validatedData);
+        
         return $this->responseSuccess('coupon created', new CouponResource($coupon));
     }
 

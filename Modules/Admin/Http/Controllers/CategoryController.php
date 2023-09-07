@@ -29,7 +29,7 @@ class CategoryController extends Controller
     public function store(CategoryRequest $request)
     {
         $data = $request->validated();
-        $category = $this->store->categories->create($data);
+        $category = $this->store->categories()->create($data);
         $category->uploadMedia();
 
         return $this->responseCreated('category created successfully', new CategoryResource($category));

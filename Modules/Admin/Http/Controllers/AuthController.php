@@ -6,13 +6,13 @@ use Illuminate\Http\Request;
 use Modules\Acl\Entities\User;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Modules\Acl\Entities\UserType;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Responses\MessageResponse;
 use App\Services\AdminRegisterService;
-use Modules\Acl\Entities\UserType;
-use Modules\Admin\Http\Requests\AdminRegisterRequest;
+use App\Http\Responses\MessageResponse;
 use Modules\Admin\Http\Requests\LoginRequest;
+use Modules\Admin\Http\Requests\AdminRegisterRequest;
 
 class AuthController extends Controller
 {

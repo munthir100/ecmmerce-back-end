@@ -3,16 +3,17 @@
 namespace Modules\Customer\Http\Controllers;
 
 use App\Services\OrderService;
-use Modules\Store\Entities\Store;
-use Illuminate\Routing\Controller;
-use App\Http\Responses\MessageResponse;
 use App\Services\CouponService;
 use App\Services\CustomerService;
+use Modules\Store\Entities\Store;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
+use Modules\Shipping\Entities\Captain;
+use App\Http\Responses\MessageResponse;
+use Modules\Shipping\Entities\Location;
 use Modules\Customer\Entities\ShoppingCart;
 use Modules\Customer\Transformers\OrderResource;
 use Modules\Customer\Http\Requests\CheckOutRequest;
-use Modules\Shipping\Entities\Captain;
-use Modules\Shipping\Entities\Location;
 
 class CheckoutController extends Controller
 {
@@ -46,15 +47,17 @@ class CheckoutController extends Controller
             $coupon = $couponService->findByPromocode($store, $data['coupon']);
             $order = $couponService->applyCouponDiscount($order, $coupon, $orderItems, $store);
         }
+        DB::transaction(function () use ($order, $orderItems,$shoppingCart) {
+            $order->save();
+            $order->items()->saveMany($orderItems);
+            $shoppingCart->delete();
+        });
+        
 
-        $order->save();
-        $order->items()->saveMany($orderItems);
-        $shoppingCart->delete();
 
-
-        return new MessageResponse('order created', [
+        return $this->responseSuccess('order created', [
             'order' => new OrderResource($order),
             'items' => $orderItems,
-        ], statusCode: 200);
+        ]);
     }
 }

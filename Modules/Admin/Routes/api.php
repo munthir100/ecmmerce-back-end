@@ -47,7 +47,7 @@ Route::middleware(['auth:sanctum'])
         Route::apiResource('brands', BrandController::class);
         Route::apiResource('customers', CustomerManagementController::class);
         Route::apiResource('captains', CaptainController::class);
-        Route::apiResource('orders', OrderController::class);
+        Route::apiResource('orders', OrderController::class)->except('update');
         Route::apiResource('coupons', CouponController::class);
         Route::apiResource('notifications', AdminNotificationController::class)->only('index','destroy');
         Route::apiResource('contactMessages', ContactMessagesController::class)->only('index','destroy');

@@ -43,7 +43,9 @@ class ProductController extends Controller
         return DB::transaction(function () use ($data, $optionsData) {
             $product = $this->store->products()->create($data);
             $product->uploadMedia();
-            $this->productService->createProductOptions($product, $optionsData);
+            if(!isEmpty($optionsData)){
+                $this->productService->createProductOptions($product, $optionsData);
+            }
 
             return $this->responseCreated('product created', new ProductWithOptionsResource($product));
         });

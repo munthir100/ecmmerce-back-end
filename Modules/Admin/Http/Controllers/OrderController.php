@@ -2,10 +2,12 @@
 
 namespace Modules\Admin\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Services\StoreService;
+use App\Services\CouponService;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Modules\Customer\Entities\Order;
+use App\Services\Admin\AdminOrderService;
 use Modules\Admin\Transformers\OrderResource;
 use Modules\Admin\Http\Requests\ChangeOrderStatus;
 use Modules\Admin\Http\Requests\CreateOrderRequest;
@@ -30,10 +32,28 @@ class OrderController extends Controller
         );
     }
 
-    public function store(CreateOrderRequest $request)
+
+    public function store(CreateOrderRequest $request, AdminOrderService $adminOrderService, CouponService $couponService)
     {
-        //
+        $orderData = $request->validated();
+        $productIds = collect($orderData['products'])->pluck('id')->toArray();
+        $orderdProducts = $adminOrderService->findProducts($this->store, $productIds);
+        $orderData += $request->validateQuantitiesAndOptions($orderdProducts);
+        $totalPrice = $adminOrderService->calculateSelectedProductsTotalPrice($orderdProducts, $orderData);
+        $order = $adminOrderService->createOrder($this->store, $orderData, $totalPrice);
+        $orderItems = $adminOrderService->setOrderItems($orderData, $order);
+        DB::transaction(function () use ($order, $orderItems) {
+            $order->save();
+            $order->items()->saveMany($orderItems);
+        });
+        if ($request->has('coupon')) {
+            $coupon = $couponService->findByPromocode($this->store, $orderData['coupon']);
+            $order = $couponService->applyCouponDiscount($order, $coupon, $orderItems, $this->store);
+        }
+
+        return $this->responseSuccess('order created', new OrderResource($order));
     }
+
 
     public function show($orderId)
     {
