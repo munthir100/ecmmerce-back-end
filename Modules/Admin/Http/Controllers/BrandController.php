@@ -3,6 +3,7 @@
 namespace Modules\Admin\Http\Controllers;
 
 use App\Services\StoreService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Modules\Store\Entities\Brand;
 use Illuminate\Routing\Controller;
 use Modules\Admin\Http\Requests\BrandRequest;
@@ -11,6 +12,7 @@ use Modules\Admin\Http\Requests\UpdateBrandRequest;
 
 class BrandController extends Controller
 {
+    use AuthorizesRequests;
     protected $storeService, $store;
 
     public function __construct(StoreService $storeService)
@@ -21,6 +23,7 @@ class BrandController extends Controller
 
     public function index()
     {
+        $this->authorize('View-Brand');
         $brands = $this->store->brands()->useFilters()->dynamicPaginate();
 
         return $this->responseSuccess(
@@ -30,6 +33,7 @@ class BrandController extends Controller
 
     public function store(BrandRequest $request)
     {
+        $this->authorize('Create-Brand');
         $data = $request->validated();
         $brand = Brand::create($data);
         $brand->uploadMedia();
@@ -42,6 +46,7 @@ class BrandController extends Controller
 
     public function show($brandId)
     {
+        $this->authorize('View-Brand');
         $brand = $this->storeService->findStoreModel($this->store, Brand::class, $brandId);
 
         return $this->responseSuccess(
@@ -51,6 +56,7 @@ class BrandController extends Controller
 
     public function update(UpdateBrandRequest $request, $brandId)
     {
+        $this->authorize('Edit-Brand');
         $brand = $this->storeService->findStoreModel($this->store, Brand::class, $brandId);
         if ($request->has('image')) {
             $brand->clearMediaCollection('image');
@@ -66,6 +72,7 @@ class BrandController extends Controller
 
     public function destroy($brandId)
     {
+        $this->authorize('Delete-Brand');
         $brand = $this->storeService->findStoreModel($this->store, Brand::class, $brandId);
         $brand->delete();
 

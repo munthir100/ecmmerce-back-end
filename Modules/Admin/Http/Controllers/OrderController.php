@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\Customer\Entities\Order;
 use App\Services\Admin\AdminOrderService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Modules\Admin\Transformers\OrderResource;
 use Modules\Admin\Http\Requests\ChangeOrderStatus;
 use Modules\Admin\Http\Requests\CreateOrderRequest;
@@ -15,6 +16,7 @@ use Modules\Admin\Transformers\OrderWithDetailsResource;
 
 class OrderController extends Controller
 {
+    use AuthorizesRequests;
     protected $storeService, $store;
 
     public function __construct(StoreService $storeService)
@@ -25,6 +27,7 @@ class OrderController extends Controller
 
     public function index()
     {
+        $this->authorize('View-Order');
         $orders = $this->store->orders()->useFilters()->with('customer.user', 'captain')->dynamicPaginate();
 
         return $this->responseSuccess(
@@ -35,6 +38,7 @@ class OrderController extends Controller
 
     public function store(CreateOrderRequest $request, AdminOrderService $adminOrderService, CouponService $couponService)
     {
+        $this->authorize('Create-Order');
         $orderData = $request->validated();
         $productIds = collect($orderData['products'])->pluck('id')->toArray();
         $orderdProducts = $adminOrderService->findProducts($this->store, $productIds);
@@ -57,6 +61,7 @@ class OrderController extends Controller
 
     public function show($orderId)
     {
+        $this->authorize('View-Order-Details');
         $order = $this->storeService->findStoreModel($this->store, Order::class, $orderId)->with([
             'customer.user',
             'captain:id,name,shipping_cost',
@@ -74,6 +79,7 @@ class OrderController extends Controller
 
     public function destroy($orderId)
     {
+        $this->authorize('Delete-Order');
         $order = $this->storeService->findStoreModel($this->store, Order::class, $orderId);
         $order->delete();
 
@@ -82,6 +88,7 @@ class OrderController extends Controller
 
     public function changeStatus($orderId, ChangeOrderStatus $request)
     {
+        $this->authorize('Change-Order-Status');
         $data = $request->validated();
         $order = $this->storeService->findStoreModel($this->store, Order::class, $orderId);
         $order->update($data);

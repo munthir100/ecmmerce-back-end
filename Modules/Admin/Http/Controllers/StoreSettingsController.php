@@ -3,12 +3,14 @@
 namespace Modules\Admin\Http\Controllers;
 
 use App\Services\StoreService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Routing\Controller;
 use Modules\Admin\Transformers\StoreResource;
 use Modules\Admin\Http\Requests\UpdateStoreRequest;
 
 class StoreSettingsController extends Controller
 {
+    use AuthorizesRequests;
     protected $storeService,$store;
 
     public function __construct(StoreService $storeService)
@@ -18,6 +20,7 @@ class StoreSettingsController extends Controller
     }
     function updateBasicInformation(UpdateStoreRequest $request)
     {
+        $this->authorize('Manage-Store-Settings');
         $data = $request->validated();
         $data += $request->validateStoreLink($this->store);
         $updatedStore = $this->store->update($data);
@@ -27,6 +30,7 @@ class StoreSettingsController extends Controller
 
     function UpdateStoreLogo(UpdateStoreRequest $request)
     {
+        $this->authorize('Manage-Store-Settings');
         $request->validated();
 
         if ($request->has('store_logo')) {
@@ -38,6 +42,7 @@ class StoreSettingsController extends Controller
     }
     function UpdateStoreIcon(UpdateStoreRequest $request)
     {
+        $this->authorize('Manage-Store-Settings');
         $request->validated();
 
         if ($request->has('store_icon')) {
@@ -50,6 +55,7 @@ class StoreSettingsController extends Controller
 
     function UpdateStoreCity(UpdateStoreRequest $request)
     {
+        $this->authorize('Manage-Store-Settings');
         $data = $request->validateStoreCity($this->store);
         $this->store->update($data);
 

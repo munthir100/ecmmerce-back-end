@@ -2,13 +2,16 @@
 
 namespace Modules\Admin\Http\Controllers;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Routing\Controller;
 use Modules\Admin\Transformers\AdminNotificationResource;
 
 class AdminNotificationController extends Controller
 {
+    use AuthorizesRequests;
     public function index()
     {
+        $this->authorize('View-Notification');
         $admin = $this->getAdmin();
         $notifications = $admin->notifications()->get();
 
@@ -19,6 +22,7 @@ class AdminNotificationController extends Controller
     
     public function destroy($notificationId)
     {
+        $this->authorize('Delete-Notification');
         $admin = $this->getAdmin();
         $notification = $admin->notifications()->find($notificationId);
 
@@ -33,6 +37,6 @@ class AdminNotificationController extends Controller
 
     protected function getAdmin()
     {
-        return auth()->user()->admin;
+        return request()->user()->admin;
     }
 }

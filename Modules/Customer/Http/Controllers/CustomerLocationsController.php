@@ -14,7 +14,7 @@ class CustomerLocationsController extends Controller
 {
     public function index(Store $store)
     {
-        $customer = auth()->user()->customer;
+        $customer = request()->user()->customer;
         $locations = $customer->locations;
 
         return $this->responseSuccess(data: LocationResource::collection($locations));
@@ -35,7 +35,7 @@ class CustomerLocationsController extends Controller
 
     public function show(Store $store, Location $location)
     {
-        $customer = auth()->user()->customer;
+        $customer = request()->user()->customer;
         if ($location->customer_id !== $customer->id) {
             return $this->responseUnAuthorized('Unauthorized');
         }

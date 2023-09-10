@@ -4,8 +4,7 @@ namespace Modules\Admin\Transformers;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-
-class SellerResource extends JsonResource
+class TaxResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,9 +16,11 @@ class SellerResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'user' => new UserResource($this->user),
-            'roles' => $this->user->roles->pluck('name'),
-            'permissions' => $this->user->permissions->pluck('name'),
+            'name' => $this->name,
+            'number' => $this->number,
+            'precentage' => $this->precentage,
+            'merchant_borne_tax' => $this->merchant_borne_tax,
+            'is_active' => $this->is_active,
         ];
     }
 }

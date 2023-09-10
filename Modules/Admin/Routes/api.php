@@ -22,6 +22,7 @@ use Modules\Admin\Http\Controllers\StoreCountriesController;
 use Modules\Admin\Http\Controllers\SellerManagementController;
 use Modules\Admin\Http\Controllers\Settings\ProfileController;
 use Modules\Admin\Http\Controllers\StoreAdditionalSettingsController;
+use Modules\Admin\Http\Controllers\TaxController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,12 +49,14 @@ Route::middleware(['auth:sanctum'])
         Route::apiResource('customers', CustomerManagementController::class);
         Route::apiResource('captains', CaptainController::class);
         Route::apiResource('orders', OrderController::class)->except('update');
-        Route::apiResource('coupons', CouponController::class);
-        Route::apiResource('notifications', AdminNotificationController::class)->only('index','destroy');
-        Route::apiResource('contactMessages', ContactMessagesController::class)->only('index','destroy');
-        
-        
         Route::post('orders/{order}/change-status', [OrderController::class, 'changeStatus']);
+        Route::apiResource('coupons', CouponController::class);
+        Route::apiResource('taxes', TaxController::class);
+        
+        Route::apiResource('notifications', AdminNotificationController::class)->only('index','destroy');
+        Route::apiResource('contactMessages', ContactMessagesController::class)->only('index','destroy');// only admin
+        
+        
         Route::get('store-cities', [StoreCitiesController::class, 'index']);
 
         Route::prefix('settings')->group(function () {
@@ -69,10 +72,10 @@ Route::middleware(['auth:sanctum'])
             Route::put('profile/change-password', [ProfileController::class, 'changePassword']);
 
 
-            Route::apiResource('BankAccounts', BankAccountController::class)->except('show');
+            Route::apiResource('BankAccounts', BankAccountController::class)->except('show'); // only admin
 
 
-            Route::apiResource('sellers', SellerManagementController::class);
+            Route::apiResource('sellers', SellerManagementController::class);// only admin
 
 
             Route::prefix('store/update')->group(function () {
@@ -86,11 +89,12 @@ Route::middleware(['auth:sanctum'])
                 Route::put('commercial-registration', [StoreAdditionalSettingsController::class, 'updateCommercialRegistration']);
                 Route::put('status', [StoreAdditionalSettingsController::class, 'updateStatus']);
                 Route::put('language', [StoreAdditionalSettingsController::class, 'updateStoreLanguage']);
-                Route::put('colors', [StoreAdditionalSettingsController::class, 'updateColors']);
-
+                
                 Route::prefix('design')->group(function () {
                     Route::put('navbar', [StoreDesignController::class, 'updateNavbar']);
+                    Route::delete('navbar', [StoreDesignController::class, 'deleteNavbar']);
                     Route::put('theme', [StoreDesignController::class, 'updateTheme']);
+                    Route::put('colors', [StoreDesignController::class, 'updateColors']);
                 });
             });
 

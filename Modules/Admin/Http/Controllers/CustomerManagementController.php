@@ -8,6 +8,7 @@ use Modules\Acl\Entities\User;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Essa\APIToolKit\Api\ApiResponse;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Hash;
 use Modules\Customer\Entities\Customer;
 use Modules\Admin\Http\Requests\CustomerRequest;
@@ -16,8 +17,9 @@ use Modules\Admin\Http\Requests\UpdateCustomerRequest;
 
 class CustomerManagementController extends Controller
 {
+    use AuthorizesRequests;
     protected $storeService, $store;
-
+    
     public function __construct(StoreService $storeService)
     {
         $this->storeService = $storeService;
@@ -26,6 +28,7 @@ class CustomerManagementController extends Controller
 
     public function index()
     {
+        $this->authorize('View-Customer');
         $customers = $this->store->customers()->useFilters()->with('user')->dynamicPaginate();
 
         return ['customer' => CustomerResource::collection($customers)];
@@ -33,6 +36,7 @@ class CustomerManagementController extends Controller
 
     public function store(CustomerRequest $request)
     {
+        $this->authorize('Create-Customer');
         return DB::transaction(function () use ($request) {
             $data = $request->validated();
 
@@ -58,6 +62,7 @@ class CustomerManagementController extends Controller
 
     public function show($customerId)
     {
+        $this->authorize('Do-Something');
         $customer = $this->storeService->findStoreModel($this->store, Customer::class, $customerId);
 
         return $this->responseSuccess(
@@ -68,6 +73,7 @@ class CustomerManagementController extends Controller
 
     public function update(UpdateCustomerRequest $request, $customerId)
     {
+        $this->authorize('Edit-Customer');
         $customer = $this->storeService->findStoreModel($this->store, Customer::class, $customerId);
         return DB::transaction(function () use ($request, $customer) {
             $data = $request->validated();
@@ -96,6 +102,7 @@ class CustomerManagementController extends Controller
 
     public function destroy($customerId)
     {
+        $this->authorize('Delete-Customer');
         $customer = $this->storeService->findStoreModel($this->store, Customer::class, $customerId);
         $customer->user->delete();
 

@@ -3,6 +3,7 @@
 namespace Modules\Admin\Http\Controllers;
 
 use App\Services\StoreService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Routing\Controller;
 use Modules\Store\Entities\Category;
 use Modules\Admin\Http\Requests\CategoryRequest;
@@ -11,8 +12,8 @@ use Modules\Admin\Http\Requests\UpdateCategoryRequest;
 
 class CategoryController extends Controller
 {
+    use AuthorizesRequests;
     protected $storeService,$store;
-
     public function __construct(StoreService $storeService)
     {
         $this->storeService = $storeService;
@@ -20,6 +21,7 @@ class CategoryController extends Controller
     }
     public function index()
     {
+        $this->authorize('View-Category');
         $categories = $this->store->categories()->useFilters()->dynamicPaginate();
 
         return $this->responseSuccess('categories', new CategoryResource($categories));
@@ -28,6 +30,7 @@ class CategoryController extends Controller
 
     public function store(CategoryRequest $request)
     {
+        $this->authorize('Create-Category');
         $data = $request->validated();
         $category = $this->store->categories()->create($data);
         $category->uploadMedia();
@@ -38,6 +41,7 @@ class CategoryController extends Controller
 
     public function show($categoryId)
     {
+        $this->authorize('View-Category');
         $category = $this->storeService->findStoreModel($this->store, Category::class, $categoryId);
 
         return $this->responseSuccess(data: new CategoryResource($category));
@@ -45,6 +49,7 @@ class CategoryController extends Controller
 
     public function update(UpdateCategoryRequest $request, $categoryId)
     {
+        $this->authorize('Edit-Category');
         $category = $this->storeService->findStoreModel($this->store, Category::class, $categoryId);
         if ($request->has('image')) {
             $category->clearMediaCollection('image');
@@ -60,6 +65,7 @@ class CategoryController extends Controller
 
     public function destroy($categoryId)
     {
+        $this->authorize('Delete-Category');
         $category = $this->storeService->findStoreModel($this->store, Category::class, $categoryId);
         $category->delete();
 

@@ -9,11 +9,13 @@ use Essa\APIToolKit\Api\ApiResponse;
 use Modules\Shipping\Entities\Country;
 use App\Http\Responses\MessageResponse;
 use App\Services\StoreCountriesService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Modules\Store\Entities\StoreCountry;
 use Modules\Admin\Http\Requests\StoreCountriesRequest;
 
 class StoreCountriesController extends Controller
 {
+    use AuthorizesRequests;
     protected $storeService, $store, $storeCountriesService;
 
     public function __construct(StoreCountriesService $storeCountriesService, StoreService $storeService)
@@ -26,6 +28,7 @@ class StoreCountriesController extends Controller
 
     public function index()
     {
+        $this->authorize('Manage-Store-Countries');
         $countries = $this->storeCountriesService->getStoreCountries($this->store);
 
         return $this->responseSuccess('supported countries', ['countries' => $countries]);
@@ -33,6 +36,7 @@ class StoreCountriesController extends Controller
 
     public function store(StoreCountriesRequest $request)
     {
+        $this->authorize('Manage-Store-Countries');
         $data = $request->validated();
         $country = $this->storeService->findStoreModel($this->store, Country::class, $data['country_id']);
         $this->storeCountriesService->checkIfCountryExestsInStore($this->store, $country);
@@ -44,6 +48,7 @@ class StoreCountriesController extends Controller
 
     public function setAsDefault($countryId)
     {
+        $this->authorize('Manage-Store-Countries');
         $country = $this->storeService->findStoreModel($this->store, Country::class, $countryId);
         $this->storeCountriesService->checkIfCountryNotExestsInStore($this->store, $country);
         $this->storeCountriesService->checkIfCountryIsActivated($this->store->countries(), $countryId);
@@ -56,6 +61,7 @@ class StoreCountriesController extends Controller
 
     public function destroy($countryId)
     {
+        $this->authorize('Manage-Store-Countries');
         $country = $this->storeService->findStoreModel($this->store, Country::class, $countryId);
         $this->storeCountriesService->checkIfCountryNotExestsInStore($this->store, $country);
         $this->storeCountriesService->checkIfCountryIsDefault($this->store->countries(), $countryId);
@@ -66,6 +72,7 @@ class StoreCountriesController extends Controller
 
     public function toggleActivation($countryId)
     {
+        $this->authorize('Manage-Store-Countries');
         $country = $this->storeService->findStoreModel($this->store, Country::class, $countryId);
         $this->storeCountriesService->checkIfCountryNotExestsInStore($this->store, $country);
         $this->storeCountriesService->checkIfCountryIsDefault($this->store->countries(), $countryId);

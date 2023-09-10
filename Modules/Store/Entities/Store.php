@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Store\Entities\AdditionalSetting;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Admin\Entities\Tax;
 use Modules\Customer\Entities\Order;
 
 class Store extends Model implements HasMedia
@@ -33,6 +34,7 @@ class Store extends Model implements HasMedia
         'captains',
         'additionalSettings',
         'socialMediaLinks',
+        'taxes',
     ];
 
     protected $fillable = [
@@ -109,5 +111,9 @@ class Store extends Model implements HasMedia
     function orders()
     {
         return $this->hasMany(Order::class);
+    }
+    function taxes()
+    {
+        return $this->hasMany(Tax::class);
     }
 }

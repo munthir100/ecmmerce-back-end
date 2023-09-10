@@ -18,7 +18,7 @@ use Modules\Admin\Transformers\ProductWithOptionsResource;
 class ProductController extends Controller
 {
     use AuthorizesRequests;
-    protected $productService, $storeService,$store;
+    protected $productService, $storeService, $store;
 
     public function __construct(ProductService $productService, StoreService $storeService)
     {
@@ -29,6 +29,7 @@ class ProductController extends Controller
 
     public function index()
     {
+        $this->authorize('View-Product');
         $products = $this->store->products()->useFilters()->dynamicPaginate();
 
         return $this->responseSuccess('products', ProductResource::collection($products));
@@ -36,6 +37,7 @@ class ProductController extends Controller
 
     public function store(ProductRequest $request)
     {
+        $this->authorize('Create-Product');
         $data = $request->validated();
         $request->validateSkuIsUnique($this->store);
         $optionsData = Arr::pull($data, 'options', []);
@@ -43,7 +45,7 @@ class ProductController extends Controller
         return DB::transaction(function () use ($data, $optionsData) {
             $product = $this->store->products()->create($data);
             $product->uploadMedia();
-            if(!isEmpty($optionsData)){
+            if (!isEmpty($optionsData)) {
                 $this->productService->createProductOptions($product, $optionsData);
             }
 
@@ -54,6 +56,7 @@ class ProductController extends Controller
 
     public function show($productId)
     {
+        $this->authorize('View-Product');
         $product = $this->storeService->findStoreModel($this->store, Product::class, $productId);
 
         return $this->responseSuccess(data: new ProductWithOptionsResource($product));
@@ -62,6 +65,7 @@ class ProductController extends Controller
 
     public function update(UpdateProductRequest $request, $productId)
     {
+        $this->authorize('Edit-Product');
         $product = $this->storeService->findStoreModel($this->store, Product::class, $productId);
         $data = $request->validated();
         $request->validateSkuIsUnique($this->store, $product);
@@ -93,6 +97,7 @@ class ProductController extends Controller
 
     public function destroy($productId)
     {
+        $this->authorize('Delete-Product');
         $product = $this->storeService->findStoreModel($this->store, Product::class, $productId);
         $this->productService->deleteProduct($product);
 

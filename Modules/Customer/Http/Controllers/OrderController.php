@@ -13,7 +13,7 @@ class OrderController extends Controller
 {
     public function index(Store $store)
     {
-        $customerOrders = auth()->user()->customer->orders()->useFilters()->with('items')->dynamicPaginate();
+        $customerOrders = request()->user()->customer->orders()->useFilters()->with('items')->dynamicPaginate();
 
         return $this->responseSuccess(data: OrderResource::collection($customerOrders));
     }

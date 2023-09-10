@@ -6,12 +6,14 @@ use App\Services\StoreService;
 use Illuminate\Routing\Controller;
 use Modules\Shipping\Entities\Captain;
 use App\Http\Responses\MessageResponse;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Modules\Admin\Http\Requests\CaptainRequest;
 use Modules\Admin\Transformers\CaptainResource;
 use Modules\Admin\Http\Requests\UpdateCaptainRequest;
 
 class CaptainController extends Controller
 {
+    use AuthorizesRequests;
     protected $storeService,$store;
 
     public function __construct(StoreService $storeService)
@@ -22,6 +24,7 @@ class CaptainController extends Controller
 
     public function index()
     {
+        $this->authorize('View-Shipping-Method');
         $captains = $this->store->captains()->useFilters()->dynamicPaginate();
 
         return $this->responseSuccess(
@@ -31,6 +34,7 @@ class CaptainController extends Controller
 
     public function store(CaptainRequest $request)
     {
+        $this->authorize('Create-Shipping-Method');
         $data = $request->validated();
         $data += $request->validateStoreCity($this->store);
         $captain = $this->store->captains()->create($data);
@@ -44,8 +48,8 @@ class CaptainController extends Controller
 
     public function show($captianId)
     {
+        $this->authorize('View-Shipping-Method');
         $captain = $this->storeService->findStoreModel($this->store, Captain::class, $captianId);
-        
         return new MessageResponse(
             data: ['captain' => new CaptainResource($captain)],
             statusCode: 200
@@ -54,6 +58,7 @@ class CaptainController extends Controller
 
     public function update(UpdateCaptainRequest $request, $captianId)
     {
+        $this->authorize('Edit-Shipping-Method');
         $data = $request->validated();
         $captain = $this->storeService->findStoreModel($this->store, Captain::class, $captianId);
 
@@ -72,6 +77,7 @@ class CaptainController extends Controller
 
     public function destroy($captianId)
     {
+        $this->authorize('Delete-Shipping-Method');
         $captain = $this->storeService->findStoreModel($this->store, Captain::class, $captianId);
         $captain->delete();
 

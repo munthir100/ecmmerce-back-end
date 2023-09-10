@@ -3,14 +3,17 @@
 namespace Modules\Admin\Http\Controllers;
 
 use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Admin\Transformers\ContactMessageResource;
 
 class ContactMessagesController extends Controller
 {
+    use AuthorizesRequests;
     public function index()
     {
+        $this->authorize('View-Contact-Message');
         $admin = $this->getAdmin();
         $contactMessages = $admin->contactMessages()->get();
 
@@ -21,6 +24,7 @@ class ContactMessagesController extends Controller
     
     public function destroy($messageId)
     {
+        $this->authorize('Delete-Contact-Message');
         $admin = $this->getAdmin();
         $message = $admin->contactMessages()->find($messageId);
 
@@ -35,6 +39,6 @@ class ContactMessagesController extends Controller
 
     protected function getAdmin()
     {
-        return auth()->user()->admin;
+        return request()->user()->admin;
     }
 }

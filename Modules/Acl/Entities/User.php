@@ -20,6 +20,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles, HasPermissions, SoftDeletes, CascadeSoftDeletes;
+    protected $guard_name = 'api';
 
     protected $cascadeDeletes = ['admin', 'customer', 'seller'];
 

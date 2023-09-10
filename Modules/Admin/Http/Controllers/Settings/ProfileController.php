@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Hash;
 use Modules\Admin\Transformers\UserResource;
 use Modules\Admin\Http\Requests\Settings\Profile\UpdatePasswordRequest;
+use Modules\Admin\Http\Requests\UpdateProfileRequest;
 
 class ProfileController extends Controller
 {
@@ -24,12 +25,10 @@ class ProfileController extends Controller
     }
 
 
-    public function update(Request $request)
+    public function update(UpdateProfileRequest $request)
     {
         $user = $request->user();
-
-        $data = $this->validateProfileData($user);
-        return $data;
+        $data = $request->validateProfileData($user);
         $user->update($data);
 
         return $this->responseSuccess('user data updated', new UserResource($user), 200);
@@ -53,29 +52,5 @@ class ProfileController extends Controller
 
 
 
-    function validateProfileData($user)
-        {
-            return request()->validate([
-                'name' => 'required|string|max:255',
-                'email' => [
-                    'required',
-                    'string',
-                    'email',
-                    Rule::unique('users', 'email')->where(function ($query) use ($user) {
-                        return $query->where('user_type_id', 1)
-                            ->where('id', '!=', $user->id);
-                            // ->whereNull('deleted_at');
-                    }),
-                ],
-                'phone' => [
-                    'required',
-                    'string',
-                    Rule::unique('users', 'phone')->where(function ($query) use ($user) {
-                        return $query->where('user_type_id', 1)
-                            ->where('id', '!=', $user->id);
-                            // ->whereNull('deleted_at');
-                    }),
-                ],
-            ]);
-        }
+
 }

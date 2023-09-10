@@ -21,7 +21,7 @@ class SellerManagementController extends Controller
     public function index()
     {
         $admin = $this->getAdmin();
-        $sellers = $admin->sellers()->useFilters()->dynamicPaginate();
+        $sellers = $admin->sellers()->with('user','user.roles','user.permissions')->useFilters()->dynamicPaginate();
 
         return $this->responseSuccess(data: SellerResource::collection($sellers));
     }
@@ -83,6 +83,6 @@ class SellerManagementController extends Controller
 
     protected function getAdmin()
     {
-        return auth()->user()->admin;
+        return request()->user()->admin;
     }
 }

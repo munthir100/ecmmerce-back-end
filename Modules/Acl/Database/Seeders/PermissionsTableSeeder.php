@@ -17,68 +17,83 @@ class PermissionsTableSeeder extends Seeder
     {
         $permissions = [
             'Products' => [
-                'Add-Product',
+                'Create-Product',
                 'Edit-Product',
                 'Delete-Product',
-                'Publish-Product',
-                'Hide-Product',
                 'View-Product',
                 'Export-Product',
                 'Import-Product',
-                'Preview-Product'
-            ],
-            'Orders' => [
-                'Add-New-Order',
-                'Delete-Order',
-                'View-Order',
-                'View-Order-Details',
-                'Order-Status'
-            ],
-            'Customers' => [
-                'Add-Customer',
-                'Edit-Customer',
-                'View-Customer-Profile',
-                'Delete-Customer',
-                'View-Customers',
-                'Add-Customer-Address',
-                'Edit-Customer-Address',
-                'View-Customer-Addresses',
-                'Delete-Customer-Address'
             ],
             'Categories' => [
-                'Add-Category',
+                'Create-Category',
                 'Edit-Category',
-                'Publish-Category',
-                'Hide-Category',
                 'View-Category',
                 'Delete-Category'
             ],
             'Brands' => [
-                'Add-Brand',
+                'Create-Brand',
                 'Edit-Brand',
-                'Publish-Brand',
-                'Hide-Brand',
                 'View-Brand',
                 'Delete-Brand'
             ],
+            'Customers' => [
+                'Create-Customer',
+                'Edit-Customer',
+                'Delete-Customer',
+                'View-Customer',
+            ],
+            'Shipping-Methods' =>[
+                'Create-Shipping-Method',
+                'View-Shipping-Method',
+                'Edit-Shipping-Method',
+                'Delete-Shipping-Method',
+            ],
+            'Orders' => [
+                'Create-Order',
+                'Delete-Order',
+                'View-Order',
+                'View-Order-Details',
+                'Change-Order-Status'
+            ],
             'Marketing' => [
-                'Add-Coupon',
+                'Create-Coupon',
                 'Edit-Coupon',
                 'View-Coupon',
                 'Delete-Coupon',
-                'Navbar',
-                'Hide-Coupon',
-                'Publish-Coupon'
             ],
-            'Settings' => [
-                'View-Settings',
-                'Store-Settings',
+            'Taxes' => [
+                'Create-Tax',
+                'Edit-Tax',
+                'View-Tax',
+                'Delete-Tax',
+            ],
+            'Notifications' => [
+                'View-Notification',
+                'Delete-Notification',
+            ],
+            'Contact-Messages' => [
+                'View-Contact-Message',
+                'Delete-Contact-Message',
+            ],
+        
+            'Store-Countries' => [
+                'Manage-Store-Countries'
+            ],
+            'Store-Settings' => [
+                'Manage-Store-Settings',
+                'Manage-Store-Navbar',
+                'Edit-Store-Design',
+            ],
+        
+            'Payment-Methods' => [
                 'View-Payment-Methods',
-                'View-Shipping-Methods',
-                'Design-Store',
+            ],
+
+
+            
+            'Settings' => [
                 'Definetion-Pages',
                 'Team-Members',
-                'Tax',
                 'Custom-Domain',
                 'Link-Services',
                 'Additional-Store-Settings',
@@ -91,7 +106,7 @@ class PermissionsTableSeeder extends Seeder
                 'View-Reports'
             ],
             'Affiliate-Marketing' => [
-                'Add-Affiliate-Marketer',
+                'Create-Affiliate-Marketer',
                 'Edit-Affiliate-Marketer',
                 'View-Affiliate-Marketer',
                 'Delete-Affiliate-Marketer',
