@@ -67,6 +67,12 @@ class PermissionsTableSeeder extends Seeder
                 'View-Tax',
                 'Delete-Tax',
             ],
+            'Definition-Pages' => [
+                'Create-DefinitionPage',
+                'Edit-DefinitionPage',
+                'View-DefinitionPage',
+                'Delete-DefinitionPage',
+            ],
             'Notifications' => [
                 'View-Notification',
                 'Delete-Notification',

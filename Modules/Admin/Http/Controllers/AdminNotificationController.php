@@ -12,19 +12,17 @@ class AdminNotificationController extends Controller
     public function index()
     {
         $this->authorize('View-Notification');
-        $admin = $this->getAdmin();
-        $notifications = $admin->notifications()->get();
+        $notifications = request()->admin->notifications()->get();
 
         return $this->responseSuccess(data: AdminNotificationResource::collection($notifications));
     }
 
 
-    
+
     public function destroy($notificationId)
     {
         $this->authorize('Delete-Notification');
-        $admin = $this->getAdmin();
-        $notification = $admin->notifications()->find($notificationId);
+        $notification = request()->admin->notifications()->find($notificationId);
 
         if (!$notification) {
             return $this->responseNotFound('notification not found');
@@ -32,11 +30,5 @@ class AdminNotificationController extends Controller
         $notification->delete();
 
         return $this->responseSuccess('notification deleted');
-    }
-
-
-    protected function getAdmin()
-    {
-        return request()->user()->admin;
     }
 }

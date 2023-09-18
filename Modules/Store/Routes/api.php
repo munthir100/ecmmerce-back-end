@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Modules\Store\Http\Controllers\StoreBrandController;
 use Modules\Store\Http\Controllers\StoreCaptainController;

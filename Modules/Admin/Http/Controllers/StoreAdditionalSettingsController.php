@@ -11,39 +11,33 @@ use Modules\Admin\Http\Requests\UpdateStoreRequest;
 class StoreAdditionalSettingsController extends Controller
 {
     use AuthorizesRequests;
-    protected $storeService, $store;
 
-    public function __construct(StoreService $storeService)
-    {
-        $this->storeService = $storeService;
-        $this->store = $this->storeService->getStore();
-    }
 
     public function updateCommercialRegistration(UpdateStoreRequest $request)
     {
         $this->authorize('Manage-Store-Settings');
-        $data = $request->validateCommercialRegistration($this->store);
-        $this->store->update($data);
+        $data = $request->validateCommercialRegistration(request()->store);
+        request()->store->update($data);
 
-        return $this->responseSuccess('Commercial registration number updated', new StoreResource($this->store));
+        return $this->responseSuccess('Commercial registration number updated', new StoreResource(request()->store));
     }
 
     public function updateStoreLanguage(UpdateStoreRequest $request)
     {
         $this->authorize('Manage-Store-Settings');
         $data = $request->validated();
-        $this->store->update($data);
+        request()->store->update($data);
 
-        return $this->responseSuccess('Language updated', new StoreResource($this->store));
+        return $this->responseSuccess('Language updated', new StoreResource(request()->store));
     }
 
     public function updateStatus(UpdateStoreRequest $request)
     {
         $this->authorize('Manage-Store-Settings');
         $data = $request->validated();
-        $this->store->update($data);
+        request()->store->update($data);
 
-        return $this->responseSuccess('Store status updated.', new StoreResource($this->store));
+        return $this->responseSuccess('Store status updated.', new StoreResource(request()->store));
     }
 
 }

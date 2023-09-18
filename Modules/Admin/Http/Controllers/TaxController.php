@@ -15,18 +15,11 @@ use Modules\Admin\Transformers\TaxResource;
 class TaxController extends Controller
 {
     use AuthorizesRequests;
-    protected $storeService, $store;
-
-    public function __construct(StoreService $storeService)
-    {
-        $this->storeService = $storeService;
-        $this->store = $this->storeService->getStore();
-    }
 
     public function index()
     {
         // $this->authorize('View-Tax');
-        $taxes = $this->store->taxes()->useFilters()->dynamicPaginate();
+        $taxes = request()->store->taxes()->useFilters()->dynamicPaginate();
 
         return $this->responseSuccess(data: TaxResource::collection($taxes));
     }
@@ -34,7 +27,7 @@ class TaxController extends Controller
     public function store(Taxrequest $request)
     {
         // $this->authorize('Create-Tax');
-        $tax = $this->store->taxes()->create($request->validated());
+        $tax = request()->store->taxes()->create($request->validated());
 
         return $this->responseSuccess('tax created', new TaxResource($tax));
     }
@@ -42,7 +35,7 @@ class TaxController extends Controller
     public function show($taxId)
     {
         // $this->authorize('View-Tax');
-        $tax = $this->getTax($taxId);
+        $tax = request()->store->taxes()->findOrFail($taxId);
 
         return $this->responseSuccess(data: new TaxResource($tax));
     }
@@ -51,7 +44,7 @@ class TaxController extends Controller
     {
         // $this->authorize('Edit-Tax');
         $data = $request->validated();
-        $tax = $this->getTax($taxId);
+        $tax = request()->store->taxes()->findOrFail($taxId);
         $tax->update($data);
 
         return $this->responseSuccess('tax updated', new TaxResource($tax));
@@ -60,15 +53,10 @@ class TaxController extends Controller
     public function destroy($taxId)
     {
         // $this->authorize('Delete-Tax');
-        $tax = $this->getTax($taxId);
+        $tax = request()->store->taxes()->findOrFail($taxId);
         $tax->delete();
 
         return $this->responseSuccess('tax deleted');
     }
 
-
-    protected function getTax($taxId)
-    {
-        return $this->storeService->findStoreModel($this->store, Tax::class, $taxId);
-    }
 }

@@ -14,7 +14,7 @@ class ProfileController extends Controller
 {
     public function index()
     {
-        $user = request()->user();
+        $user = request()->authenticated_user;
         $userData = [
             'name' => $user->name,
             'email' => $user->email,

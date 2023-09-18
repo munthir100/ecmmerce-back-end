@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Store\Entities\AdditionalSetting;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Admin\Entities\DefinitionPage;
 use Modules\Admin\Entities\Tax;
 use Modules\Customer\Entities\Order;
 
@@ -115,5 +116,9 @@ class Store extends Model implements HasMedia
     function taxes()
     {
         return $this->hasMany(Tax::class);
+    }
+    function definitionPages()
+    {
+        return $this->hasMany(DefinitionPage::class);
     }
 }

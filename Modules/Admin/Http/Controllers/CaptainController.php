@@ -14,18 +14,11 @@ use Modules\Admin\Http\Requests\UpdateCaptainRequest;
 class CaptainController extends Controller
 {
     use AuthorizesRequests;
-    protected $storeService,$store;
-
-    public function __construct(StoreService $storeService)
-    {
-        $this->storeService = $storeService;
-        $this->store = $this->storeService->getStore();
-    }
 
     public function index()
     {
         $this->authorize('View-Shipping-Method');
-        $captains = $this->store->captains()->useFilters()->dynamicPaginate();
+        $captains = request()->store->captains()->useFilters()->dynamicPaginate();
 
         return $this->responseSuccess(
             data: ['captains' => CaptainResource::collection($captains)],
@@ -36,8 +29,8 @@ class CaptainController extends Controller
     {
         $this->authorize('Create-Shipping-Method');
         $data = $request->validated();
-        $data += $request->validateStoreCity($this->store);
-        $captain = $this->store->captains()->create($data);
+        $data += $request->validateStoreCity(request()->store);
+        $captain = request()->store->captains()->create($data);
         $captain->cities()->attach($data['city_id']);
 
         return $this->responseSuccess(
@@ -49,7 +42,7 @@ class CaptainController extends Controller
     public function show($captianId)
     {
         $this->authorize('View-Shipping-Method');
-        $captain = $this->storeService->findStoreModel($this->store, Captain::class, $captianId);
+        $captain = request()->store->captains()->findOrFail($captianId);
         return new MessageResponse(
             data: ['captain' => new CaptainResource($captain)],
             statusCode: 200
@@ -60,9 +53,9 @@ class CaptainController extends Controller
     {
         $this->authorize('Edit-Shipping-Method');
         $data = $request->validated();
-        $captain = $this->storeService->findStoreModel($this->store, Captain::class, $captianId);
+        $captain = request()->store->captains()->findOrFail($captianId);
 
-        $data += $request->validateStoreCity($this->store);
+        $data += $request->validateStoreCity(request()->store);
         $captain->update($data);
 
         if ($request->has('city_id')) {
@@ -78,7 +71,7 @@ class CaptainController extends Controller
     public function destroy($captianId)
     {
         $this->authorize('Delete-Shipping-Method');
-        $captain = $this->storeService->findStoreModel($this->store, Captain::class, $captianId);
+        $captain = request()->store->captains()->findOrFail($captianId);
         $captain->delete();
 
         return $this->responseSuccess(

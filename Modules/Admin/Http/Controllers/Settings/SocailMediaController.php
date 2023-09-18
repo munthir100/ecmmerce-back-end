@@ -6,35 +6,19 @@ use Illuminate\Http\Request;
 use App\Services\StoreService;
 use Illuminate\Routing\Controller;
 use App\Http\Responses\MessageResponse;
+use Modules\Admin\Http\Requests\UpdateSocialMediaLinksRequest;
 use Modules\Admin\Transformers\Settings\SocialMediaLinksResource;
 
 class SocailMediaController extends Controller
 {
-    protected $storeService, $store, $storeCountriesService;
 
-    public function __construct(StoreService $storeService)
+    public function update(UpdateSocialMediaLinksRequest $request)
     {
-        $this->storeService = $storeService;
-        $this->store = $this->storeService->getStore();
-    }
-    public function update(Request $request)
-    {
-        $socialMediaLinks = $this->store->socialMediaLink()->firstOrCreate([]);
-
-        $data = $request->validate([
-            'facebook' => 'nullable|string',
-            'snapchat' => 'nullable|string',
-            'twitter' => 'nullable|string',
-            'tictok' => 'stringnullable|',
-            'whatsapp' => 'nullable|string',
-            'maroof' => 'stringnullable|',
-            'instagram' => 'nullable|string',
-            'telegram' => 'nullable|string',
-            'google_play' => 'nullable|string',
-            'app_store' => 'nullable|string',
-        ]);
-
-        $socialMediaLinks->update($data);
+        $data = $request->validated();
+        $socialMediaLinks = $request->store->socialMediaLinks()->updateOrCreate(
+            ['store_id' => request()->store->id],
+            $data
+        );
 
         return new MessageResponse(
             'social media links updated',
