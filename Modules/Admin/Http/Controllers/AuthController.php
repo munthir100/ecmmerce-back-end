@@ -3,14 +3,18 @@
 namespace Modules\Admin\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Modules\Acl\Entities\User;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\Acl\Entities\UserType;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
-use App\Services\AdminRegisterService;
+use Modules\Shipping\Entities\Country;
 use App\Http\Responses\MessageResponse;
+use App\Services\Admin\AdminRegisterService;
+use App\Services\StoreService;
+use Modules\Admin\Entities\SubscriptionPlan;
 use Modules\Admin\Http\Requests\LoginRequest;
 use Modules\Admin\Http\Requests\AdminRegisterRequest;
 
@@ -50,10 +54,13 @@ class AuthController extends Controller
     }
 
 
-    function register(AdminRegisterRequest $request, AdminRegisterService $adminRegisterService)
-    {
+    function register(
+        AdminRegisterRequest $request,
+        AdminRegisterService $adminRegisterService,
+        StoreService $storeService
+    ) {
         $data = $request->validated();
-        $country = $adminRegisterService->findCountry($data['country_id']);
+        $country = Country::findOrFail($data['country_id']);
         $adminRegisterService->ValidPhoneForCountry($data['phone'], $country);
         try {
             DB::beginTransaction();
@@ -72,8 +79,9 @@ class AuthController extends Controller
                 $data['link'],
                 $country->currency_code
             );
-
             $adminRegisterService->createDefaultStoreCountry($store, $country);
+            $storeService->createFreeTrial($store);
+
 
             DB::commit();
 

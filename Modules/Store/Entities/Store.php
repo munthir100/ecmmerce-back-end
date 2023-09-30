@@ -3,28 +3,30 @@
 namespace Modules\Store\Entities;
 
 use App\Traits\HasUploads;
+use Laravel\Cashier\Billable;
+use Modules\Admin\Entities\Tax;
+use Laravel\Cashier\Subscription;
 use Modules\Admin\Entities\Admin;
 use Spatie\MediaLibrary\HasMedia;
 use Modules\Admin\Entities\Coupon;
 use willvincent\Rateable\Rateable;
 use Modules\Shipping\Entities\City;
+use Modules\Customer\Entities\Order;
 use Modules\Shipping\Entities\Captain;
 use Modules\Shipping\Entities\Country;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Customer\Entities\Customer;
+use Modules\Admin\Entities\DefinitionPage;
 use Modules\Store\Entities\SocialMediaLink;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Store\Entities\AdditionalSetting;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Modules\Admin\Entities\DefinitionPage;
-use Modules\Admin\Entities\Tax;
-use Modules\Customer\Entities\Order;
 
 class Store extends Model implements HasMedia
 {
-    use HasFactory, InteractsWithMedia, HasUploads, Rateable, SoftDeletes, CascadeSoftDeletes;
+    use HasFactory, InteractsWithMedia, HasUploads, Rateable, SoftDeletes, CascadeSoftDeletes,Billable;
 
     protected $cascadeDeletes = [
         'customers',
@@ -120,5 +122,9 @@ class Store extends Model implements HasMedia
     function definitionPages()
     {
         return $this->hasMany(DefinitionPage::class);
+    }
+    function subscription()
+    {
+        return $this->hasOne(Subscription::class);
     }
 }

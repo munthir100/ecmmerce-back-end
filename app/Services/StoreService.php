@@ -2,17 +2,16 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Carbon;
+use Modules\Admin\Entities\SubscriptionPlan;
+
 class StoreService
 {
-    public function findStoreModel($store, $modelClass, $modelId)
+    function createFreeTrial($store)
     {
-        $model =  $modelClass::where('store_id', $store->id)->find($modelId);
-
-        if (!$model) {
-            $modelName = class_basename($modelClass);
-            abort(response()->json(['message' => $modelName . ' not found in this store'], 404));
-        }
-
-        return $model;
+        $basicPlan = SubscriptionPlan::where('name', 'Basic')->first();
+        $store->newSubscription('Basic', $basicPlan->stripe_plan_id)
+            ->trialUntil(Carbon::now()->addDays(365))
+            ->create();
     }
 }

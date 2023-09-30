@@ -24,6 +24,7 @@ use Modules\Admin\Http\Controllers\Settings\ProfileController;
 use Modules\Admin\Http\Controllers\AdminNotificationController;
 use Modules\Admin\Http\Controllers\CustomerManagementController;
 use Modules\Admin\Http\Controllers\StoreAdditionalSettingsController;
+use Modules\Admin\Http\Controllers\SubscriptionsPlansController;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,6 +63,7 @@ Route::middleware(['auth:sanctum', 'can_manage'])
         Route::get('store-cities', [StoreCitiesController::class, 'index']);
 
         Route::prefix('settings')->group(function () {
+            Route::apiResource('subscriptionsPlans', SubscriptionsPlansController::class)->only('index', 'show');
             Route::apiResource('countries', StoreCountriesController::class)->except('show', 'update');
             Route::put('countries/{countryId}/default', [StoreCountriesController::class, 'setAsDefault']);
             Route::put('countries/{countryId}/toggle-activation', [StoreCountriesController::class, 'toggleActivation']);

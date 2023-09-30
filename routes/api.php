@@ -1,7 +1,12 @@
 <?php
 
+use App\Http\Controllers\superAdmin\StoreController;
+use App\Http\Controllers\superAdmin\UserController;
+use Stripe\Plan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Modules\Admin\Entities\SubscriptionPlan;
+use Modules\Admin\Http\Controllers\SubscriptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,4 +21,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::post('createPlans',[SubscriptionController::class,'createPlans']);
+Route::get('subscriptionPlans',[SubscriptionController::class,'index']);
+Route::prefix('superAdmin')->group(function(){
+    Route::get('users',[UserController::class,'index']); 
+    Route::get('stores',[StoreController::class,'index']); 
 });

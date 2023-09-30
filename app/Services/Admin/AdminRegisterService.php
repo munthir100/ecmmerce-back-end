@@ -1,27 +1,17 @@
 <?php
+namespace App\Services\Admin;
 
-namespace App\Services;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Modules\Acl\Entities\User;
 use Illuminate\Support\Facades\Hash;
 use Modules\Admin\Entities\Language;
-use Modules\Admin\Entities\Status;
 use Modules\Shipping\Entities\Country;
 use Modules\Store\Entities\StoreTheme;
 
 class AdminRegisterService
 {
 
-    public function findCountry($countryId)
-    {
-        $country = Country::find($countryId);
-        if (!$country) {
-            abort(response()->json('Invalid country selected.'));
-        }
-        return $country;
-    }
     public function ValidPhoneForCountry($phone, $country)
     {
         if (!Str::startsWith($phone, $country->phone_code)) {
