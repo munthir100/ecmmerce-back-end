@@ -64,6 +64,8 @@ Route::middleware(['auth:sanctum', 'can_manage'])
 
         Route::prefix('settings')->group(function () {
             Route::apiResource('subscriptionsPlans', SubscriptionsPlansController::class)->only('index', 'show');
+            Route::post('subscriptionsPlans/upgrade', [SubscriptionsPlansController::class, 'upgrade']);
+            
             Route::apiResource('countries', StoreCountriesController::class)->except('show', 'update');
             Route::put('countries/{countryId}/default', [StoreCountriesController::class, 'setAsDefault']);
             Route::put('countries/{countryId}/toggle-activation', [StoreCountriesController::class, 'toggleActivation']);
