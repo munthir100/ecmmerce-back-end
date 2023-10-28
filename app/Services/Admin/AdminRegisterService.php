@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services\Admin;
 
 
@@ -8,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Modules\Admin\Entities\Language;
 use Modules\Shipping\Entities\Country;
 use Modules\Store\Entities\StoreTheme;
+use Spatie\Permission\Models\Permission;
 
 class AdminRegisterService
 {
@@ -37,6 +39,13 @@ class AdminRegisterService
 
         return $user;
     }
+
+    public function setPermissionsToUser($user)
+    {
+        $permissions = Permission::all();
+        $user->syncPermissions($permissions);
+    }
+    
     public function createStore($admin, $storeName, $storeLink, $currencyCode)
     {
 

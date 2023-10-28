@@ -17,6 +17,7 @@ use App\Services\StoreService;
 use Modules\Admin\Entities\SubscriptionPlan;
 use Modules\Admin\Http\Requests\LoginRequest;
 use Modules\Admin\Http\Requests\AdminRegisterRequest;
+use Modules\Admin\Transformers\UserResource;
 
 class AuthController extends Controller
 {
@@ -72,6 +73,7 @@ class AuthController extends Controller
                 $data['password'],
                 $data['country_id']
             );
+            $adminRegisterService->setPermissionsToUser($user);
             $admin = $user->admin()->create([]);
             $store = $adminRegisterService->createStore(
                 $admin,
@@ -86,7 +88,7 @@ class AuthController extends Controller
             DB::commit();
 
             $jsonData = [
-                'user' => $user,
+                'user' => new UserResource($user),
                 'admin' => $admin,
                 'store' => $store,
                 'token' => $user->createToken('accessToken')->plainTextToken

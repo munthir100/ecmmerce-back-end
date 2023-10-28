@@ -23,7 +23,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('createPlans',[SubscriptionController::class,'createPlans']);
 Route::get('subscriptionPlans',[SubscriptionController::class,'index']);
 Route::prefix('superAdmin')->group(function(){
     Route::get('users',[UserController::class,'index']); 
