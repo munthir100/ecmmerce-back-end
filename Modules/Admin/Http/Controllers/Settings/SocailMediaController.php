@@ -20,10 +20,9 @@ class SocailMediaController extends Controller
             $data
         );
 
-        return new MessageResponse(
+        return $this->responseSuccess(
             'social media links updated',
             new SocialMediaLinksResource($socialMediaLinks),
-            200
         );
     }
 }

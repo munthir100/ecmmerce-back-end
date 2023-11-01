@@ -2,6 +2,7 @@
 
 namespace Modules\Admin\Http\Requests;
 
+use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Http\FormRequest;
@@ -83,7 +84,11 @@ class CreateOrderRequest extends FormRequest
             ->where('name', request()->input('products.' . $index . '.option.name'))
             ->first();
         if (!$selectedProductOption) {
-            abort(response()->json('selected product option value is not available', 404));
+            abort(response()->json([
+                'message' => 'selected product option value is not available',
+                'success' => false,
+                'statuscode' => Response::HTTP_CONFLICT,
+            ]));
         }
 
         return $selectedProductOption->values->pluck('name')->toArray();
@@ -95,7 +100,11 @@ class CreateOrderRequest extends FormRequest
             ->where('name', request()->input('products.' . $index . '.option.value.name'))
             ->first();
         if (!$selectedProductOptionValue) {
-            abort(response()->json('selected product option value is not available', 404));
+            abort(response()->json([
+                'message' => 'selected product option value is not available',
+                'success' => false,
+                'statuscode' => Response::HTTP_CONFLICT,
+            ]));
         }
 
         return $selectedProductOptionValue;

@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\CustomAuthSanctumMiddleware;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 use Modules\Acl\Http\Middleware\CustomerMiddleware;
 use Modules\Acl\Http\Middleware\ManagementMiddleware;
@@ -72,5 +73,6 @@ class Kernel extends HttpKernel
         'can_manage' => ManagementMiddleware::class,
         'is_customer' => CustomerMiddleware::class,
         'is_admin' => IsAdminMiddleware::class,
+        'custom_auth_sanctum' => CustomAuthSanctumMiddleware::class,
     ];
 }

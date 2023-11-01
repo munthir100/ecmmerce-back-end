@@ -13,7 +13,11 @@ class CouponService
     {
         $coupon = $store->coupons()->where('promocode', $promocode)->first();
         if (!$coupon) {
-            abort(response()->json('This coupon is not found in this store.'));
+            abort(response()->json([
+                'message' => 'coupon not found',
+                'success' => false,
+                'statuscode' => 404,
+            ]));
         }
 
         return $coupon;

@@ -16,3 +16,4 @@ use Modules\Shipping\Http\Controllers\ShippingController;
 */
 
 Route::get('/cities', [ShippingController::class, 'cities']); // temp
+Route::get('/countries', [ShippingController::class, 'countries']); // temp

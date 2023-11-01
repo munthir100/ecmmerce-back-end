@@ -4,6 +4,7 @@ namespace App\Services\Admin;
 
 
 use Illuminate\Support\Str;
+use Illuminate\Http\Response;
 use Modules\Acl\Entities\User;
 use Illuminate\Support\Facades\Hash;
 use Modules\Admin\Entities\Language;
@@ -17,12 +18,20 @@ class AdminRegisterService
     public function ValidPhoneForCountry($phone, $country)
     {
         if (!Str::startsWith($phone, $country->phone_code)) {
-            abort(response()->json('is not a valid phone number for the selected country.'));
+            abort(response()->json([
+                'message' => 'is not a valid phone number for the selected country.',
+                'success' => false,
+                'statuscode' => Response::HTTP_CONFLICT,
+            ]));
         }
         $phoneDigits = Str::length($phone) - Str::length($country->phone_code);
 
         if ($phoneDigits != $country->phone_digits_number) {
-            abort(response()->json('The phone must have ' . $country->phone_digits_number . ' digits.'));
+            abort(response()->json([
+                'message' => 'The phone must have ' . $country->phone_digits_number . ' digits.',
+                'success' => false,
+                'statuscode' => Response::HTTP_CONFLICT,
+            ]));
         }
     }
 

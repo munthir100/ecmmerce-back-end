@@ -2,24 +2,25 @@
 
 namespace Modules\Shipping\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Modules\Shipping\Entities\City;
-use App\Http\Responses\MessageResponse;
-use Illuminate\Contracts\Support\Renderable;
 use Modules\Admin\Transformers\CityResource;
+use Modules\Shipping\Entities\City;
+use Modules\Shipping\Entities\Country;
+use Modules\Shipping\Transformers\CountryResource;
 
 class ShippingController extends Controller
 {
+    function countries()
+    {
+        $countries = Country::useFilters()->dynamicPaginate();
+
+        return $this->responseSuccess('countries',new CountryResource($countries));
+    }
+
     function cities()
     {
-        $term = request()->get('term', '');
-        $perPage = request()->get('perPage', 25);
-        $cities = City::search($term)->paginate($perPage);
+        $cities = City::useFilters()->dynamicPaginate();
 
-        return new MessageResponse(
-            data: ['products' => CityResource::collection($cities)],
-            statusCode: 200
-        );
+        return $this->responseSuccess('cities',new CityResource($cities));
     }
 }

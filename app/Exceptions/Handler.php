@@ -6,6 +6,8 @@ use Throwable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -26,14 +28,22 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
         if ($exception instanceof ModelNotFoundException) {
-            $model = class_basename($exception->getModel()); // Get the model name
-
-            return new JsonResponse(["error" => "$model not found"], 404);
+            return $this->handleException($exception, 404, class_basename($exception->getModel()) . ' not found', false);
+        } elseif ($exception instanceof NotFoundHttpException) {
+            return $this->handleException($exception, 404, 'Page not found', false);
         }
 
         return parent::render($request, $exception);
     }
 
+    protected function handleException(Throwable $exception, int $statusCode, string $message, bool $success): JsonResponse
+    {
+        return new JsonResponse([
+            'message' => $message,
+            'success' => $success,
+            'statuscode' => $statusCode,
+        ]);
+    }
 
     public function register(): void
     {

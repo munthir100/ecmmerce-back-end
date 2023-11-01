@@ -2,6 +2,7 @@
 
 namespace Modules\Shipping\Entities;
 
+use App\Filters\CountryFilters;
 use Modules\Store\Entities\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -12,6 +13,10 @@ use Modules\Shipping\Database\factories\CountryFactory;
 class Country extends Model
 {
     use HasFactory,SoftDeletes;
+
+    protected string $default_filters = CountryFilters::class;
+
+
     protected static function newFactory()
     {
         return CountryFactory::new();

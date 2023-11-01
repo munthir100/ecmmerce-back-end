@@ -6,7 +6,6 @@ use App\Traits\ModelsForAdmin;
 use Illuminate\Routing\Controller;
 use Essa\APIToolKit\Api\ApiResponse;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Responses\MessageResponse;
 use Modules\Admin\Entities\BankAccount;
 use Modules\Admin\Http\Requests\BankAccountRequest;
 use Modules\Admin\Transformers\BankAccountResource;

@@ -27,7 +27,11 @@ class RouteServiceProvider extends ServiceProvider
     {
         parent::boot();
         Route::bind('storeLink', function ($value) {
-            return Store::where('link', $value)->first() ?? abort(response()->json('this store not found', 404));
+            return Store::where('link', $value)->first() ?? abort(response()->json([
+                'message' => 'this store not found',
+                'success' => false,
+                'statuscode' => 404,
+            ]));
         });
     }
 

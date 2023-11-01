@@ -11,10 +11,8 @@ use Modules\Acl\Entities\UserType;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Modules\Shipping\Entities\Country;
-use App\Http\Responses\MessageResponse;
 use App\Services\Admin\AdminRegisterService;
 use App\Services\StoreService;
-use Modules\Admin\Entities\SubscriptionPlan;
 use Modules\Admin\Http\Requests\LoginRequest;
 use Modules\Admin\Http\Requests\AdminRegisterRequest;
 use Modules\Admin\Transformers\UserResource;
@@ -39,19 +37,20 @@ class AuthController extends Controller
         })->first();
 
         if (!$user || !Hash::check($credentials['password'], $user->password)) {
-            return new MessageResponse(message: 'User not found', statusCode: 401);
+            return $this->responseUnAuthenticated('user not found');
         }
 
         $token = $user->createToken('token')->plainTextToken;
 
-        return new MessageResponse(message: 'Login successful', data: ['token' => $token], statusCode: 200);
+        return $this->responseSuccess(message:'login successfull',data:['token' => $token]);
     }
 
 
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
-        return new MessageResponse('Successfully logged out');
+
+        return $this->responseSuccess('Successfully logged out');
     }
 
 
@@ -94,7 +93,7 @@ class AuthController extends Controller
                 'token' => $user->createToken('accessToken')->plainTextToken
             ];
 
-            return new MessageResponse(message: 'Registration success', data: $jsonData, statusCode: 200);
+            return $this->responseSuccess(message: 'Registration success', data: $jsonData);
         } catch (\Exception $e) {
             DB::rollBack();
 

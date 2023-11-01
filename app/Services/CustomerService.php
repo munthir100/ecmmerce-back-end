@@ -18,7 +18,11 @@ class CustomerService
         $model = $modelClass::where('customer_id',$customer->id)->find($modelId);
         if (!$model) {
             $modelName = class_basename($modelClass);
-            abort(response()->json(['message' => $modelName . ' not found'], 404));
+            abort(response()->json([
+                'message' => $modelName . ' not found',
+                'success' => false,
+                'statuscode' => 404,
+            ]));
         }
 
         return $model;
@@ -28,7 +32,11 @@ class CustomerService
         $model = $modelClass::where('customer_id',$customer->id)->first();
         if (!$model) {
             $modelName = class_basename($modelClass);
-            abort(response()->json(['message' => $modelName . ' not found'], 404));
+            abort(response()->json([
+                'message' => $modelName . ' not found',
+                'success' => false,
+                'statuscode' => 404,
+            ]));
         }
 
         return $model;

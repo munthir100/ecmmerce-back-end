@@ -45,7 +45,11 @@ class OrderService
     public function validateShippingMethod($storeCities, $selectedLocation)
     {
         if (!$storeCities->contains('id', $selectedLocation->city_id)) {
-            abort(response()->json('This location does not have a captain'));
+            abort(response()->json([
+                'message' => 'This location does not have a captain',
+                'success' => false,
+                'statuscode' => 400,
+            ]));
         }
     }
     public function calculateProductsTotalPrice($shoppingCart)

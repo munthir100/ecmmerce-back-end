@@ -21,7 +21,11 @@ class FeaturedProductService
 
 
         if (!$product) {
-            abort(response()->json(['message' => 'error to find this product']));
+            abort(response()->json([
+                'message' => 'product not found',
+                'success' => false,
+                'statuscode' => 404,
+            ]));
         }
 
         return $product;
@@ -58,7 +62,11 @@ class FeaturedProductService
     public function validateQuantity($availableQuantiy, $totalQuantity)
     {
         if ($totalQuantity > $availableQuantiy) {
-            abort(response()->json(['message' => 'Invalid quantity for the featured product'], 400));
+            abort(response()->json([
+                'message' => 'invaild quantity not found',
+                'success' => false,
+                'statuscode' => 400,
+            ]));
         }
     }
 

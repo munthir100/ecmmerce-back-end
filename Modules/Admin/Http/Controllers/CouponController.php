@@ -5,7 +5,6 @@ namespace Modules\Admin\Http\Controllers;
 use App\Services\StoreService;
 use Modules\Admin\Entities\Coupon;
 use App\Http\Controllers\Controller;
-use App\Http\Responses\MessageResponse;
 use App\Actions\ValidateCouponPromocode;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Modules\Admin\Http\Requests\CouponRequest;
@@ -21,7 +20,7 @@ class CouponController extends Controller
         $this->authorize('View-Coupon');
         $coupons = request()->store->coupons()->useFilters()->dynamicPaginate();
 
-        return new MessageResponse('coupons', CouponResource::collection($coupons));
+        return $this->responseSuccess('coupons', CouponResource::collection($coupons));
     }
 
     public function store(CouponRequest $request, ValidateCouponPromocode $action)

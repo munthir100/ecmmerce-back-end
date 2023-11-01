@@ -13,10 +13,18 @@ class CartService
         $product = $store->products->find($productId);
    
         if($product->FeaturedProdcut){
-            abort(response()->json(['message' => 'this is featured product'], 404));
+            abort(response()->json([
+                'message' => 'this is featured product',
+                'success' => false,
+                'statuscode' => 404,
+            ]));
         }
         if (!$product) {
-            abort(response()->json(['message' => 'product not found'], 404));
+            abort(response()->json([
+                'message' => 'product not found',
+                'success' => false,
+                'statuscode' => 404,
+            ]));
         }
         return $product;
     }
@@ -27,7 +35,11 @@ class CartService
 
         if ($products->count() !== count($productIds)) {
             $missingProductIds = array_diff($productIds, $products->pluck('id')->toArray());
-            abort(response()->json(['message' => 'products not found', 'missing_ids' => $missingProductIds], 404));
+            abort(response()->json([
+                'message' => 'some products not found',
+                'success' => false,
+                'statuscode' => 404,
+            ]));
         }
 
         return $products;
@@ -59,7 +71,11 @@ class CartService
     public function validateQuantityForSingleProduct(Product $product, $totalQuantity)
     {
         if (!$product->unspecified_quantity && $totalQuantity > $product->quantity) {
-            abort(response()->json(['message' => 'invalid quantity'], 404));
+            abort(response()->json([
+                'message' => 'invaild quantity',
+                'success' => false,
+                'statuscode' => 400,
+            ]));
         }
 
         return $totalQuantity;

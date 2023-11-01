@@ -44,7 +44,7 @@ Route::post('admin/logout', [AuthController::class, 'logout'])->middleware('auth
 
 
 // need update social media links
-Route::middleware(['auth:sanctum', 'can_manage'])
+Route::middleware(['custom_auth_sanctum', 'can_manage'])
     ->prefix('admin')->group(function () {
         Route::apiResource('products', ProductController::class);
         Route::apiResource('categories', CategoryController::class);

@@ -2,6 +2,7 @@
 
 namespace Modules\Store\Http\Controllers;
 
+use Illuminate\Http\Response;
 use Modules\Store\Entities\Store;
 use Illuminate\Routing\Controller;
 use Modules\Store\Http\Requests\RatingRequest;
@@ -69,7 +70,11 @@ class StoreProductController extends Controller
         $product = $store->products()->find($productId);
 
         if (!$product) {
-            abort(response()->json('product not found', 404));
+            abort(response()->json([
+                'message' => 'product not found',
+                'success' => false,
+                'statuscode' => Response::HTTP_CONFLICT,
+            ]));
         }
         
         return $product;

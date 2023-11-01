@@ -64,7 +64,11 @@ class ProductService
     private function validateQuantityMatch(Product $product, int $totalValuesQuantity)
     {
         if ($product->quantity != $totalValuesQuantity) {
-            abort(response()->json('Invalid quantity'));
+            abort(response()->json([
+                'message' => 'invaild quantity',
+                'success' => false,
+                'statuscode' => Response::HTTP_CONFLICT,
+            ]));
         }
     }
 
@@ -81,7 +85,11 @@ class ProductService
     function deleteProduct($product)
     {
         if ($product->orderItems()->exists()) {
-            abort(response()->json('the product has an orders', Response::HTTP_CONFLICT));
+            abort(response()->json([
+                'message' => 'this product has an orders',
+                'success' => false,
+                'statuscode' => Response::HTTP_CONFLICT,
+            ]));
         }
 
         $product->delete();

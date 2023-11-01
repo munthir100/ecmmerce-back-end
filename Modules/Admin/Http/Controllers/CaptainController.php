@@ -2,18 +2,13 @@
 
 namespace Modules\Admin\Http\Controllers;
 
-use App\Services\StoreService;
 use Illuminate\Routing\Controller;
-use Modules\Shipping\Entities\Captain;
-use App\Http\Responses\MessageResponse;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Modules\Admin\Http\Requests\CaptainRequest;
 use Modules\Admin\Transformers\CaptainResource;
 use Modules\Admin\Http\Requests\UpdateCaptainRequest;
 
 class CaptainController extends Controller
 {
-    use AuthorizesRequests;
 
     public function index()
     {
@@ -43,10 +38,8 @@ class CaptainController extends Controller
     {
         $this->authorize('View-Shipping-Method');
         $captain = request()->store->captains()->findOrFail($captianId);
-        return new MessageResponse(
-            data: ['captain' => new CaptainResource($captain)],
-            statusCode: 200
-        );
+        
+        return $this->responseSuccess(data:new CaptainResource($captain));
     }
 
     public function update(UpdateCaptainRequest $request, $captianId)

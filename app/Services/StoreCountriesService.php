@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Modules\Shipping\Entities\Country;
 
@@ -27,7 +28,11 @@ class StoreCountriesService
     public function checkIfCountryExestsInStore($store, $country)
     {
         if ($store->countries->contains($country)) {
-            abort(response()->json('The country is already exists in thise store.', 404));
+            abort(response()->json([
+                'message' => 'The country is already exists in thise store',
+                'success' => false,
+                'statuscode' => Response::HTTP_CONFLICT,
+            ]));
         }
 
         return true;
@@ -36,7 +41,11 @@ class StoreCountriesService
     public function checkIfCountryNotExestsInStore($store, $country)
     {
         if (!$store->countries->contains($country)) {
-            abort(response()->json('The country is not associated with the store.', 404));
+            abort(response()->json([
+                'message' => 'The country is not associated with the store.',
+                'success' => false,
+                'statuscode' => Response::HTTP_CONFLICT,
+            ]));
         }
         return true;
     }
@@ -46,7 +55,11 @@ class StoreCountriesService
             ->where('store_countries.is_active', true)
             ->count() > 0;
 
-        abort_if(!$isActive, response()->json('only activated countries can be set as default'));
+        abort_if(!$isActive, response()->json([
+            'message' => 'only activated countries can be set as default',
+            'success' => false,
+            'statuscode' => Response::HTTP_CONFLICT,
+        ]));
 
         return true;
     }
@@ -65,7 +78,11 @@ class StoreCountriesService
         $isDefault =  $countries->where('countries.id', $countryId)
             ->where('store_countries.is_default', true)
             ->count() > 0;
-        abort_if($isDefault, response()->json('can not de activate or delete default country'));
+        abort_if($isDefault, response()->json([
+            'message' => 'can not de activate or delete default country',
+            'success' => false,
+            'statuscode' => Response::HTTP_CONFLICT,
+        ]));
 
         return true;
     }

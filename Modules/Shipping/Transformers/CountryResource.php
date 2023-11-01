@@ -1,11 +1,10 @@
 <?php
 
-namespace Modules\Admin\Transformers;
+namespace Modules\Shipping\Transformers;
 
-use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class AdminNotificationResource extends JsonResource
+class CountryResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,9 +16,7 @@ class AdminNotificationResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'title' => $this->title,
-            'details' => $this->details,
-            'date' => $this->created_at->diffForHumans()
+            'name' => $this->name,
         ];
     }
 }

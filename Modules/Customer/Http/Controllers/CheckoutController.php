@@ -9,7 +9,6 @@ use Modules\Store\Entities\Store;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\Shipping\Entities\Captain;
-use App\Http\Responses\MessageResponse;
 use Modules\Shipping\Entities\Location;
 use Modules\Customer\Entities\ShoppingCart;
 use Modules\Customer\Transformers\OrderResource;
