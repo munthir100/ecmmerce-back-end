@@ -5,9 +5,10 @@ namespace App\Exceptions;
 use Throwable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -31,6 +32,8 @@ class Handler extends ExceptionHandler
             return $this->handleException($exception, 404, class_basename($exception->getModel()) . ' not found', false);
         } elseif ($exception instanceof NotFoundHttpException) {
             return $this->handleException($exception, 404, 'Page not found', false);
+        }elseif($exception instanceof MethodNotAllowedHttpException){
+            return $this->handleException($exception,405,$exception->getMessage(),false);
         }
 
         return parent::render($request, $exception);
