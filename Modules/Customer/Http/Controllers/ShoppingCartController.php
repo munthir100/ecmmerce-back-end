@@ -5,7 +5,7 @@ namespace Modules\Customer\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\CartService;
 use Modules\Store\Entities\Store;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 use App\Services\CustomerService;
 use App\Services\FeaturedProductService;
 use Modules\Customer\Entities\ShoppingCart;

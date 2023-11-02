@@ -6,7 +6,7 @@ use Illuminate\Support\Arr;
 use App\Services\StoreService;
 use Illuminate\Support\Carbon;
 use App\Services\ProductService;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\Store\Entities\Product;
 use function PHPUnit\Framework\isEmpty;

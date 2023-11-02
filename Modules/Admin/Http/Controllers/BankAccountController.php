@@ -3,7 +3,7 @@
 namespace Modules\Admin\Http\Controllers;
 
 use App\Traits\ModelsForAdmin;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 use Essa\APIToolKit\Api\ApiResponse;
 use Illuminate\Support\Facades\Auth;
 use Modules\Admin\Entities\BankAccount;

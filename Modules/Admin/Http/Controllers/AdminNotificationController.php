@@ -3,7 +3,7 @@
 namespace Modules\Admin\Http\Controllers;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 use Modules\Admin\Transformers\AdminNotificationResource;
 
 class AdminNotificationController extends Controller

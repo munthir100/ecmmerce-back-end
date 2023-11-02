@@ -4,7 +4,7 @@ namespace Modules\Admin\Http\Controllers;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Modules\Store\Entities\Brand;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 use Modules\Admin\Http\Requests\BrandRequest;
 use Modules\Admin\Transformers\BrandResource;
 use Modules\Admin\Http\Requests\UpdateBrandRequest;

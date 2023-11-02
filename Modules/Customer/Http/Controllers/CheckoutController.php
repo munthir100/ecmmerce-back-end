@@ -6,7 +6,7 @@ use App\Services\OrderService;
 use App\Services\CouponService;
 use App\Services\CustomerService;
 use Modules\Store\Entities\Store;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\Shipping\Entities\Captain;
 use Modules\Shipping\Entities\Location;

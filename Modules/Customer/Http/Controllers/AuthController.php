@@ -5,7 +5,7 @@ namespace Modules\Customer\Http\Controllers;
 use Illuminate\Http\Request;
 use Modules\Acl\Entities\User;
 use Modules\Store\Entities\Store;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Modules\Customer\Http\Requests\CustomerRegisterRequest;
 

@@ -5,7 +5,7 @@ namespace Modules\Customer\Http\Controllers;
 use Essa\APIToolKit\Api\ApiResponse;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 use Modules\Customer\Transformers\OrderResource;
 use Modules\Store\Entities\Store;
 

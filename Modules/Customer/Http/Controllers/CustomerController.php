@@ -4,7 +4,7 @@ namespace Modules\Customer\Http\Controllers;
 
 use Modules\Store\Entities\Store;
 use App\Events\ContactMessageSend;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 use Modules\Admin\Entities\ContactMessage;
 use Modules\Customer\Http\Requests\SendCustomerMessageRequest;
 

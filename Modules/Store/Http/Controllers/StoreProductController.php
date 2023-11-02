@@ -4,7 +4,8 @@ namespace Modules\Store\Http\Controllers;
 
 use Illuminate\Http\Response;
 use Modules\Store\Entities\Store;
-use Illuminate\Routing\Controller;
+
+use App\Http\Controllers\Controller;
 use Modules\Store\Http\Requests\RatingRequest;
 use Modules\Admin\Transformers\ProductResource;
 use Modules\Admin\Transformers\ProductWithOptionsResource;

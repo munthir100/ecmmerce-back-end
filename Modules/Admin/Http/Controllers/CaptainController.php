@@ -2,7 +2,7 @@
 
 namespace Modules\Admin\Http\Controllers;
 
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 use Modules\Admin\Http\Requests\CaptainRequest;
 use Modules\Admin\Transformers\CaptainResource;
 use Modules\Admin\Http\Requests\UpdateCaptainRequest;

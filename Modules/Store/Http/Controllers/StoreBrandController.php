@@ -3,7 +3,7 @@
 namespace Modules\Store\Http\Controllers;
 
 use Modules\Store\Entities\Store;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 use Modules\Admin\Transformers\CategoryResource;
 
 class StoreBrandController extends Controller

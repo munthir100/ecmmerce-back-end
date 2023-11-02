@@ -4,7 +4,7 @@ namespace Modules\Admin\Http\Controllers\Settings;
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Modules\Admin\Transformers\UserResource;
 use Modules\Admin\Http\Requests\Settings\Profile\UpdatePasswordRequest;

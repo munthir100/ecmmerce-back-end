@@ -4,7 +4,7 @@ namespace Modules\Admin\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\SellerService;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 use Modules\Admin\Transformers\SellerResource;
 use Modules\Admin\Http\Requests\CreateSellerRequest;
 

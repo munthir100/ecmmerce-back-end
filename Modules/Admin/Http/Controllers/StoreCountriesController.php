@@ -2,7 +2,7 @@
 
 namespace Modules\Admin\Http\Controllers;
 
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 use App\Services\StoreCountriesService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Modules\Store\Entities\StoreCountry;

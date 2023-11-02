@@ -5,7 +5,7 @@ namespace Modules\Admin\Http\Controllers;
 use App\Services\Admin\SubscriptionPlanService;
 use Stripe\Plan;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Support\Renderable;
 use Modules\Admin\Entities\SubscriptionPlan;
 

@@ -3,7 +3,7 @@
 namespace Modules\Admin\Http\Controllers;
 
 use App\Services\CouponService;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use App\Services\Admin\AdminOrderService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;

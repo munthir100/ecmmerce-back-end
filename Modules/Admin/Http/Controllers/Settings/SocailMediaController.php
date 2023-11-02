@@ -4,7 +4,7 @@ namespace Modules\Admin\Http\Controllers\Settings;
 
 use Illuminate\Http\Request;
 use App\Services\StoreService;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 use App\Http\Responses\MessageResponse;
 use Modules\Admin\Http\Requests\UpdateSocialMediaLinksRequest;
 use Modules\Admin\Transformers\Settings\SocialMediaLinksResource;

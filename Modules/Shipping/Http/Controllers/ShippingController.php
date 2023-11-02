@@ -2,7 +2,7 @@
 
 namespace Modules\Shipping\Http\Controllers;
 
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 use Modules\Admin\Transformers\CityResource;
 use Modules\Shipping\Entities\City;
 use Modules\Shipping\Entities\Country;

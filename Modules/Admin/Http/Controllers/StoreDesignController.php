@@ -3,7 +3,7 @@
 namespace Modules\Admin\Http\Controllers;
 
 use App\Services\StoreService;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 use Modules\Admin\Transformers\StoreResource;
 use Modules\Admin\Http\Requests\UpdateStoreRequest;
 use Modules\Admin\Http\Requests\UpdateStoreThemeRequest;

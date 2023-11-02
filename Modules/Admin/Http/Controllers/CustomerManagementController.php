@@ -3,7 +3,7 @@
 namespace Modules\Admin\Http\Controllers;
 
 use Modules\Acl\Entities\User;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Hash;

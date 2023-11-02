@@ -4,7 +4,7 @@ namespace Modules\Admin\Http\Controllers;
 
 use App\Services\StoreService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 use Modules\Store\Entities\Category;
 use Modules\Admin\Http\Requests\CategoryRequest;
 use Modules\Admin\Transformers\CategoryResource;

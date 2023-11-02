@@ -3,7 +3,8 @@
 namespace Modules\Store\Http\Controllers;
 
 use Modules\Store\Entities\Store;
-use Illuminate\Routing\Controller;
+
+use App\Http\Controllers\Controller;
 use Modules\Store\Http\Requests\RatingRequest;
 
 class StoreController extends Controller

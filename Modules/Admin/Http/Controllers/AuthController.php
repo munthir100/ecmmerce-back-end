@@ -3,19 +3,19 @@
 namespace Modules\Admin\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Services\StoreService;
 use Illuminate\Support\Carbon;
 use Modules\Acl\Entities\User;
-use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\Acl\Entities\UserType;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Modules\Shipping\Entities\Country;
 use App\Services\Admin\AdminRegisterService;
-use App\Services\StoreService;
+use Modules\Admin\Transformers\UserResource;
 use Modules\Admin\Http\Requests\LoginRequest;
 use Modules\Admin\Http\Requests\AdminRegisterRequest;
-use Modules\Admin\Transformers\UserResource;
 
 class AuthController extends Controller
 {
