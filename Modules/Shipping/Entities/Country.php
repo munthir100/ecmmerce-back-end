@@ -22,7 +22,10 @@ class Country extends Model
     {
         return CountryFactory::new();
     }
-    protected $fillable = ['name'];
+    protected $fillable = ['name','phone_code','phone_digits_number','currency_code'];
+    
+
+
 
     function cities()
     {
