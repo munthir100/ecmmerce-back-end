@@ -17,17 +17,15 @@ class BrandController extends Controller
     {
         $this->authorize('View-Brand');
         $brands = request()->store->brands()->useFilters()->dynamicPaginate();
-
-        return $this->responseSuccess(
-            data: ['brands' => BrandResource::collection($brands)],
-        );
+        return $brands;
+        return $this->responseSuccess('brands', BrandResource::collection($brands));
     }
 
     public function store(BrandRequest $request)
     {
         $this->authorize('Create-Brand');
         $data = $request->validated();
-        $brand = Brand::create($data);
+        $brand = request()->store->brands()->create($data);
         $brand->uploadMedia();
 
         return $this->responseCreated(

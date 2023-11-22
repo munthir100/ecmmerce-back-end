@@ -25,6 +25,12 @@ return new class extends Migration
                 ->on('categories')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+
+            $table->foreignId('store_id')
+                ->references('id')
+                ->on('stores')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
         });
     }
 

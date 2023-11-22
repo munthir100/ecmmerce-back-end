@@ -85,7 +85,7 @@ class Store extends Model implements HasMedia
     }
     function brands()
     {
-        return $this->hasManyThrough(Brand::class, Category::class);
+        return $this->hasMany(Brand::class);
     }
     public function coupons()
     {
