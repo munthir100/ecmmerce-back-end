@@ -20,6 +20,7 @@ class BrandResource extends JsonResource
             'category_id' => $this->category_id,
             'is_active' => $this->is_active,
             'brand_image' => $this->resource->retrieveMedia(),
+            'is_active' => $this->is_active
         ];
     }
 }

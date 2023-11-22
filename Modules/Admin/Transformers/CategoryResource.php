@@ -19,6 +19,7 @@ class CategoryResource extends JsonResource
             'name' => $this->name,
             'parent_id' => $this->parent_id,
             'category_image' => $this->resource->retrieveMedia(),
+            'is_active' => $this->is_active
         ];
     }
 }

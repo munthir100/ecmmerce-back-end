@@ -35,19 +35,19 @@ class Category extends Model  implements HasMedia
     }
     public function products()
     {
-        return $this->hasMany(Product::class)->isActive();
+        return $this->hasMany(Product::class);
     }
     public function brands()
     {
-        return $this->hasMany(Brand::class)->isActive();
+        return $this->hasMany(Brand::class);
     }
     public function children()
     {
-        return $this->hasMany(Category::class, 'parent_id')->isActive();
+        return $this->hasMany(Category::class, 'parent_id');
     }
     public function parent()
     {
-        return $this->belongsTo(Category::class, 'parent_id')->isActive();
+        return $this->belongsTo(Category::class, 'parent_id');
     }
     //scopes
     public function scopeForAdmin($query, $adminId)
