@@ -24,6 +24,7 @@ class CouponResource extends JsonResource
             'minimum_purchase' => $this->minimum_purchase,
             'total_usage_times' => $this->total_usage_times,
             'usage_per_customer' => $this->usage_per_customer,
+            'is_active' => $this->is_active,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
