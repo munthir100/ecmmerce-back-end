@@ -20,10 +20,22 @@ class CouponRequest extends FormRequest
             'value' => [
                 'required',
                 'numeric',
-                'min:0',
-                Rule::when($this->input('discount_type') === 'percentage', 'max:100'),
+                function ($attribute, $value, $fail) {
+                    $discountType = $this->input('discount_type');
+
+                    if ($discountType == 'percentage') {
+                        // If discount type is percentage, value must be between 0 and 100
+                        if ($value < 0 || $value > 100) {
+                            $fail("The $attribute must be between 0 and 100 when the discount type is percentage.");
+                        }
+                    } elseif ($discountType == 'fixed') {
+                        // If discount type is fixed, value must be greater than 0
+                        if ($value <= 0) {
+                            $fail("The $attribute must be greater than 0 when the discount type is fixed.");
+                        }
+                    }
+                },
             ],
-            'value' => 'required|numeric|min:0',
             'discount_end_date' => [
                 'required',
                 'date',
