@@ -15,24 +15,36 @@ class UpdateCouponRequest extends FormRequest
     public function rules()
     {
         return [
-            'promocode' => 'required',
-            'discount_type' => 'required|in:percentage,fixed',
+            'promocode' => 'sometimes',
+            'discount_type' => 'sometimes|in:percentage,fixed',
             'value' => [
-                'required',
+                'sometimes',
                 'numeric',
-                'min:0',
-                Rule::when($this->input('discount_type') === 'percentage', 'max:100'),
+                function ($attribute, $value, $fail) {
+                    $discountType = $this->input('discount_type');
+
+                    if ($discountType == 'percentage') {
+                        // If discount type is percentage, value must be between 0 and 100
+                        if ($value < 0 || $value > 100) {
+                            $fail("The $attribute must be between 0 and 100 when the discount type is percentage.");
+                        }
+                    } elseif ($discountType == 'fixed') {
+                        // If discount type is fixed, value must be greater than 0
+                        if ($value <= 0) {
+                            $fail("The $attribute must be greater than 0 when the discount type is fixed.");
+                        }
+                    }
+                },
             ],
-            'value' => 'required|numeric|min:0',
             'discount_end_date' => [
-                'required',
+                'sometimes',
                 'date',
                 'after_or_equal:today',
             ],
-            'exclude_discounted_products' => 'required|boolean',
-            'minimum_purchase' => 'required|numeric|min:0',
-            'total_usage_times' => 'required|integer|min:1',
-            'usage_per_customer' => 'required|integer|min:1',
+            'exclude_discounted_products' => 'sometimes|boolean',
+            'minimum_purchase' => 'sometimes|numeric|min:0',
+            'total_usage_times' => 'sometimes|integer|min:1',
+            'usage_per_customer' => 'sometimes|integer|min:1',
             'is_active' => 'boolean|sometimes'
 
         ];
