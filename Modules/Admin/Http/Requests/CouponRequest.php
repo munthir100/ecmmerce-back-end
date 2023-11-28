@@ -4,6 +4,7 @@ namespace Modules\Admin\Http\Requests;
 
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Response;
 
 class CouponRequest extends FormRequest
 {
@@ -47,6 +48,15 @@ class CouponRequest extends FormRequest
             'usage_per_customer' => 'required|integer|min:1',
             'is_active' => 'boolean',
         ];
+    }
+
+    function validatePromocodeIsUniqueInStore($store)
+    {
+        return $this->validate([
+            'promocode' => Rule::unique('coupons', 'promocode')->where(function ($query) use ($store) {
+                return $query->where('store_id', $store->id);
+            })
+        ]);
     }
 
     /**

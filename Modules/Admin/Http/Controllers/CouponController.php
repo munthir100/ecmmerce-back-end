@@ -5,7 +5,6 @@ namespace Modules\Admin\Http\Controllers;
 use App\Services\StoreService;
 use Modules\Admin\Entities\Coupon;
 use App\Http\Controllers\Controller;
-use App\Actions\ValidateCouponPromocode;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Modules\Admin\Http\Requests\CouponRequest;
 use Modules\Admin\Transformers\CouponResource;
@@ -23,13 +22,13 @@ class CouponController extends Controller
         return $this->responseSuccess('coupons', CouponResource::collection($coupons));
     }
 
-    public function store(CouponRequest $request, ValidateCouponPromocode $action)
+    public function store(CouponRequest $request)
     {
         $this->authorize('Create-Coupon');
         $validatedData = $request->validated();
-        $action->validatePromocode($request->promocode, request()->store);
+        $request->validatePromocodeIsUniqueInStore(request()->store);
         $coupon = request()->store->coupons()->create($validatedData);
-        
+
         return $this->responseSuccess('coupon created', new CouponResource($coupon));
     }
 
@@ -42,11 +41,11 @@ class CouponController extends Controller
         return new CouponResource($coupon);
     }
 
-    public function update(UpdateCouponRequest $request, $couponId, ValidateCouponPromocode $action)
+    public function update(UpdateCouponRequest $request, $couponId)
     {
         $this->authorize('Edit-Coupon');
         $coupon = request()->store->coupons()->findOrFail($couponId);
-        $action->validateExestingPromocode($couponId, $request->promocode, request()->store);
+        $request->validatePromocodeIsUniqueInStore(request()->store, $couponId);
         $coupon->update($request->validated());
 
         return $this->responseSuccess('coupon updated', new CouponResource($coupon));

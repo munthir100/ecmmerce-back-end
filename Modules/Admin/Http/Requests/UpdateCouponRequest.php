@@ -38,6 +38,15 @@ class UpdateCouponRequest extends FormRequest
         ];
     }
 
+    function validatePromocodeIsUniqueInStore($store, $couponId)
+    {
+        return $this->validate([
+            'promocode' => Rule::unique('coupons', 'promocode')->where(function ($query) use ($store, $couponId) {
+                return $query->where('store_id', $store->id)
+                    ->where('id', '!=', $couponId);
+            })
+        ]);
+    }
     /**
      * Determine if the user is authorized to make this request.
      *
