@@ -2,9 +2,11 @@
 
 namespace Modules\Admin\Http\Requests;
 
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Modules\Admin\Rules\UniqueEmailForAdmin;
 use Modules\Admin\Rules\UniquePhoneForAdmin;
+use Illuminate\Validation\ValidationException;
 
 class AdminRegisterRequest extends FormRequest
 {
@@ -27,6 +29,20 @@ class AdminRegisterRequest extends FormRequest
             'link' => 'required|unique:stores',
         ];
     }
+
+    function ValidPhoneForCountry($value, $country)
+    {
+        $validator = Validator::make(
+            ['phone' => $value],
+            ['phone' => 'regex:/^' . $country->phone_code . '\d{' . $country->phone_digits_number . '}$/']
+        );
+        if ($validator->fails()) {
+            throw ValidationException::withMessages([
+                'phone' => ["The phone number for $country->name must start with {$country->phone_code} and have {$country->phone_digits_number} digits."],
+            ]);
+        }
+    }
+
 
     /**
      * Determine if the user is authorized to make this request.

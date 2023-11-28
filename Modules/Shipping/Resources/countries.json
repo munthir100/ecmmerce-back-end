@@ -6,7 +6,7 @@
         "currency_code": "SAR",
         "symbol": "ر.س",
         "phone_code": "966",
-        "phone_digits_number": "9"
+        "phone_digits_number": "10"
     },
     {
         "name": "Sudan",
@@ -15,7 +15,7 @@
         "currency_code": "SDG",
         "symbol": "ج.س",
         "phone_code": "249",
-        "phone_digits_number": "9"
+        "phone_digits_number": "10"
     },
     {
         "name": "Egypt",
@@ -24,7 +24,7 @@
         "currency_code": "EGP",
         "symbol": "£",
         "phone_code": "20",
-        "phone_digits_number": "10"
+        "phone_digits_number": "11"
     },
     {
         "name": "United Arab Emirates",
@@ -33,6 +33,6 @@
         "currency_code": "AED",
         "symbol": "د.إ",
         "phone_code": "971",
-        "phone_digits_number": "9"
+        "phone_digits_number": "10"
     }
 ]
