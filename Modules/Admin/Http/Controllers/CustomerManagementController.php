@@ -52,7 +52,7 @@ class CustomerManagementController extends Controller
 
     public function show($customerId)
     {
-        $this->authorize('Do-Something');
+        $this->authorize('View-Customer');
         $customer = request()->store->customers()->findOrFail($customerId);
 
         return $this->responseSuccess(

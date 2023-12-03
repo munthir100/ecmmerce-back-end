@@ -12,14 +12,18 @@ class StoreSettingsController extends Controller
 {
     use AuthorizesRequests;
 
-    function updateBasicInformation(UpdateStoreRequest $request)
+    function getStoreInformation()
+    {
+        return $this->responseSuccess(data: new StoreResource(request()->store));
+    }
+    
+    function updateStoreInformation(UpdateStoreRequest $request)
     {
         $this->authorize('Manage-Store-Settings');
         $data = $request->validated();
-        $data += $request->validateStoreLink(request()->store);
-        $updatedStore = request()->store->update($data);
+        request()->store->update($data);
 
-        return $this->responseSuccess('store data updated', new StoreResource($updatedStore));
+        return $this->responseSuccess('store data updated', new StoreResource(request()->store));
     }
 
     function UpdateStoreLogo(UpdateStoreRequest $request)
@@ -46,14 +50,4 @@ class StoreSettingsController extends Controller
 
         return $this->responseSuccess('store icon updated');
     }
-
-    function UpdateStoreCity(UpdateStoreRequest $request)
-    {
-        $this->authorize('Manage-Store-Settings');
-        $data = $request->validateStoreCity(request()->store);
-        request()->store->update($data);
-
-        return $this->responseSuccess('store city updated', $data);
-    }
-    
 }

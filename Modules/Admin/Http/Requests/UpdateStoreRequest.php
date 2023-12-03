@@ -16,44 +16,34 @@ class UpdateStoreRequest extends FormRequest
     {
         return [
             'name' => 'string|max:255',
-            'link' => 'string|max:255',
+            'link' => [
+                Rule::unique('stores')->ignore(request()->store),
+            ],
             'description' => 'string|max:255',
             'store_logo' => 'image',
             'store_icon' => 'image',
             'language_id' => 'exists:languages,id',
             'is_active' => 'boolean',
-            'maintenance_message' => ['required_if:is_active,true', 'string', 'max:255'],
+            'maintenance_message' => ['required_if:is_active,false', 'string', 'max:255'],
             'button_color' => 'string',
             'text_color' => 'string',
-        ];
-    }
-
-    public function validateStoreCity($store)
-    {
-        return $this->validate([
             'city_id' => [
-                'required',
                 'array',
-                Rule::exists('cities', 'id')->where(function ($query) use ($store) {
-                    $query->whereIn('country_id', $store->countries->pluck('id'));
+                Rule::exists('cities', 'id')->where(function ($query) {
+                    $query->whereIn('country_id', request()->store->countries->pluck('id'));
                 }),
             ],
             'city_id.*' => 'distinct',
-        ]);
+            'commercial_registration_no' => Rule::unique('stores')->ignore(request()->store),
+            'store_theme_id' => 'exists:store_themes,id'
+        ];
     }
-    public function validateStoreLink($store)
+
+    function messages()
     {
-        return $this->validate([
-            'link' => [
-                Rule::unique('stores')->ignore($store),
-            ],
-        ]);
-    }
-    public function validateCommercialRegistration($store)
-    {
-        return $this->validate([
-            'commercial_registration_no' => Rule::unique('stores')->ignore($store),
-        ]);
+        return [
+            'maintenance_message.required_if' => __("the mantinance message is required when you try de-activate store"),
+        ];
     }
 
     /**

@@ -48,6 +48,7 @@ class Store extends Model implements HasMedia
         'default_currency',
         'status_id',
         'is_active',
+        'maintenance_message',
         'city_id',
         'commercial_registration_no',
         'language_id',

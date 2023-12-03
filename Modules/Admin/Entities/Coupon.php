@@ -34,6 +34,7 @@ class Coupon extends Model
         'usage_per_customer',
         'used_times',
         'store_id',
+        'is_active'
     ];
     function store()
     {

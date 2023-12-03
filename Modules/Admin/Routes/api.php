@@ -14,7 +14,6 @@ use Modules\Admin\Http\Controllers\ProductController;
 use Modules\Admin\Http\Controllers\CategoryController;
 use Modules\Admin\Http\Controllers\BankAccountController;
 use Modules\Admin\Http\Controllers\StoreCitiesController;
-use Modules\Admin\Http\Controllers\StoreDesignController;
 use Modules\Admin\Http\Controllers\StoreSettingsController;
 use Modules\Admin\Http\Controllers\DefinitionPageController;
 use Modules\Admin\Http\Controllers\StoreCountriesController;
@@ -23,7 +22,6 @@ use Modules\Admin\Http\Controllers\SellerManagementController;
 use Modules\Admin\Http\Controllers\Settings\ProfileController;
 use Modules\Admin\Http\Controllers\AdminNotificationController;
 use Modules\Admin\Http\Controllers\CustomerManagementController;
-use Modules\Admin\Http\Controllers\StoreAdditionalSettingsController;
 use Modules\Admin\Http\Controllers\SubscriptionsPlansController;
 
 /*
@@ -65,7 +63,7 @@ Route::middleware(['custom_auth_sanctum', 'can_manage'])
         Route::prefix('settings')->group(function () {
             Route::apiResource('subscriptionsPlans', SubscriptionsPlansController::class)->only('index', 'show');
             Route::post('subscriptionsPlans/upgrade', [SubscriptionsPlansController::class, 'upgrade']);
-            
+
             Route::apiResource('countries', StoreCountriesController::class)->except('show', 'update');
             Route::put('countries/{countryId}/default', [StoreCountriesController::class, 'setAsDefault']);
             Route::put('countries/{countryId}/toggle-activation', [StoreCountriesController::class, 'toggleActivation']);
@@ -84,24 +82,13 @@ Route::middleware(['custom_auth_sanctum', 'can_manage'])
             Route::apiResource('sellers', SellerManagementController::class); // only admin
 
 
-            Route::prefix('store/update')->group(function () {
-                Route::put('basic-information', [StoreSettingsController::class, 'updateBasicInformation']);
-                Route::post('logo', [StoreSettingsController::class, 'updateStoreLogo']);
-                Route::post('icon', [StoreSettingsController::class, 'updateStoreIcon']);
-                Route::put('city', [StoreSettingsController::class, 'updateStoreCity']);
-
-
-
-                Route::put('commercial-registration', [StoreAdditionalSettingsController::class, 'updateCommercialRegistration']);
-                Route::put('status', [StoreAdditionalSettingsController::class, 'updateStatus']);
-                Route::put('language', [StoreAdditionalSettingsController::class, 'updateStoreLanguage']);
-
-                Route::prefix('design')->group(function () {
-                    Route::put('navbar', [StoreDesignController::class, 'updateNavbar']);
-                    Route::delete('navbar', [StoreDesignController::class, 'deleteNavbar']);
-                    Route::put('theme', [StoreDesignController::class, 'updateTheme']);
-                    Route::put('colors', [StoreDesignController::class, 'updateColors']);
+            Route::prefix('store')->group(function () {
+                Route::prefix('update')->group(function () {
+                    Route::put('/', [StoreSettingsController::class, 'updateStoreInformation']);
+                    Route::post('logo', [StoreSettingsController::class, 'updateStoreLogo']);
+                    Route::post('icon', [StoreSettingsController::class, 'updateStoreIcon']);
                 });
+                Route::get('/', [StoreSettingsController::class, 'getStoreInformation']);
             });
 
 
