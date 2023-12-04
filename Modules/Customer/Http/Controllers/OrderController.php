@@ -2,7 +2,6 @@
 
 namespace Modules\Customer\Http\Controllers;
 
-use Essa\APIToolKit\Api\ApiResponse;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;

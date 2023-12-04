@@ -4,7 +4,6 @@ namespace Modules\Admin\Http\Controllers;
 
 use App\Traits\ModelsForAdmin;
 use App\Http\Controllers\Controller;
-use Essa\APIToolKit\Api\ApiResponse;
 use Illuminate\Support\Facades\Auth;
 use Modules\Admin\Entities\BankAccount;
 use Modules\Admin\Http\Requests\BankAccountRequest;
@@ -14,7 +13,7 @@ use Modules\Admin\Http\Requests\UpdateBankAccountRequest;
 
 class BankAccountController extends Controller
 {
-    use ModelsForAdmin, ApiResponse, AuthorizesRequests;
+    use ModelsForAdmin, AuthorizesRequests;
 
     public function index()
     {
