@@ -17,11 +17,11 @@ class CustomerResource extends JsonResource
         return [
             'id' => $this->id,
             'user' => new UserResource($this->user),
-            'birth_date' => $this->birth_date ?? 'N\A',
-            'gender' => $this->gender == 0 ? 'male' : 'female',
-            'description' => $this->description ?? 'N\A',
+            'birth_date' => $this->birth_date,
+            'gender' => $this->gender,
+            'description' => $this->description,
             'number_of_orders' => $this->number_of_orders,
-            'city' => $this->city ? $this->city->name : 'N\A',
+            'city_id' => $this->city_id,
         ];
     }
 }
