@@ -10,22 +10,16 @@ class CartService
 {
     public function findProduct($store, $productId)
     {
-        $product = $store->products->find($productId);
-   
-        if($product->FeaturedProdcut){
+        $product = $store->products()->findOrFail($productId);
+
+        if ($product->FeaturedProdcut) {
             abort(response()->json([
                 'message' => 'this is featured product',
                 'success' => false,
                 'statuscode' => 404,
             ]));
         }
-        if (!$product) {
-            abort(response()->json([
-                'message' => 'product not found',
-                'success' => false,
-                'statuscode' => 404,
-            ]));
-        }
+
         return $product;
     }
 
@@ -72,7 +66,7 @@ class CartService
     {
         if (!$product->unspecified_quantity && $totalQuantity > $product->quantity) {
             abort(response()->json([
-                'message' => 'invaild quantity',
+                'message' => 'the quantity must be less than or equal ' . $product->quantity . '',
                 'success' => false,
                 'statuscode' => 400,
             ]));

@@ -7,6 +7,7 @@ use Modules\Acl\Entities\User;
 use Modules\Store\Entities\Store;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Modules\Acl\Entities\UserType;
 use Modules\Customer\Http\Requests\CustomerRegisterRequest;
 
 class AuthController extends Controller
@@ -40,7 +41,7 @@ class AuthController extends Controller
     function register(CustomerRegisterRequest $request, Store $store)
     {
         $data = $request->validated();
-        $data['user_type_id'] = 2;
+        $data['user_type_id'] = UserType::CUSTOMER;
         $data['password'] = Hash::make($data['password']);
 
         $email = $data['email'];
@@ -50,14 +51,15 @@ class AuthController extends Controller
                 ->orWhere('phone', $phone);
         })->exists();
         if ($exists) {
-            return $this->responseConflictError('the email or phone is already exist');
+            return $this->responseConflictError('the email or phone is already exist for another customer');
         }
         $user = User::create($data);
-        $user->customer()->create([
+        $customer = $user->customer()->create([
             'store_id' => $store->id
         ]);
+        $customer->shoppingCart()->create();
         $token = $user->createToken('token')->plainTextToken;
-
+        
         return $this->responseSuccess(
             message: 'register successfull',
             data: ['token' => $token],

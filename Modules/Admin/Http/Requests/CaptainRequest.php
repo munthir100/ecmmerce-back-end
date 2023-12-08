@@ -24,6 +24,7 @@ class CaptainRequest extends FormRequest
             ],
             'expected_time_shipping' => 'required|integer',
             'is_active' => 'boolean',
+            'city_id' => 'required',
             'city_id.*' => 'distinct',
         ];
     }
@@ -32,13 +33,11 @@ class CaptainRequest extends FormRequest
     {
         return $this->validate([
             'city_id' => [
-                'required',
                 'array',
                 Rule::exists('cities', 'id')->where(function ($query) use ($store) {
                     $query->whereIn('country_id', $store->countries->pluck('id'));
                 }),
             ],
-            'city_id.*' => 'distinct',
         ]);
     }
 

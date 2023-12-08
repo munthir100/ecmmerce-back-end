@@ -4,14 +4,15 @@ namespace Modules\Customer\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\CartService;
+use App\Services\CustomerService;
 use Modules\Store\Entities\Store;
 use App\Http\Controllers\Controller;
-use App\Services\CustomerService;
 use App\Services\FeaturedProductService;
 use Modules\Customer\Entities\ShoppingCart;
-use Modules\Customer\Http\Requests\AddFeaturedProductToCartRequest;
 use Modules\Customer\Http\Requests\AddToCartRequest;
-use Modules\Customer\Transformers\shoppingCartResource;
+use Modules\Customer\Transformers\ShoppingCartResource;
+use Modules\Customer\Http\Requests\UpdateQuantityRequest;
+use Modules\Customer\Http\Requests\AddFeaturedProductToCartRequest;
 
 class ShoppingCartController extends Controller
 {
@@ -30,10 +31,10 @@ class ShoppingCartController extends Controller
     public function getCartByCustomer()
     {
         $customer = request()->user()->customer;
-        $cart = $this->customerService->findModel($customer, ShoppingCart::class);
+        $cart = $customer->ShoppingCart;
 
         return $cart && !$cart->items->isEmpty()
-            ? $this->responseSuccess(data: new shoppingCartResource($cart))
+            ? $this->responseSuccess(data: new ShoppingCartResource($cart))
             : $this->responseSuccess('The cart is empty');
     }
 
@@ -43,7 +44,7 @@ class ShoppingCartController extends Controller
     {
         $data = $request->validated();
         $customer = $request->user()->customer;
-        $cart = $customer->shoppingCart()->firstOrCreate([]);
+        $cart = $customer->shoppingCart;
         $product = $this->cartService->findProduct($store, $productId);
         $validatedQuantity = $this->cartService->validateProductQuantity($product, $data['quantity'], $cart);
         $ProductInCart = $this->cartService->CheckIfProductExistsInCart($product, $cart);
@@ -57,9 +58,10 @@ class ShoppingCartController extends Controller
                 'store_id' => $store->id,
                 'quantity' => $validatedQuantity,
             ]);
+
         return $this->responseSuccess(
             'shopping cart updated',
-            data: new shoppingCartResource($cart),
+            data: new ShoppingCartResource($cart),
         );
     }
 
@@ -91,7 +93,7 @@ class ShoppingCartController extends Controller
 
         return $this->responseSuccess(
             'shopping cart updated',
-            new shoppingCartResource($cart),
+            new ShoppingCartResource($cart),
         );
     }
 
@@ -99,7 +101,7 @@ class ShoppingCartController extends Controller
     public function removeProductFromCart(Store $store, $itemId, CustomerService $customerService)
     {
         $customer = request()->user()->customer;
-        $cart = $customerService->findModel($customer, ShoppingCart::class);
+        $cart = $customer->ShoppingCart;
         $item = $cart->items->find($itemId);
         if (!$item) {
             return $this->responseNotFound('this item not exist in cart');
@@ -110,25 +112,22 @@ class ShoppingCartController extends Controller
     }
 
 
-    public function updateProductQuantity(Store $store, $productId, Request $request)
+
+    public function updateProductQuantity(Store $store, $productId, UpdateQuantityRequest $request)
     {
-        $product = $store->products->find($productId);
+        $product = $store->products()->findOrFail($productId);
 
-        if (!$product) {
-            return $this->responseNotFound('The product does not exist in the store');
-        }
-
-        $data = $request->validated();
-        $newQuantity = $data['quantity'];
-        $customer = request()->user()->customer;
-        $cart = $customer->shoppingCart->with('items');
-
-        if (!$cart || $cart->items()->isEmpty() || !$cart->items()->contains('id', $product->id)) {
+        $customer = $request->user()->customer;
+        $cart = $customer->shoppingCart()->with('items')->first();
+        $item = $this->cartService->CheckIfProductExistsInCart($product,$cart);
+        if(!$item){
             return $this->responseNotFound('The product does not exist in the cart');
         }
+        $request->validateQuantityWithProductQuantity($product->quantity);
+        $item->update([
+            'quantity' =>  $request->input('quantity')
+        ]);
 
-        $cart->products()->updateExistingPivot($product->id, ['quantity' => $newQuantity]);
-
-        return $this->responseSuccess('Product quantity updated in cart');
+        return $this->responseSuccess('Updated Quantity Successfully',new ShoppingCartResource($item));
     }
 }

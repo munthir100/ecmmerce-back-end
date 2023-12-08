@@ -2,12 +2,14 @@
 
 namespace Modules\Acl\Http\Middleware;
 
+use App\Traits\ApiResponse;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Auth\Access\AuthorizationException;
 
 class CustomerMiddleware
 {
+    use ApiResponse;
     /**
      * Handle an incoming request.
      *
@@ -19,7 +21,7 @@ class CustomerMiddleware
     {
         $user = auth()->user();
         if (!$user->isCustomer) {
-            throw new AuthorizationException('you must be a customer in this store');
+            return $this->responseUnAuthorized(message: 'you must login or register in this store');
         }
         return $next($request);
     }

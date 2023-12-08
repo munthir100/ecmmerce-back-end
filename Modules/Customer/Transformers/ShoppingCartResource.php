@@ -4,7 +4,7 @@ namespace Modules\Customer\Transformers;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class shoppingCartResource extends JsonResource
+class ShoppingCartResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -19,6 +19,7 @@ class shoppingCartResource extends JsonResource
             $subtotalPrice = ($item->price + $additionalPrice) * $item->pivot->quantity;
 
             return [
+                'id' => $item->id,
                 'item' => $item->name,
                 'quantity' => $item->pivot->quantity,
                 'product_option' => $item->pivot->product_option,

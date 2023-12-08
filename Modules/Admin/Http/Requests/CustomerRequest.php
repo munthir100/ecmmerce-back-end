@@ -27,6 +27,16 @@ class CustomerRequest extends FormRequest
         ];
     }
 
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $this->validateEmailAndPhoneInStore(request()->store);
+        });
+    }
+
+    function validateEmailAndPhoneInStore($store){
+        
+    }
     /**
      * Determine if the user is authorized to make this request.
      *

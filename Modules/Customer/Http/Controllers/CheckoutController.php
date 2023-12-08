@@ -49,7 +49,7 @@ class CheckoutController extends Controller
         DB::transaction(function () use ($order, $orderItems,$shoppingCart) {
             $order->save();
             $order->items()->saveMany($orderItems);
-            $shoppingCart->delete();
+            $shoppingCart->items()->delete();
         });
         
 

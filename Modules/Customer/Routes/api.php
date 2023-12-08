@@ -26,7 +26,7 @@ Route::prefix('{storeLink}')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
 
 
-    Route::middleware(['auth:sanctum'])->group(function () {
+    Route::middleware(['auth:sanctum','is_customer'])->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
 
         Route::prefix('cart')->group(function () {

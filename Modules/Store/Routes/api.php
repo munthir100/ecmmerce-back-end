@@ -33,7 +33,7 @@ Route::prefix('{storeLink}')->middleware('active_store')->group(function () {
     Route::get('/brands', [StoreBrandController::class, 'brands']);
 
     Route::get('/captains', [StoreCaptainController::class, 'captains']);
-
+    Route::get('/cities', [StoreController::class,'cities']);
     Route::get('ratings', [StoreController::class, 'ratings']);
     Route::post('rate', [StoreController::class, 'rate']);
 });
