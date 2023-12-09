@@ -5,6 +5,7 @@ namespace Modules\Admin\Rules;
 use Closure;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Modules\Acl\Entities\UserType;
 
 class UniquePhoneForAdmin implements ValidationRule
 {
@@ -17,7 +18,7 @@ class UniquePhoneForAdmin implements ValidationRule
     {
         $PhoneIsExist = DB::table('users')
             ->where('phone', $value)
-            ->where('user_type_id', 1)
+            ->where('user_type_id', UserType::ADMIN)
             ->count();
 
         if ($PhoneIsExist) {
