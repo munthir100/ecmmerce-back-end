@@ -14,6 +14,20 @@ use Spatie\Permission\Models\Permission;
 
 class AdminRegisterService
 {
+    public function ValidPhoneForCountry($phone, $country)
+    {
+        $phoneDigits = Str::length($phone) - Str::length($country->phone_code);
+        if (
+            !Str::startsWith($phone, $country->phone_code) ||
+            $phoneDigits != $country->phone_digits_number
+        ) {
+            abort(response()->json([
+                'message' => 'The phone of ' . $country->name . ' must start with '.$country->phone_code.' have ' . $country->phone_digits_number . ' digits.',
+                'success' => false,
+                'statuscode' => 422,
+            ]));
+        }
+    }
 
     public function createUser($name, $email, $phone, $password, $countryId)
     {
@@ -34,7 +48,7 @@ class AdminRegisterService
         $permissions = Permission::all();
         $user->syncPermissions($permissions);
     }
-    
+
     public function createStore($admin, $storeName, $storeLink, $currencyCode)
     {
 

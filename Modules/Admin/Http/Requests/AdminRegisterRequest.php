@@ -2,7 +2,6 @@
 
 namespace Modules\Admin\Http\Requests;
 
-use Modules\Shipping\Entities\Country;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Modules\Admin\Rules\UniqueEmailForAdmin;
@@ -31,19 +30,7 @@ class AdminRegisterRequest extends FormRequest
         ];
     }
 
-    function ValidPhoneForCountry($value, Country $country): void
-    {
-        $phoneRegex = sprintf('/^(?=%s\d{%d}$)/', $country->phone_code, $country->phone_digits_number);
 
-        if (!preg_match($phoneRegex, $value, $matches)) {
-            throw ValidationException::withMessages([
-                'phone' => ["The phone number for {$country->name} must start with {$country->phone_code} and have {$country->phone_digits_number} digits."],
-            ]);
-        }
-    }
-    
-    
-    
 
 
     /**
