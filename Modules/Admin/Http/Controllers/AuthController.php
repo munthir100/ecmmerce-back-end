@@ -61,7 +61,7 @@ class AuthController extends Controller
     ) {
         $data = $request->validated();
         $country = Country::findOrFail($data['country_id']);
-        $request->ValidPhoneForCountry($data['phone'],$country);
+        // $request->ValidPhoneForCountry($data['phone'],$country);
         try {
             DB::beginTransaction();
 
