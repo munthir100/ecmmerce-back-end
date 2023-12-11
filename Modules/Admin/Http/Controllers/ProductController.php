@@ -44,7 +44,8 @@ class ProductController extends Controller
         return DB::transaction(function () use ($data, $optionsData) {
             $product = request()->store->products()->create($data);
             $product->uploadMedia();
-            if (!isEmpty($optionsData)) {
+            
+            if ($optionsData != []) {
                 $this->productService->createProductOptions($product, $optionsData);
             }
 

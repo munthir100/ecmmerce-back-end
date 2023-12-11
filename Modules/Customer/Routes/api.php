@@ -35,6 +35,7 @@ Route::prefix('{storeLink}')->group(function () {
             Route::post('product/featured/{product}/add-to-cart', [ShoppingCartController::class, 'addFeaturedProductToCart']);
             Route::delete('remove/{product}', [ShoppingCartController::class, 'removeProductFromCart']);
             Route::put('update/{product}', [ShoppingCartController::class, 'updateProductQuantity']);
+            Route::put('featured-product/{productId}/update-quantity', [ShoppingCartController::class,'updateFeaturedProductQuantity']);
         });
 
         Route::apiResource('locations', CustomerLocationsController::class);

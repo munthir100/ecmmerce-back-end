@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Modules\Store\Entities\Product;
 use Modules\Customer\Entities\ShoppingCart;
 
@@ -51,7 +52,15 @@ class CartService
 
     public function CheckIfProductExistsInCart(Product $product, ShoppingCart $cart)
     {
-        return $cart->items()->where('product_id', $product->id)->first();
+        $item = $cart->items()->where('product_id', $product->id)->first();
+        if (!$item) {
+            abort(response()->json([
+                'message' => 'The product does not exist in the cart',
+                'success' => false,
+                'statuscode' => Response::HTTP_NOT_FOUND,
+            ]));
+        }
+        return $item;
     }
     public function calculateTotalQuantity($existingProduct, $requestedQuantity)
     {
@@ -68,7 +77,7 @@ class CartService
             abort(response()->json([
                 'message' => 'the quantity must be less than or equal ' . $product->quantity . '',
                 'success' => false,
-                'statuscode' => 400,
+                'statuscode' => Response::HTTP_UNPROCESSABLE_ENTITY,
             ]));
         }
 

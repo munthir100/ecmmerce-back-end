@@ -4,7 +4,7 @@ namespace Modules\Customer\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateQuantityRequest extends FormRequest
+class UpdateFeaturedProductQuantity extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -14,14 +14,16 @@ class UpdateQuantityRequest extends FormRequest
     public function rules()
     {
         return [
-            'quantity' => 'required|string'
+            'product_option_id' => 'required|integer',
+            'product_option_value_id' => 'required|integer',
+            'quantity' => 'required|integer|min:0',
         ];
     }
 
-    function ValidateQuantity($availableQuantity)
+    function validateQuantity($availableQuantity)
     {
         return $this->validate([
-            'quantity' => "numeric|min:1|max:$availableQuantity"
+            'quantity' => 'max:' . $availableQuantity,
         ]);
     }
     /**

@@ -14,27 +14,28 @@ class ShoppingCartResource extends JsonResource
      */
     public function toArray($request)
     {
-        $items = $this->products->map(function ($item) {
-            $additionalPrice = $item->pivot->product_option_value ? $item->pivot->additional_price : 0;
-            $subtotalPrice = ($item->price + $additionalPrice) * $item->pivot->quantity;
-
+        $products = $this->products->map(function ($product) {
+            $additionalPrice = $product->pivot->product_option_value ? $product->pivot->additional_price : 0;
+            $subtotalPrice = ($product->price + $additionalPrice) * $product->pivot->quantity;
+            $item = $this->items()->where('product_id',$product->id)->first();
+            
             return [
                 'id' => $item->id,
-                'item' => $item->name,
-                'quantity' => $item->pivot->quantity,
-                'product_option' => $item->pivot->product_option,
-                'product_option_value' => $item->pivot->product_option_value,
+                'product_name' => $product->name,
+                'quantity' => $product->pivot->quantity,
+                'product_option' => $product->pivot->product_option,
+                'product_option_value' => $product->pivot->product_option_value,
                 'additional_price' => $additionalPrice,
                 'subtotal_price' => $subtotalPrice,
             ];
         });
 
         // Calculate the total price as the sum of all subtotals
-        $totalPrice = $items->sum('subtotal_price');
+        $totalPrice = $products->sum('subtotal_price');
 
         return [
             'id' => $this->id,
-            'products' => $items,
+            'items' => $products,
             'total_price' => $totalPrice,
         ];
     }
