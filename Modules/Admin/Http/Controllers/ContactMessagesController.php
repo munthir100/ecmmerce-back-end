@@ -17,7 +17,7 @@ class ContactMessagesController extends Controller
         $admin = $this->getAdmin();
         $contactMessages = $admin->contactMessages()->get();
 
-        return $this->responseSuccess(data: ContactMessageResource::collection($contactMessages));
+        return $this->responseSuccess(data: ['contact_messages',ContactMessageResource::collection($contactMessages)]);
     }
 
 

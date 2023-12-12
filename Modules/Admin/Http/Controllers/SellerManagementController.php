@@ -21,9 +21,9 @@ class SellerManagementController extends Controller
     public function index()
     {
         $admin = $this->getAdmin();
-        $sellers = $admin->sellers()->with('user','user.roles','user.permissions')->useFilters()->dynamicPaginate();
+        $sellers = $admin->sellers()->with('user', 'user.roles', 'user.permissions')->useFilters()->dynamicPaginate();
 
-        return $this->responseSuccess(data: SellerResource::collection($sellers));
+        return $this->responseSuccess(data: ['sellers' => SellerResource::collection($sellers)]);
     }
 
     public function store(CreateSellerRequest $request)

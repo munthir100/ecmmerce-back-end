@@ -14,10 +14,10 @@ class OrderController extends Controller
     {
         $customerOrders = request()->user()->customer->orders()->useFilters()->with('items')->dynamicPaginate();
 
-        return $this->responseSuccess(data: OrderResource::collection($customerOrders));
+        return $this->responseSuccess(data: ['customer_orders' => OrderResource::collection($customerOrders)]);
     }
 
-    public function invoice(){
-        
+    public function invoice()
+    {
     }
 }

@@ -18,7 +18,7 @@ class BrandController extends Controller
         $this->authorize('View-Brand');
         $brands = request()->store->brands()->useFilters()->dynamicPaginate();
         return $brands;
-        return $this->responseSuccess('brands', BrandResource::collection($brands));
+        return $this->responseSuccess(data:['brands' => BrandResource::collection($brands)]);
     }
 
     public function store(BrandRequest $request)

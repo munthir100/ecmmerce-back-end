@@ -21,7 +21,7 @@ class CustomerManagementController extends Controller
         $this->authorize('View-Customer');
         $customers = request()->store->customers()->useFilters()->with('user')->dynamicPaginate();
 
-        return ['customer' => CustomerResource::collection($customers)];
+        return $this->responseSuccess(data:['customers' => CustomerResource::collection($customers)]);
     }
 
     public function store(CustomerRequest $request)

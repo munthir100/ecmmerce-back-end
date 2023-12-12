@@ -31,7 +31,7 @@ class ProductController extends Controller
         $this->authorize('View-Product');
         $products = request()->store->products()->useFilters()->dynamicPaginate();
 
-        return $this->responseSuccess('products', ProductResource::collection($products));
+        return $this->responseSuccess(data:['products' => ProductResource::collection($products)]);
     }
 
     public function store(ProductRequest $request)

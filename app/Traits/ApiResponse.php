@@ -6,6 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 trait ApiResponse
 {
@@ -81,9 +82,27 @@ trait ApiResponse
 
     public function responseSuccess(?string $message = null, mixed $data = null): JsonResponse
     {
+        $meta = [];
+        $key = collect($data)->keys()->first();
+        $firstItem = $data[$key] ?? null;
+        if (isset($firstItem->resource) && $firstItem->resource instanceof LengthAwarePaginator) {
+            $paginationMeta = $data[$key]->resource->toArray();
+            $meta = [
+                'total' => $paginationMeta['total'],
+                'per_page' => request('per_page') ? request('per_page') : config('api-tool-kit.default_pagination_number'),
+                'current_page' => $paginationMeta['current_page'],
+                'last_page' => $paginationMeta['last_page'],
+                'first_page_url' => $paginationMeta['first_page_url'],
+                'last_page_url' => $paginationMeta['last_page_url'],
+                'next_page_url' => $paginationMeta['next_page_url'],
+                'prev_page_url' => $paginationMeta['prev_page_url'],
+            ];
+        }
+        
         return new JsonResponse([
             'message' => $message,
-            'data' => $data,
+            'data' => $data ? $data : ($this->sendDataAsNull ? null : []),
+            ...($meta ? ['meta' => $meta] : []),
             'success' => true,
             'statuscode' => Response::HTTP_OK
         ], Response::HTTP_OK);

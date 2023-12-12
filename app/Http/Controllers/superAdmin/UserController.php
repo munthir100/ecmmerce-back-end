@@ -14,6 +14,6 @@ class UserController extends Controller
     {
         $users = User::get();
 
-        return UserResource::collection($users);
+        return $this->responseSuccess(data:[UserResource::collection($users)]);
     }
 }

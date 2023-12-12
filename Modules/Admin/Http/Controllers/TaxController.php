@@ -21,7 +21,7 @@ class TaxController extends Controller
         // $this->authorize('View-Tax');
         $taxes = request()->store->taxes()->useFilters()->dynamicPaginate();
 
-        return $this->responseSuccess(data: TaxResource::collection($taxes));
+        return $this->responseSuccess(data: ['taxes' => TaxResource::collection($taxes)]);
     }
 
     public function store(Taxrequest $request)
@@ -58,5 +58,4 @@ class TaxController extends Controller
 
         return $this->responseSuccess('tax deleted');
     }
-
 }

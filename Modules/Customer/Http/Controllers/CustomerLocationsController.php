@@ -15,9 +15,9 @@ class CustomerLocationsController extends Controller
     public function index(Store $store)
     {
         $customer = request()->user()->customer;
-        $locations = $customer->locations;
+        $locations = $customer->locations()->dynamicPaginate();
 
-        return $this->responseSuccess(data: LocationResource::collection($locations));
+        return $this->responseSuccess(data: ['locations' => LocationResource::collection($locations)]);
     }
 
     public function store(LocationRequest $request, Store $store)

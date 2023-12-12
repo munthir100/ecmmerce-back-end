@@ -16,7 +16,7 @@ class SubscriptionsPlansController extends Controller
     {
         $subscriptionsPlans = SubscriptionPlan::all();
 
-        return SubscriptionsPlansResource::collection($subscriptionsPlans);
+        return $this->responseSuccess(data: ['plans' => SubscriptionsPlansResource::collection($subscriptionsPlans)]);
     }
 
 
@@ -30,18 +30,16 @@ class SubscriptionsPlansController extends Controller
         $data = $request->validated();
         $newPlan = SubscriptionPlan::findOrFail($data['subscription_plans']);
         $currentSubscription = $request->store->subscription;
-dd($currentSubscription->onTrial());
+        dd($currentSubscription->onTrial());
         if ($currentSubscription->active()) {
             dd($currentSubscription->name());
             // Swap the current subscription to the new plan
             $currentSubscription->swap($newPlan->stripe_plan_id);
-    
+
             return response()->json(['message' => 'Subscription plan upgraded successfully']);
         } else {
-            
+
             return response()->json(['message' => 'No active subscription found'], 422);
         }
     }
-    
-    
 }

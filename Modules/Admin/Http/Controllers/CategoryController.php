@@ -13,13 +13,13 @@ use Modules\Admin\Http\Requests\UpdateCategoryRequest;
 class CategoryController extends Controller
 {
     use AuthorizesRequests;
-    
+
     public function index()
     {
         $this->authorize('View-Category');
         $categories = request()->store->categories()->useFilters()->dynamicPaginate();
 
-        return $this->responseSuccess('categories', CategoryResource::collection($categories));
+        return $this->responseSuccess(data: ['categories' => CategoryResource::collection($categories)]);
     }
 
 
