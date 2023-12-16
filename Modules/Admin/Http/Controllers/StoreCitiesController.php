@@ -16,6 +16,7 @@ class StoreCitiesController extends Controller
                 ->from('store_countries')
                 ->where('store_id', request()->store->id);
         })
+        ->useFilters()
         ->dynamicPaginate();
 
         return $this->responseSuccess(data:['cities' => CityResource::collection($cities)]);
