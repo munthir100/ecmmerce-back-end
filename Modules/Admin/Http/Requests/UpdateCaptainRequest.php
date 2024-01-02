@@ -34,7 +34,6 @@ class UpdateCaptainRequest extends FormRequest
     {
         return $this->validate([
             'city_id' => [
-                'required',
                 'array',
                 Rule::exists('cities', 'id')->where(function ($query) use ($store) {
                     $query->whereIn('country_id', $store->countries->pluck('id'));

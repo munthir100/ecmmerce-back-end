@@ -75,7 +75,7 @@ trait ApiResponse
         return new JsonResponse([
             'message' => $message,
             'data' => $data,
-            'success' => true,
+            'success' => false,
             'statuscode' => Response::HTTP_CONFLICT
         ], Response::HTTP_OK);
     }

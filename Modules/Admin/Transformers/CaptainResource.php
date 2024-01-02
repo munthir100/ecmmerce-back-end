@@ -22,7 +22,7 @@ class CaptainResource extends JsonResource
             'cash_on_delivery' => $this->cash_on_delivery,
             'cash_on_delivery_cost' => $this->cash_on_delivery_cost,
             'store_id' => $this->store_id,
-            'cities' => $this->cities->pluck('name'),
+            'cities' => CityResource::collection($this->cities),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

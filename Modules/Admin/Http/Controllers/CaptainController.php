@@ -13,7 +13,7 @@ class CaptainController extends Controller
     public function index()
     {
         $this->authorize('View-Shipping-Method');
-        $captains = request()->store->captains()->useFilters()->dynamicPaginate();
+        $captains = request()->store->captains()->with('cities')->useFilters()->dynamicPaginate();
 
         return $this->responseSuccess(
             data: ['captains' => CaptainResource::collection($captains)],
@@ -37,7 +37,7 @@ class CaptainController extends Controller
     public function show($captianId)
     {
         $this->authorize('View-Shipping-Method');
-        $captain = request()->store->captains()->findOrFail($captianId);
+        $captain = request()->store->captains()->with('cities')->findOrFail($captianId);
         
         return $this->responseSuccess(data:new CaptainResource($captain));
     }
