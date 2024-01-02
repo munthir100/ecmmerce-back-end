@@ -72,14 +72,14 @@ class User extends Authenticatable
 
     protected function IsAdmin(): Attribute
     {
-        return Attribute::make()->get(fn () => $this->user_type_id == 1);
+        return Attribute::make()->get(fn () => $this->user_type_id == UserType::ADMIN);
     }
     protected function IsCustomer(): Attribute
     {
-        return Attribute::make()->get(fn () => $this->user_type_id == 2);
+        return Attribute::make()->get(fn () => $this->user_type_id == UserType::CUSTOMER);
     }
     protected function IsSeller(): Attribute
     {
-        return Attribute::make()->get(fn () => $this->user_type_id == 3);
+        return Attribute::make()->get(fn () => $this->user_type_id == UserType::SELLER);
     }
 }

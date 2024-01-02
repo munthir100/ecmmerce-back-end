@@ -17,7 +17,7 @@ class AddToCartRequest extends FormRequest
             'quantity' => [
                 'required',
                 'integer',
-                'min:0',
+                'min:1',
             ],
         ];
     }

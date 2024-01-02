@@ -79,9 +79,10 @@ trait ApiResponse
             'statuscode' => Response::HTTP_CONFLICT
         ], Response::HTTP_OK);
     }
-
+    public bool $sendDataAsNull = false;
     public function responseSuccess(?string $message = null, mixed $data = null): JsonResponse
     {
+
         $meta = [];
         $key = collect($data)->keys()->first();
         $firstItem = $data[$key] ?? null;
@@ -98,7 +99,7 @@ trait ApiResponse
                 'prev_page_url' => $paginationMeta['prev_page_url'],
             ];
         }
-        
+
         return new JsonResponse([
             'message' => $message,
             'data' => $data ? $data : ($this->sendDataAsNull ? null : []),

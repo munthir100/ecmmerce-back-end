@@ -45,10 +45,10 @@ class ShoppingCartController extends Controller
     {
         $data = $request->validated();
         $customer = $request->user()->customer;
-        $cart = $customer->shoppingCart;
+        $cart = $customer->shoppingCart()->firstOrCreate([]);
         $product = $this->cartService->findProduct($store, $productId);
-        $validatedQuantity = $this->cartService->validateProductQuantity($product, $data['quantity'], $cart);
-        $ProductInCart = $this->cartService->CheckIfProductExistsInCart($product, $cart);
+        $validatedQuantity = $this->cartService->validateQuantityForSingleProduct($product, $data['quantity']);
+        $ProductInCart = $cart->items()->where('product_id', $product->id)->first();
 
         $ProductInCart ?
             $ProductInCart->update([

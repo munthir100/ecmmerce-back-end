@@ -18,12 +18,24 @@ class CreateOrderRequest extends FormRequest
     {
         return [
             'customer_id' => 'required|integer|exists:customers,id',
-            'location_id' => 'required|integer|exists:locations,id',
-            'captain_id' => 'required|integer|exists:captains,id',
+            'location_id' => [
+                'required',
+                'integer',
+                Rule::exists('locations', 'id')->where('customer_id', request('customer_id')),
+            ],
+            'captain_id' => [
+                'required',
+                'integer',
+                Rule::exists('captains', 'id')->where('store_id', request()->store->id),
+            ],
             'payment_type' => 'required|in:cash,bank',
             'products' => 'required|array',
             'products.*' => 'distinct',
-            'products.*.id' => 'required_with:product.*',
+            'products.*.id' => [
+                'required_with:product.*',
+                Rule::exists('products', 'id')->where('store_id', request()->store->id),
+            ],
+            'products.*.quantity' => 'required_with:products.*.id|integer|min:1',
             'coupon' => 'sometimes|string|max:255'
         ];
     }
@@ -111,6 +123,13 @@ class CreateOrderRequest extends FormRequest
     }
 
 
+    public function messages()
+    {
+        return [
+            'location_id.exists' => __('The selected location does not exist for the specified customer'),
+            'payment_type.in' => 'The selected payment type is invalid. Please choose either "cash" or "bank".',
+        ];
+    }
     /**
      * Determine if the user is authorized to make this request.
      *

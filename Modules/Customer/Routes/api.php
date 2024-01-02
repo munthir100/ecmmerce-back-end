@@ -27,7 +27,7 @@ Route::prefix('{storeLink}')->group(function () {
 
 
     Route::middleware(['auth:sanctum','is_customer'])->group(function () {
-        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::post('logout', [AuthController::class, 'logout']);
 
         Route::prefix('cart')->group(function () {
             Route::get('/', [ShoppingCartController::class, 'getCartByCustomer']);
