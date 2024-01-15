@@ -16,7 +16,7 @@ class SubscriptionsPlansController extends Controller
     {
         $subscriptionsPlans = SubscriptionPlan::all();
 
-        return $this->responseSuccess(data: ['plans' => SubscriptionsPlansResource::collection($subscriptionsPlans)]);
+        return $this->responseSuccess(data: [SubscriptionsPlansResource::collection($subscriptionsPlans)]);
     }
 
 

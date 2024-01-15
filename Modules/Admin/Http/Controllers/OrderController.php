@@ -22,7 +22,7 @@ class OrderController extends Controller
         $orders = request()->store->orders()->useFilters()->with('customer.user', 'captain')->dynamicPaginate();
 
         return $this->responseSuccess(
-            data: ['orders' => OrderResource::collection($orders)],
+            data: [OrderResource::collection($orders)],
         );
     }
 

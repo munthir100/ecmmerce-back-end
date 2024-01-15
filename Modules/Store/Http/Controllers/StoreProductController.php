@@ -62,7 +62,7 @@ class StoreProductController extends Controller
         $products = $store->products()->useFilters()->whereHas('options')->dynamicPaginate();
 
         return $this->responseSuccess(
-            data: ['products' => ProductResource::collection($products),],
+            data: [ProductResource::collection($products),],
         );
     }
 

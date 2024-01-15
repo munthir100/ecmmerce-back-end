@@ -19,7 +19,7 @@ class CategoryController extends Controller
         $this->authorize('View-Category');
         $categories = request()->store->categories()->useFilters()->dynamicPaginate();
 
-        return $this->responseSuccess(data: ['categories' => CategoryResource::collection($categories)]);
+        return $this->responseSuccess(data: [CategoryResource::collection($categories)]);
     }
 
 

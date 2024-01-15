@@ -19,7 +19,7 @@ class CouponController extends Controller
         $this->authorize('View-Coupon');
         $coupons = request()->store->coupons()->useFilters()->dynamicPaginate();
 
-        return $this->responseSuccess(data: ['coupons' => CouponResource::collection($coupons)]);
+        return $this->responseSuccess(data: [CouponResource::collection($coupons)]);
     }
 
     public function store(CouponRequest $request)

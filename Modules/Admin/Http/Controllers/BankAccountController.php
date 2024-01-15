@@ -22,7 +22,7 @@ class BankAccountController extends Controller
         $bankAccounts = BankAccount::with('bank')->where('admin_id', $store->admin_id)->useFilters()->dynamicPaginate();
 
         return $this->responseSuccess(
-            data: ['bankAccounts' => BankAccountResource::collection($bankAccounts)],
+            data: [BankAccountResource::collection($bankAccounts)],
         );
     }
 

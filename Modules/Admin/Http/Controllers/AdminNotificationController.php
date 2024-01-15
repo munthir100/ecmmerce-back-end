@@ -14,7 +14,7 @@ class AdminNotificationController extends Controller
         $this->authorize('View-Notification');
         $notifications = request()->admin->notifications()->get();
 
-        return $this->responseSuccess(data: ['admin_notifications' => AdminNotificationResource::collection($notifications)]);
+        return $this->responseSuccess(data: [AdminNotificationResource::collection($notifications)]);
     }
 
 

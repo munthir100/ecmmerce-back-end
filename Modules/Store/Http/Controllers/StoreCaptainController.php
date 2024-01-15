@@ -12,6 +12,6 @@ class StoreCaptainController extends Controller
     {
         $captains = $store->captains()->where('is_active', true)->dynamicPaginate();
 
-        return $this->responseSuccess(data: ['captains' => CaptainResource::collection($captains)]);
+        return $this->responseSuccess(data: [CaptainResource::collection($captains)]);
     }
 }

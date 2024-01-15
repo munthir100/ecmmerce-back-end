@@ -14,13 +14,13 @@ class ShippingController extends Controller
     {
         $countries = Country::useFilters()->dynamicPaginate();
 
-        return $this->responseSuccess(data: ['countries' => CountryResource::collection($countries)]);
+        return $this->responseSuccess(data: [CountryResource::collection($countries)]);
     }
 
     function cities()
     {
         $cities = City::useFilters()->dynamicPaginate();
 
-        return $this->responseSuccess(data: ['cities' => CityResource::collection($cities)]);
+        return $this->responseSuccess(data: [CityResource::collection($cities)]);
     }
 }

@@ -16,7 +16,7 @@ class CaptainController extends Controller
         $captains = request()->store->captains()->with('cities')->useFilters()->dynamicPaginate();
 
         return $this->responseSuccess(
-            data: ['captains' => CaptainResource::collection($captains)],
+            data: [CaptainResource::collection($captains)],
         );
     }
 

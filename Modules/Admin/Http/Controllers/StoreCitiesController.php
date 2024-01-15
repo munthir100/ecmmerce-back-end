@@ -19,7 +19,7 @@ class StoreCitiesController extends Controller
         ->useFilters()
         ->dynamicPaginate();
 
-        return $this->responseSuccess(data:['cities' => CityResource::collection($cities)]);
+        return $this->responseSuccess(data:[CityResource::collection($cities)]);
     }
 
 }
