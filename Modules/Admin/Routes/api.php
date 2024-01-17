@@ -35,6 +35,9 @@ use Modules\Admin\Http\Controllers\SubscriptionsPlansController;
 |
 */
 
+Route::get('/test', function(){
+    return response()->json('test is working');
+});
 
 Route::post('/admin/register', [AuthController::class, 'register']);
 Route::post('/admin/login', [AuthController::class, 'login']);
