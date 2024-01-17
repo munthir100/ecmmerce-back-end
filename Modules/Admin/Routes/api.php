@@ -36,9 +36,9 @@ use Modules\Admin\Http\Controllers\SubscriptionsPlansController;
 */
 
 
-Route::post('admin/register', [AuthController::class, 'register']);
-Route::post('admin/login', [AuthController::class, 'login']);
-Route::post('admin/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+Route::post('/admin/register', [AuthController::class, 'register']);
+Route::post('/admin/login', [AuthController::class, 'login']);
+Route::post('/admin/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 
 // need update social media links
